@@ -48,25 +48,52 @@ class HotelSeeder extends Seeder
             'kota' => 'Malang',
             'alamat' => 'Jl. Merdeka No. 1, Malang',
             'rating' => 4.5,
-            'bintang' => 3,
+            'bintang' => 5,
         ]);
 
         Hotel::create([
             'nama_hotel' => 'Azurea Lodge',
-            'gambar' => 'hotel6.jpg',
+            'gambar' => 'hotel7.jpg',
+            'kota' => 'Maluku',
+            'alamat' => 'Jl. Merdeka No. 1, Maluku',
+            'rating' => 4.5,
+            'bintang' => 4,
+        ]);
+            
+        Hotel::create([
+            'nama_hotel' => 'Aruna Stay',
+            'gambar' => 'hotel2.jpg',
             'kota' => 'Maluku',
             'alamat' => 'Jl. Merdeka No. 1, Maluku',
             'rating' => 4.5,
             'bintang' => 3,
         ]);
-            
+
         Hotel::create([
-            'nama_hotel' => 'Aruna Stay',
-            'gambar' => 'hotel7.jpg',
-            'kota' => 'Maluku',
-            'alamat' => 'Jl. Merdeka No. 1, Maluku',
+            'nama_hotel' => 'Biru Hotel',
+            'gambar' => 'hotel9.jpg',
+            'kota' => 'Pangandaran',
+            'alamat' => 'Jl. Merdeka No. 1, Pangandaran',
+            'rating' => 4.1,
+            'bintang' => 4,
+        ]);
+
+         Hotel::create([
+            'nama_hotel' => 'Velora Stay',
+            'gambar' => 'hotel10.jpg',
+            'kota' => 'Sukabumi',
+            'alamat' => 'Jl. Merdeka No. 1, Sukabumi',
+            'rating' => 4.4,
+            'bintang' => 4,
+        ]);
+        
+        Hotel::create([
+            'nama_hotel' => 'Samudra Hotel',
+            'gambar' => 'hotel1.jpg',
+            'kota' => 'Bali',
+            'alamat' => 'Jl. Merdeka No. 1, Bali',
             'rating' => 4.5,
-            'bintang' => 3,
+            'bintang' => 5,
         ]);
     }
 }
