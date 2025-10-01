@@ -1,6 +1,12 @@
-@extends('layouts.app')
-
-@section('content')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -32,18 +38,9 @@
                             <label>No HP</label>
                             <input type="text" class="form-control" placeholder="Masukkan nomor HP">
                         </div>
-                        <div class="mb-3">
-                            <label>Role</label>
-                            <select class="form-select">
-                                <option value="user" selected>User</option>
-                                <option value="admin">Admin</option>
-                                <option value="resepsionis">Resepsionis</option>
-                                <option value="owner">Owner</option>
-                            </select>
-                        </div>
                         <button type="submit" class="btn btn-success w-100">Register</button>
                         <p class="text-center mt-3">
-                            Sudah punya akun? <a href="{{ url('/login') }}">Login</a>
+                            Sudah punya akun? <a href="login.html">Login</a>
                         </p>
                     </form>
                 </div>
@@ -51,4 +48,5 @@
         </div>
     </div>
 </div>
-@endsection
+</body>
+</html>

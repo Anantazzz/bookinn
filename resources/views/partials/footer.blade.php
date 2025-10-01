@@ -30,11 +30,11 @@
                             <li><a href="#" class="text-white text-decoration-none">Yogyakarta</a></li>
                             <li><a href="#" class="text-white text-decoration-none">Pangandaran</a></li>
                             <li><a href="#" class="text-white text-decoration-none">Malang</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Banda Neira</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Surabaya</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Sukabumi</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Papua</a></li>
                             <li><a href="#" class="text-white text-decoration-none">Palembang</a></li>
+                            <li><a href="#" class="text-white text-decoration-none">Surabaya</a></li>
+                            <li><a href="#" class="text-white text-decoration-none">Papua</a></li>
+                            <li><a href="#" class="text-white text-decoration-none">Sukabumi</a></li>
+                            <li><a href="#" class="text-white text-decoration-none">Maluku</a></li>
                         </ul>
                     </div>
 

@@ -1,57 +1,22 @@
 @extends('layouts.app')
 
 @section('content')
-    {{-- Hero Section --}}
-    <section class="position-relative rounded-4 overflow-hidden mb-5">
-        {{-- Background Image --}}
-        <img src="{{ asset('images/hero_hotel.jpg') }}" 
-             alt="Hero Background" 
-             class="w-100" 
-             style="height: 420px; object-fit: cover;">
 
-        {{-- Search Box --}}
-        <div class="position-absolute top-50 start-50 translate-middle w-75">
-            <div class="bg-white shadow rounded-4 p-4 d-flex flex-column flex-lg-row align-items-stretch gap-3">
-                
-                {{-- Where to --}}
-                <div class="flex-fill border rounded-3 p-3 d-flex flex-column justify-content-center">
-                    <div class="d-flex align-items-center mb-1">
-                        <i class="bi bi-geo-alt-fill me-2"></i>
-                        <span class="fw-semibold">Where to?</span>
-                    </div>
-                    <input type="text" class="form-control border-0 p-0 shadow-none" 
-                           placeholder="Jakarta, Special Capital Region...">
-                </div>
+   {{-- Hero Section --}}
+<section class="position-relative rounded-4 overflow-hidden mb-5">
+    {{-- Background Image --}}
+    <img src="{{ asset('images/hero_hotel.jpg') }}" 
+         alt="Hero Background" 
+         class="w-100" 
+         style="height: 420px; object-fit: cover;">
 
-                {{-- Dates --}}
-                <div class="flex-fill border rounded-3 p-3 d-flex flex-column justify-content-center">
-                    <div class="d-flex align-items-center mb-1">
-                        <i class="bi bi-calendar-event me-2"></i>
-                        <span class="fw-semibold">Dates</span>
-                    </div>
-                    <input type="text" class="form-control border-0 p-0 shadow-none" 
-                           placeholder="22 Sept - 26 Sept">
-                </div>
-
-                {{-- Travellers --}}
-                <div class="flex-fill border rounded-3 p-3 d-flex flex-column justify-content-center">
-                    <div class="d-flex align-items-center mb-1">
-                        <i class="bi bi-person-fill me-2"></i>
-                        <span class="fw-semibold">Travellers</span>
-                    </div>
-                    <input type="text" class="form-control border-0 p-0 shadow-none" 
-                           placeholder="2 Travellers, 1 Room">
-                </div>
-
-                {{-- Button --}}
-                <div class="d-flex align-items-center">
-                    <button class="btn btn-dark rounded-3 px-4 py-3 fw-semibold">
-                        Search
-                    </button>
-                </div>
-            </div>
-        </div>
-    </section>
+    {{-- Search Bar Component --}}
+    <div class="position-absolute top-50 start-50 translate-middle w-75">
+        <form action="{{ route('hotel') }}" method="GET">
+            <x-search-bar />
+        </form>
+    </div>
+</section>
 
     {{-- Rekomendasi Hotel --}}
     <section class="mb-5">
@@ -60,7 +25,7 @@
             {{-- Wrapper Card --}}
             <div class="d-flex flex-nowrap overflow-auto pb-3" style="gap: 1rem;">
                 @foreach($hotels as $hotel)
-                    <x-hotel-card 
+                    <x-rekom-card 
                         :nama-hotel="$hotel->nama_hotel"
                         :gambar="$hotel->gambar"
                         :kota="$hotel->kota"
@@ -94,27 +59,35 @@
                 ];
             @endphp
 
-            @foreach($cities as $city)
-                <div class="col-6 col-md-4 col-lg-3">
-                    <a href="#" class="text-decoration-none">
-                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                            <img src="{{ asset('images/'.$city['image']) }}" 
-                                 alt="{{ $city['name'] }}" 
-                                 class="w-100" 
-                                 style="height: 150px; object-fit: cover;">
-                            <div class="card-img-overlay d-flex align-items-end p-2">
-                                <h6 class="text-white fw-bold m-0 text-shadow">{{ $city['name'] }}</h6>
-                            </div>
+            <div class="row g-3">
+            @foreach ($cities as $city)
+                <div class="col-md-3">
+                    <div class="card city-card border-0 shadow-sm rounded-4 overflow-hidden">
+                        <img src="{{ asset('images/'.$city['image']) }}" 
+                            alt="{{ $city['name'] }}" 
+                            class="w-100" 
+                            style="height: 180px; object-fit: cover; border-radius: 10px;">
+                        <div class="card-img-overlay d-flex align-items-end p-2">
+                            <h6 class="text-white fw-bold m-0 text-shadow">{{ $city['name'] }}</h6>
                         </div>
-                    </a>
+                    </div>
                 </div>
             @endforeach
         </div>
     </section>
 
+   {{-- Css Kota --}}
     <style>
+        .city-card {
+            transition: all 0.3s ease;
+        }
+        .city-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
         .text-shadow {
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
     </style>
 @endsection

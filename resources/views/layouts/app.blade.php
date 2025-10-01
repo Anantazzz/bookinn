@@ -22,10 +22,11 @@
         .navbar-brand img {
             height: 40px;
         }
+
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-white shadow-sm py-2">
+<nav class="navbar navbar-expand-lg bg-white shadow-sm py-2 sticky-top">
     <div class="container">
         {{-- Logo --}}
         <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">

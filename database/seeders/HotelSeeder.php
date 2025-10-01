@@ -23,16 +23,62 @@ class HotelSeeder extends Seeder
             'bintang' => 5,
         ]);
 
+       // Yogyakarta
         Hotel::create([
-            'nama_hotel' => 'Nava Inn',
-            'gambar' => 'hotel6.jpg',
+            'nama_hotel' => 'Merapi Hotel',
+            'gambar' => 'hotel16.jpg',
             'kota' => 'Yogyakarta',
             'alamat' => 'Jl. Merdeka No. 1, Yogyakarta',
             'rating' => 4.5,
             'bintang' => 5,
         ]);
 
+        Hotel::create([
+            'nama_hotel' => 'Nava Inn',
+            'gambar' => 'hotel6.jpg',
+            'kota' => 'Yogyakarta',
+            'alamat' => 'Jl. Merdeka No. 1, Yogyakarta',
+            'rating' => 4.5,
+            'bintang' => 3,
+        ]);
+
+        Hotel::create([
+            'nama_hotel' => 'Nirwana Hotel',
+            'gambar' => 'hotel13.jpg',
+            'kota' => 'Yogyakarta',
+            'alamat' => 'Jl. Merdeka No. 1, Yogyakarta',
+            'rating' => 3.8,
+            'bintang' => 3,
+        ]);
+
+        Hotel::create([
+            'nama_hotel' => 'Prambanan Inn',
+            'gambar' => 'hotel15.jpg',
+            'kota' => 'Yogyakarta',
+            'alamat' => 'Jl. Merdeka No. 1, Yogyakarta',
+            'rating' => 4.4,
+            'bintang' => 4,
+        ]);
+
+          Hotel::create([
+            'nama_hotel' => 'Arjuna Hotel',
+            'gambar' => 'hotel17.jpg',
+            'kota' => 'Yogyakarta',
+            'alamat' => 'Jl. Merdeka No. 1, Yogyakarta',
+            'rating' => 4.1,
+            'bintang' => 5,
+        ]);
+
+          Hotel::create([
+            'nama_hotel' => 'Kenanga Stay',
+            'gambar' => 'hotel15.jpg',
+            'kota' => 'Yogyakarta',
+            'alamat' => 'Jl. Merdeka No. 1, Yogyakarta',
+            'rating' => 3.9,
+            'bintang' => 3,
+        ]);
         
+        //Palembang
          Hotel::create([
             'nama_hotel' => 'Lavenda Hotel',
             'gambar' => 'hotel3.jpg',
