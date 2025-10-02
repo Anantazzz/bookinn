@@ -19,7 +19,12 @@ use App\Http\Controllers\HotelController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
+//auth
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 
+//hotel
 Route::get('/hotel', [HotelController::class, 'index'])->name('hotel');
+Route::get('/hotel/{id}', [HotelController::class, 'show'])->name('hotel.show');
+
+

@@ -23,11 +23,12 @@
                 @forelse($hotels as $hotel)
                    <div class="animate__animated animate__zoomIn hotel-card-wrapper mb-3">
                     <x-hotel-card 
+                        :id="$hotel->id"
                         :gambar="$hotel->gambar"
                         :namaHotel="$hotel->nama_hotel"
                         :kota="$hotel->kota"
+                        :alamat="$hotel->alamat"
                         :rating="$hotel->rating"
-                        :rating="$hotel->rating "
                         :bintang="$hotel->bintang"
                     />
                 @empty

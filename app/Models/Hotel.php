@@ -9,7 +9,7 @@ class Hotel extends Model
 {
     use HasFactory;
     protected $table = 'hotels';
-    protected $primaryKey = 'hotel_id';
+    protected $primaryKey = 'id';
     public $incrementing = true; 
     protected $keyType = 'int'; 
 

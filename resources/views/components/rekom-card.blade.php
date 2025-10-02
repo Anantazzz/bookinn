@@ -6,8 +6,8 @@
 
     <div class="card-body">
         <div class="d-flex align-items-center mb-2">
-            <span class="badge bg-success me-2">{{ $rating }}</span>
-             <span class="text-warning fw-bold">★ {{ $bintang }}</span>
+            <span class="badge bg-success">{{ $rating }}</span>
+            <span class="text-warning fw-bold ms-auto">★ {{ $bintang }}</span>
         </div>
         <h6 class="card-title fw-semibold mb-1">{{ $namaHotel }}</h6>
         <p class="text-muted mb-0">{{ $kota }}</p>
