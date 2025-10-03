@@ -18,25 +18,40 @@
     </div>
 </section>
 
-    {{-- Rekomendasi Hotel --}}
-    <section class="mb-5">
-        <h4 class="fw-bold mb-4">Rekomendasi hotel untuk anda</h4>
-        <div class="position-relative">
-            {{-- Wrapper Card --}}
-            <div class="d-flex flex-nowrap overflow-auto pb-3" style="gap: 1rem;">
-                @foreach($hotels as $hotel)
-                    <x-rekom-card 
-                        :nama-hotel="$hotel->nama_hotel"
-                        :gambar="$hotel->gambar"
-                        :kota="$hotel->kota"
-                        :alamat="$hotel->alamat"
-                        :rating="$hotel->rating"
-                        :bintang="$hotel->bintang"
-                    />
-                @endforeach
-            </div>
+{{-- Rekomendasi Hotel --}}
+<section class="mb-5">
+    <h4 class="fw-bold mb-4">Rekomendasi hotel untuk anda</h4>
+    <div class="position-relative">
+        {{-- Wrapper Card --}}
+        <div class="d-flex flex-nowrap overflow-auto pb-3" style="gap: 1rem;">
+            @foreach($hotels as $hotel)
+             <a href="{{ route('hotel.detail', $hotel->id) }}" class="text-decoration-none text-dark">
+                <div class="card shadow-sm rounded-3" style="min-width: 220px; overflow:hidden;">
+                    {{-- Gambar --}}
+                    <div style="height: 140px; overflow:hidden;">
+                        <img src="{{ asset('images/'.$hotel->gambar) }}" 
+                             alt="{{ $hotel->nama_hotel }}" 
+                             class="w-100 h-100" 
+                             style="object-fit: cover;">
+                    </div>
+
+                    {{-- Info Hotel --}}
+                    <div class="card-body">
+                        <h6 class="fw-bold mb-1">{{ $hotel->nama_hotel }}</h6>
+                        <p class="text-muted mb-1">{{ $hotel->kota }}</p>
+                        <p class="text-muted small">{{ $hotel->alamat }}</p>
+
+                        <div class="d-flex align-items-center justify-content-between mt-2">
+                            <span class="badge bg-success">{{ number_format($hotel->rating,1) }}</span>
+                            <span class="text-warning fw-bold">★ {{ $hotel->bintang }}</span>
+                        </div>
+                    </div>
+                  </a>
+                </div>
+            @endforeach
         </div>
-    </section>
+    </div>
+</section>
 
     {{-- Pilih Kota --}}
     <section class="mb-5">
@@ -61,8 +76,9 @@
 
             <div class="row g-3">
             @foreach ($cities as $city)
-                <div class="col-md-3">
-                    <div class="card city-card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="col-md-3">
+                <a href="{{ route('hotel', ['kota' => $city['name']]) }}" class="text-decoration-none">
+                    <div class="card city-card border-0 shadow-sm rounded-4 overflow-hidden" style="cursor: pointer;">
                         <img src="{{ asset('images/'.$city['image']) }}" 
                             alt="{{ $city['name'] }}" 
                             class="w-100" 
@@ -71,8 +87,9 @@
                             <h6 class="text-white fw-bold m-0 text-shadow">{{ $city['name'] }}</h6>
                         </div>
                     </div>
-                </div>
-            @endforeach
+                </a>
+            </div>
+        @endforeach
         </div>
     </section>
 

@@ -40,7 +40,7 @@
                         </div>
                         <button type="submit" class="btn btn-success w-100">Register</button>
                         <p class="text-center mt-3">
-                            Sudah punya akun? <a href="login.html">Login</a>
+                            Sudah punya akun? <a href="login">Login</a>
                         </p>
                     </form>
                 </div>

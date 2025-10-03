@@ -2,7 +2,6 @@
     <div class="bg-white shadow rounded-4 p-3 d-flex flex-column flex-lg-row align-items-stretch gap-3">
     <div class="flex-fill border rounded-3 p-3 d-flex flex-column justify-content-center">
     <div class="d-flex align-items-center mb-1">
-        <i class="bi bi-geo-alt-fill me-2"></i>
         <span class="fw-semibold">Mau kemana?</span>
     </div>
    <select class="form-select border-0 shadow-none p-0" name="kota">
@@ -25,7 +24,6 @@
     {{-- Tanggal --}}
     <div class="flex-fill border rounded-3 p-3 d-flex flex-column justify-content-center">
         <div class="d-flex align-items-center mb-1">
-            <i class="bi bi-calendar-event me-2"></i>
             <span class="fw-semibold">Tanggal</span>
         </div>
         <input type="text" class="form-control border-0 p-0 shadow-none"
@@ -36,7 +34,6 @@
     {{-- Jumlah --}}
     <div class="flex-fill border rounded-3 p-3 d-flex flex-column justify-content-center">
         <div class="d-flex align-items-center mb-1">
-            <i class="bi bi-person-fill me-2"></i>
             <span class="fw-semibold">Jumlah orang</span>
         </div>
         <input type="text" class="form-control border-0 p-0 shadow-none"

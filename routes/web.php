@@ -25,6 +25,6 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 
 //hotel
 Route::get('/hotel', [HotelController::class, 'index'])->name('hotel');
-Route::get('/hotel/{id}', [HotelController::class, 'show'])->name('hotel.show');
+Route::get('/hotel/{id}', [HotelController::class, 'detail'])->name('hotel.detail');
 
 

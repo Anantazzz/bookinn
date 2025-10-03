@@ -1,0 +1,177 @@
+ body {
+        background-color: #f8f9fa;
+    }
+    
+    .badge {
+        font-weight: 600;
+    }
+    
+    h1 {
+        color: #1a1a1a;
+    }
+
+        /* Room Card Styles */
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #000;
+    }
+
+    .room-card {
+        background: #fff;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .room-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .room-image-wrapper {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .room-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .badge-booked {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.25rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .room-info {
+        padding: 1.25rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .room-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #000;
+        margin-bottom: 1rem;
+    }
+
+    .room-facilities {
+        margin-bottom: 1rem;
+    }
+
+    .facility-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        color: #666;
+    }
+
+    .facility-item i {
+        font-size: 1rem;
+        color: #000;
+    }
+
+    .room-pricing {
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid #e0e0e0;
+        margin-bottom: 1rem;
+    }
+
+    .price-main {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #000;
+        margin-bottom: 0.25rem;
+    }
+
+    .price-total {
+        font-size: 0.875rem;
+        color: #666;
+        margin-bottom: 0.25rem;
+    }
+
+    .price-note {
+        font-size: 0.75rem;
+        color: #999;
+    }
+
+    .room-count-note {
+        font-size: 0.875rem;
+        color: #dc3545;
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+    }
+
+    .btn-pesan {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #1a4d2e;
+        color: white;
+        text-align: center;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-pesan:hover {
+        background-color: #143d24;
+        color: white;
+    }
+
+    .btn-disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .btn-disabled:hover {
+        background-color: #6c757d;
+    }
+
+    @media (max-width: 768px) {
+        .date-input-box {
+            padding: 0.875rem 1rem;
+        }
+
+        .booking-icon {
+            font-size: 1.25rem;
+            margin-right: 0.75rem;
+        }
+
+        .date-label {
+            font-size: 0.7rem;
+        }
+
+        .date-display {
+            font-size: 0.875rem;
+        }
+
+        .room-title {
+            font-size: 1.1rem;
+        }
+
+        .price-main {
+            font-size: 1.25rem;
+        }
+    }

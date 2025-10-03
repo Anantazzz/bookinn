@@ -12,20 +12,18 @@ class HotelController extends Controller
     {
         $query = Hotel::query();
 
-        //Filter berdasarkan Kota
         if($request->filled('kota')) {
             $query->where('kota', $request->kota);
         }
 
         $hotels = $query->paginate(10);
-        
+
         return view('hotels.hotel', compact('hotels'));
     }
 
-    public function show($id)
+    public function detail($id)
     {
-    // Ambil hotel + semua kamar terkait
-    $hotel = Hotel::with('kamars')->findOrFail($id);
-    return view('hotels.show', compact('hotel'));
+        $hotel = Hotel::with('kamars')->findOrFail($id);
+        return view('hotels.detail', compact('hotel'));
     }
 }
