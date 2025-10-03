@@ -17,11 +17,16 @@ use App\Http\Controllers\HotelController;
 |
 */
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 //auth
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::get('register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('register', [AuthController::class, 'register'])->name('register.post');
+
+Route::get('login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('login', [AuthController::class, 'login'])->name('login.post');
+
+Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 //hotel
 Route::get('/hotel', [HotelController::class, 'index'])->name('hotel');
