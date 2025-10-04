@@ -9,14 +9,14 @@ class Kamar extends Model
 {
     use HasFactory;
     protected $table = 'kamars';
-    protected $primaryKey = 'kamar_id';
+    protected $primaryKey = 'id';
     public $incrementing = true;
     protected $keyType = 'int';
 
     protected $fillable = [
         'hotel_id',
         'nomor_kamar',
-        'tipe_kamar',
+        'tipe_kamar_id', 
         'harga',
         'status',
         'kapasitas',
@@ -28,5 +28,9 @@ class Kamar extends Model
       public function hotel()
     {
          return $this->belongsTo(Hotel::class, 'hotel_id', 'id');
+    }
+    public function tipeKamar()
+    {
+          return $this->belongsTo(TipeKamar::class, 'tipe_kamar_id');
     }
 }

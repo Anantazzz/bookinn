@@ -1,4 +1,4 @@
-@props(['gambar' => null, 'tipeKamar' => '', 'harga' => 0, 'status' => '', 'kapasitas' => 0, 'jumlahBed' => 0, 'internet' => false])
+@props(['id' => null, 'gambar' => null, 'tipeKamar' => '', 'harga' => 0, 'status' => '', 'kapasitas' => 0, 'jumlahBed' => 0, 'internet' => false])
 
 {{-- Header detail --}}
 <div class="card shadow-sm rounded-4 mb-3" style="width: 100%;">
@@ -35,11 +35,10 @@
         
         {{-- Tombol Pesan --}}
         <div class="d-grid mt-3">
-            <button 
-                class="btn btn-primary rounded-pill py-2" 
-                {{ $status !== 'tersedia' ? 'disabled' : '' }}>
+            <a href="{{ route('hotel.reservasi', ['id' => $id]) }}" 
+            class="btn btn-primary rounded-pill py-2 {{ $status !== 'tersedia' ? 'disabled' : '' }}">
                 Pesan
-            </button>
+            </a>
         </div>
     </div>
 </div>

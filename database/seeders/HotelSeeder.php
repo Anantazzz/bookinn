@@ -141,5 +141,23 @@ class HotelSeeder extends Seeder
             'rating' => 4.5,
             'bintang' => 5,
         ]);
+
+         Hotel::create([
+            'nama_hotel' => 'Cendrawasih Hotel',
+            'gambar' => 'hotel20.jpg',
+            'kota' => 'Papua',
+            'alamat' => 'Jl. Merdeka No. 1, Papua',
+            'rating' => 4.3,
+            'bintang' => 4,
+        ]);
+
+        Hotel::create([
+            'nama_hotel' => 'Sura Inn',
+            'gambar' => 'hotel22.jpg',
+            'kota' => 'Surabaya',
+            'alamat' => 'Jl. Merdeka No. 1, Surabaya',
+            'rating' => 4.4,
+            'bintang' => 4,
+        ]);
     }
 }

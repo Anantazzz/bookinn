@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HotelController;
+use App\Http\Controllers\ReservasiController;
+use App\Http\Controllers\PembayaranController;
 
 
 /*
@@ -17,7 +19,7 @@ use App\Http\Controllers\HotelController;
 |
 */
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 //auth
 Route::get('register', [AuthController::class, 'showRegister'])->name('register');
@@ -25,11 +27,13 @@ Route::post('register', [AuthController::class, 'register'])->name('register.pos
 
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login.post');
-
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
 //hotel
 Route::get('/hotel', [HotelController::class, 'index'])->name('hotel');
 Route::get('/hotel/{id}', [HotelController::class, 'detail'])->name('hotel.detail');
 
-
+//Booking & Payment
+Route::get('/reservasi/{id}', [ReservasiController::class, 'showForm'])->name('hotel.reservasi')->middleware('auth');
+Route::get('/pembayaran/{id}', [PembayaranController::class, 'index'])->name('hotel.pembayaran')->middleware('auth');
+Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('hotel.pembayaran')->middleware('auth');

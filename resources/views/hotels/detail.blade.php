@@ -47,6 +47,7 @@
         @foreach ($hotel->kamars as $kamar)
             <div class="col-md-4">
                 <x-room-card 
+                    :id="$kamar->id"
                     :gambar="$kamar->gambar"
                     :tipe-kamar="$kamar->tipe_kamar"
                     :harga="$kamar->harga"

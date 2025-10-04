@@ -17,7 +17,7 @@ class KamarSeeder extends Seeder
          Kamar::create([
             'hotel_id' => 1, 
             'nomor_kamar' => '101',
-            'tipe_kamar' => 'Standar',
+            'tipe_kamar_id' => 1, 
             'harga' => 762000,
             'status' => 'tersedia',
             'kapasitas' => 2,
@@ -29,7 +29,7 @@ class KamarSeeder extends Seeder
         Kamar::create([
             'hotel_id' => 1, 
             'nomor_kamar' => '106',
-            'tipe_kamar' => 'Deluxe',
+            'tipe_kamar_id' => 2, 
             'harga' => 983000,
             'status' => 'tersedia',
             'kapasitas' => 3,
@@ -41,7 +41,7 @@ class KamarSeeder extends Seeder
         Kamar::create([
             'hotel_id' => 1, 
             'nomor_kamar' => '120',
-            'tipe_kamar' => 'Premium',
+            'tipe_kamar_id' => 3, 
             'harga' => 1145000,
             'status' => 'tersedia',
             'kapasitas' => 4,
