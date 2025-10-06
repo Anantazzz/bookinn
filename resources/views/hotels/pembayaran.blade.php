@@ -13,9 +13,14 @@
       
       <div class="card shadow-sm">
         <div class="card-body">
-          <p class="small-text mb-3 fw-semibold">Pilih metode pembayaran yang Anda inginkan.</p>
 
-          <form method="POST" action="{{ route('hotel.pembayaran', ['id' => $kamar->id]) }}">
+          @if(isset($reservasi))
+          <div class="alert alert-info mb-4">
+            <strong>Total Bayar:</strong> Rp{{ number_format($reservasi->total_harga, 0, ',', '.') }}
+          </div>
+        @endif
+
+          <form method="POST" action="{{ route('hotel.prosesPembayaran', ['id' => $kamar->id]) }}">
             @csrf
 
             <div class="mb-3 d-flex justify-content-between align-items-center">
@@ -45,6 +50,11 @@
                 <option value="other">Bank Lainnya</option>
               </select>
             </div>
+
+           <div class="mb-3">
+              <label class="form-label fw-semibold">Nomor Rekening</label>
+              <input type="text" name="nomor_rekening" class="form-control" placeholder="Masukkan nomor rekening Anda" maxlength="20">
+           </div>
 
             <input type="hidden" name="kamar_id" value="{{ $kamar->id }}">
 

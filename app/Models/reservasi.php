@@ -19,6 +19,8 @@ class reservasi extends Model
         'tanggal_checkout',
         'jam_checkout',
         'status',
+        'kasur_tambahan',
+        'total_harga',
     ];
 
      public function user()

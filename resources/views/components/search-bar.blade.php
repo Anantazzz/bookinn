@@ -31,16 +31,6 @@
                placeholder="22 Sept - 26 Sept">
     </div>
 
-    {{-- Jumlah --}}
-    <div class="flex-fill border rounded-3 p-3 d-flex flex-column justify-content-center">
-        <div class="d-flex align-items-center mb-1">
-            <span class="fw-semibold">Jumlah orang</span>
-        </div>
-        <input type="text" class="form-control border-0 p-0 shadow-none"
-               name="travellers" value="{{ request('travellers') }}"
-               placeholder="2 Orang, 1 Kamar">
-    </div>
-
     {{-- Button --}}
     <div class="d-flex align-items-center">
         <button type="submit" class="btn btn-dark rounded-3 px-4 py-3 fw-semibold">

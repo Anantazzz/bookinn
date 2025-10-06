@@ -2,10 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\PembayaranController;
+use App\Http\Controllers\InvoiceController;
 
 
 /*
@@ -29,11 +31,23 @@ Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('login', [AuthController::class, 'login'])->name('login.post');
 Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
+//Profile user
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+});
+
 //hotel
 Route::get('/hotel', [HotelController::class, 'index'])->name('hotel');
 Route::get('/hotel/{id}', [HotelController::class, 'detail'])->name('hotel.detail');
 
 //Booking & Payment
 Route::get('/reservasi/{id}', [ReservasiController::class, 'showForm'])->name('hotel.reservasi')->middleware('auth');
-Route::get('/pembayaran/{id}', [PembayaranController::class, 'index'])->name('hotel.pembayaran')->middleware('auth');
-Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('hotel.pembayaran')->middleware('auth');
+Route::post('/reservasi/{id}', [ReservasiController::class, 'store'])->name('reservasi.store');
+
+Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('hotel.pembayaran');
+Route::post('/pembayaran/{id}', [PembayaranController::class, 'prosesPembayaran'])->name('hotel.prosesPembayaran');
+
+//Invoice
+Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
+Route::get('/invoice/{id}/download', [InvoiceController::class, 'download'])->name('invoice.download');

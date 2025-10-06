@@ -1,83 +1,99 @@
 @extends('layouts.app')
 
-@section('title', 'Form Pembayaran')
+@section('title', 'Form Reservasi')
 
 @section('content')
 <div class="row g-4 justify-content-center">
-  <!-- Kolom Kiri -->
-  <div class="col-lg-8" style="max-width: 600px;"> 
-    <!-- Langkah 1 -->
-    <div class="card p-4 mb-4">
-      <h5 class="section-title">
-        <i class="bi bi-person-lines-fill me-2"></i>Langkah 1: Rincian Anda
-      </h5>
-      <p class="small-text">Masukkan nama tamu yang akan menginap, sesuai dengan data login Anda.</p>
-      
-      <form>
+  <div class="col-lg-10" style="max-width: 900px;"> 
+    <form action="{{ route('reservasi.store', ['id' => $kamar->id]) }}" method="POST">
+      @csrf
+
+      <!-- Langkah 1: Data User -->
+      <div class="card p-4 mb-4 shadow-sm border border-2 border-secondary-subtle rounded-3">
+        <h5 class="fw-semibold mb-3 text-dark">
+          <i class="bi bi-person-lines-fill me-2"></i>Langkah 1: Rincian Anda
+        </h5>
+        <p class="small text-muted mb-4">Data ini otomatis diambil dari akun Anda yang sedang login.</p>
+
         <div class="mb-3">
           <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
-          <input type="text" class="form-control" value="{{ $user->name }}" readonly>
+          <input type="text" name="nama" class="form-control" value="{{ $user->name }}" readonly>
         </div>
+
         <div class="mb-3">
           <label class="form-label fw-semibold">Alamat Email</label>
-          <input type="email" class="form-control" value="{{ $user->email }}" readonly>
+          <input type="email" name="email" class="form-control" value="{{ $user->email }}" readonly>
         </div>
+
         <div class="mb-3">
           <label class="form-label fw-semibold">Alamat Rumah</label>
-          <input type="text" class="form-control" value="{{ $user->alamat }}" readonly>
+          <input type="text" name="alamat" class="form-control" value="{{ $user->alamat }}" readonly>
         </div>
+
         <div class="mb-3">
           <label class="form-label fw-semibold">Nomor Ponsel</label>
-          <input type="text" class="form-control" value="{{ $user->no_hp }}" readonly>
+          <input type="text" name="no_hp" class="form-control" value="{{ $user->no_hp }}" readonly>
         </div>
-      </form>
-    </div>
-  </div>
+      </div>
 
-  {{-- Form kanan --}}
-<div class="col-lg-4">
-  <div class="card p-4 mb-3">
-    <h6 class="fw-bold mb-3">Kamar {{ $kamar->tipeKamar->nama_tipe }}</h6>
-    
-    <div class="mb-2">
-      <label class="form-label fw-semibold">Tanggal Check-in</label>
-      <input type="date" name="tanggal_checkin" class="form-control" required>
-    </div>
+      <!-- Langkah 2: Data Kamar -->
+      <div class="card p-4 mb-4 shadow-sm border border-2 border-secondary-subtle rounded-3">
+        <h5 class="fw-semibold mb-3 text-dark">
+          <i class="bi bi-building me-2"></i>Langkah 2: Detail Kamar
+        </h5>
 
-    <div class="mb-2">
-      <label class="form-label fw-semibold">Jam Check-in</label>
-      <input type="time" name="jam_checkin" class="form-control" required>
-    </div>
+        <h6 class="fw-semibold text-secondary mb-3">Kamar {{ $kamar->tipeKamar->nama_tipe }}</h6>
 
-    <div class="mb-2">
-      <label class="form-label fw-semibold">Tanggal Check-out</label>
-      <input type="date" name="tanggal_checkout" class="form-control" required>
-    </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Tanggal Check-in</label>
+          <input type="date" name="tanggal_checkin" class="form-control" required>
+        </div>
 
-    <div class="mb-2">
-      <label class="form-label fw-semibold">Jam Check-out</label>
-      <input type="time" name="jam_checkout" class="form-control" required>
-    </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Jam Check-in</label>
+          <input type="time" name="jam_checkin" class="form-control" required>
+        </div>
 
-    <p class="mt-3"><strong>Harga: Rp{{ number_format($kamar->harga, 0, ',', '.') }}</strong></p>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Tanggal Check-out</label>
+          <input type="date" name="tanggal_checkout" class="form-control" required>
+        </div>
 
-    <div class="d-grid mt-3">
-         <a href="{{ route('hotel.pembayaran', ['id' => $kamar->id]) }}" class="btn btn-primary rounded-pill py-2 text-center">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Jam Check-out</label>
+          <input type="time" name="jam_checkout" class="form-control" required>
+        </div>
+
+        <p class="mt-3 mb-0 fw-semibold fs-6 text-dark">
+          Harga per malam: Rp{{ number_format($kamar->harga, 0, ',', '.') }}
+        </p>
+      </div>
+
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" name="kasur_tambahan" id="kasur_tambahan" value="1">
+        <label class="form-check-label fw-semibold" for="kasur_tambahan">
+          Tambah kasur (+Rp100.000)
+        </label>
+      </div>
+      
+      <!-- Langkah 3: Tombol Submit -->
+      <div class="d-grid mb-4">
+        <button type="submit" class="btn btn-primary rounded-pill py-2">
           Lanjutkan ke Pembayaran
-      </a>
-    </div>
-  </div>
-</div>
+        </button>
+      </div>
+    </form>
 
-    <div class="card p-4 border-danger-subtle">
-      <h6 class="fw-bold mb-2 text-dark">Kebijakan pembatalan</h6>
-      <ul class="small-text mb-2">
-        <li>Check-in di jam 14:00 & Check-out di jam 12:00.</li>
-        <li>Pembatalan tanpa biaya hingga H-1 sebelum check-in.</li>
-        <li>Kami pastikan uang kembali 100% jika pembatalan dilakukan h-1 Check-in</li>
+    <!-- Kebijakan Pembatalan -->
+    <div class="card p-4 border border-2 border-secondary-subtle rounded-3 bg-light-subtle">
+      <h6 class="fw-semibold mb-2 text-dark">Kebijakan Pembatalan</h6>
+      <ul class="small mb-2 text-secondary">
+        <li>Check-in pukul 14:00 & Check-out pukul 12:00.</li>
+        <li>Pembatalan gratis hingga H-1 sebelum check-in.</li>
+        <li>Uang kembali 100% jika pembatalan dilakukan H-1 sebelum Check-in.</li>
       </ul>
-      <p class="text-danger small-text">
-        Kami tidak dapat mengembalikan pembayaran jika Anda tidak datang atau check-out lebih awal.
+      <p class="text-danger small mb-0">
+        Tidak ada pengembalian pembayaran jika Anda tidak datang atau check-out lebih awal.
       </p>
     </div>
   </div>
