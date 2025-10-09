@@ -18,7 +18,7 @@ class ReservasiController extends Controller
     }
 
    public function store(Request $request, $id)
-{
+    {
     $user = Auth::user();
     $kamar = Kamar::findOrFail($id);
 

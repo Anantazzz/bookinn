@@ -9,7 +9,6 @@
 <body style="background-color: #f8f9fa;">
 
 @php
-  // Ubah bahasa Carbon jadi Bahasa Indonesia
   \Carbon\Carbon::setLocale('id');
 @endphp
 

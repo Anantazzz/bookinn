@@ -9,7 +9,7 @@ class TipeKamar extends Model
 {
     use HasFactory;
 
-    protected $table = 'tipe_kamars'; // nama tabel
+    protected $table = 'tipe_kamars'; 
 
     protected $fillable = [
         'nama_tipe',

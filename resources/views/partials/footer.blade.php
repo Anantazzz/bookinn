@@ -13,7 +13,7 @@
                     Kami menyediakan berbagai pilihan akomodasi dengan <br>
                     harga bersahabat dan layanan terpercaya.
                 </p>
-            </div> {{-- ✅ ini yang tadi hilang penutupnya --}}
+            </div>
 
             {{-- Kolom kanan --}}
             <div class="col-md-6">

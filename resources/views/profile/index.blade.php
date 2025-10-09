@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <div class="container py-5">
     {{-- Alert sukses --}}
     @if(session('success'))
@@ -9,7 +10,7 @@
 
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <div class="card shadow-sm">
+            <div class="card user-card shadow-sm border-primary">
                 <div class="card-body position-relative">
                     {{-- Tombol Edit --}}
                     <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-3" 
@@ -19,7 +20,7 @@
 
                     {{-- Info User --}}
                     <h4 class="text-center mb-2">{{ $user->name }}</h4>
-                    <p class="text-center text-muted mb-1">{{ $user->email }}</p>
+                    <p class="text-center text-success mb-1">{{ $user->email }}</p>
                     <p class="text-center mb-1"><strong>Alamat:</strong> {{ $user->alamat ?? '-' }}</p>
                     <p class="text-center mb-0"><strong>No HP:</strong> {{ $user->no_hp ?? '-' }}</p>
                 </div>
@@ -71,4 +72,18 @@
     </div>
   </div>
 </div>
+
+{{-- CSS tambahan --}}
+<style>
+.user-card {
+    border: 2px solid #0d6efd; /* biru Bootstrap */
+    border-radius: 15px;
+    transition: 0.3s ease;
+}
+
+.user-card:hover {
+    box-shadow: 0 0 15px rgba(13, 110, 253, 0.3);
+}
+</style>
+
 @endsection

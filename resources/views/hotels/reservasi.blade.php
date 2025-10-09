@@ -3,6 +3,7 @@
 @section('title', 'Form Reservasi')
 
 @section('content')
+
 <div class="row g-4 justify-content-center">
   <div class="col-lg-10" style="max-width: 900px;"> 
     <form action="{{ route('reservasi.store', ['id' => $kamar->id]) }}" method="POST">
@@ -90,7 +91,7 @@
       <ul class="small mb-2 text-secondary">
         <li>Check-in pukul 14:00 & Check-out pukul 12:00.</li>
         <li>Pembatalan gratis hingga H-1 sebelum check-in.</li>
-        <li>Uang kembali 100% jika pembatalan dilakukan H-1 sebelum Check-in.</li>
+        <li>Kami pastikan uang kembali 100% jika melakukan pembatalan sesuai kebijakan.</li>
       </ul>
       <p class="text-danger small mb-0">
         Tidak ada pengembalian pembayaran jika Anda tidak datang atau check-out lebih awal.

@@ -11,6 +11,7 @@
 
         {{-- Area Hotel List --}}
         <div class="col-md-9">
+            
             {{-- Search Bar --}}
             <div class="mb-4">
                 <form action="{{ route('hotel') }}" method="GET">

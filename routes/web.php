@@ -9,6 +9,8 @@ use App\Http\Controllers\ReservasiController;
 use App\Http\Controllers\PembayaranController;
 use App\Http\Controllers\InvoiceController;
 
+use App\Http\Controllers\AdminHotelController;
+use App\Http\Controllers\AdminKamarController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +23,7 @@ use App\Http\Controllers\InvoiceController;
 |
 */
 
+                            // Route User
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 //auth
@@ -41,13 +44,33 @@ Route::middleware('auth')->group(function () {
 Route::get('/hotel', [HotelController::class, 'index'])->name('hotel');
 Route::get('/hotel/{id}', [HotelController::class, 'detail'])->name('hotel.detail');
 
-//Booking & Payment
+//Reservasi 
 Route::get('/reservasi/{id}', [ReservasiController::class, 'showForm'])->name('hotel.reservasi')->middleware('auth');
 Route::post('/reservasi/{id}', [ReservasiController::class, 'store'])->name('reservasi.store');
 
+//Pembayaran
 Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('hotel.pembayaran');
 Route::post('/pembayaran/{id}', [PembayaranController::class, 'prosesPembayaran'])->name('hotel.prosesPembayaran');
 
 //Invoice
 Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
 Route::get('/invoice/{id}/download', [InvoiceController::class, 'download'])->name('invoice.download');
+
+                            // Route Admin
+Route::prefix('admin')->group(function () {
+    // Dashboard admin — ambil data hotel juga
+    Route::get('/dashboard', [AdminHotelController::class, 'index'])->name('admin.dashboard');
+    // CRUD Hotel
+    Route::get('/hotels', [AdminHotelController::class, 'index'])->name('admin.hotels.index');
+    Route::get('/hotels/create', [AdminHotelController::class, 'create'])->name('admin.hotels.create');
+    Route::get('/hotels/{id}', [AdminHotelController::class, 'show'])->name('admin.hotels.show');
+    Route::post('/hotels', [AdminHotelController::class, 'store'])->name('admin.hotels.store');
+    Route::get('/hotels/{id}/edit', [AdminHotelController::class, 'edit'])->name('admin.hotels.edit');
+    Route::put('/hotels/{id}', [AdminHotelController::class, 'update'])->name('admin.hotels.update');
+    Route::delete('/hotels/{id}', [AdminHotelController::class, 'destroy'])->name('admin.hotels.destroy');
+});
+     // ROUTE ADMIN KAMAR
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::resource('kamars', AdminKamarController::class);
+});
+

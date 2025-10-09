@@ -3,6 +3,7 @@
 @section('title', 'Form Pembayaran')
 
 @section('content')
+
 <div class="row g-4 justify-content-center">
   {{-- Kolom Kanan / Langkah 2 --}}
   <div class="col-lg-8" style="max-width: 600px;">

@@ -33,10 +33,9 @@
 
     {{-- Button --}}
     <div class="d-flex align-items-center">
-        <button type="submit" class="btn btn-dark rounded-3 px-4 py-3 fw-semibold">
-            Search
-        </button>
+            <button type="submit" class="btn btn-dark rounded-3 px-4 py-3 fw-semibold">
+                Search
+            </button>
+        </div>
     </div>
-</div>
-
 </div>
