@@ -90,7 +90,7 @@ Route::prefix('admin')->group(function () {
     Route::get('/resepsionis/create', [AdminResepsionisController::class, 'create'])->name('admin.resepsionis.create');
     Route::post('/resepsionis', [AdminResepsionisController::class, 'store'])->name('admin.resepsionis.store');
     Route::get('/resepsionis/{id}', [AdminResepsionisController::class, 'show'])->name('admin.resepsionis.show');
-    Route::get('/resepsionis{id}/edit', [AdminResepsionisController::class, 'edit'])->name('admin.resepsionis.edit');
+    Route::get('/resepsionis/{id}/edit', [AdminResepsionisController::class, 'edit'])->name('admin.resepsionis.edit');
     Route::put('/resepsionis/{id}', [AdminResepsionisController::class, 'update'])->name('admin.resepsionis.update');
     Route::delete('/resepsionis/{id}', [AdminResepsionisController::class, 'destroy'])->name('admin.resepsionis.destroy');
 });

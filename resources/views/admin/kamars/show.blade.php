@@ -26,13 +26,14 @@
     </div>
 
     {{-- Tombol aksi --}}
-    <div class="mt-6 flex gap-2">
+    <div class="mt-6 flex justify-end space-x-3">
         <a href="{{ route('admin.kamars.index') }}" 
-           class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+           class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
            Kembali
         </a>
+
         <a href="{{ route('admin.kamars.edit', $kamar->id) }}" 
-           class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+           class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
            Edit
         </a>
     </div>

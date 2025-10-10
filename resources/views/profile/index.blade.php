@@ -1,29 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
-
 <div class="container py-5">
     {{-- Alert sukses --}}
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success text-center">{{ session('success') }}</div>
     @endif
 
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card user-card shadow-sm border-primary">
-                <div class="card-body position-relative">
-                    {{-- Tombol Edit --}}
-                    <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-3" 
-                            data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                        Edit
-                    </button>
+    <div class="d-flex justify-content-center">
+        <div class="card user-card shadow-sm border-primary text-center">
+            <div class="card-body position-relative d-flex flex-column align-items-center justify-content-center">
+                
+                {{-- Tombol Edit --}}
+                <button class="btn btn-sm btn-outline-primary position-absolute top-0 end-0 m-3" 
+                        data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                    Edit
+                </button>
 
-                    {{-- Info User --}}
-                    <h4 class="text-center mb-2">{{ $user->name }}</h4>
-                    <p class="text-center text-success mb-1">{{ $user->email }}</p>
-                    <p class="text-center mb-1"><strong>Alamat:</strong> {{ $user->alamat ?? '-' }}</p>
-                    <p class="text-center mb-0"><strong>No HP:</strong> {{ $user->no_hp ?? '-' }}</p>
+                {{-- Avatar Placeholder --}}
+                <div class="profile-img mb-3">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=0d6efd&color=fff&size=128" 
+                         alt="Avatar" class="rounded-circle border border-3 border-primary" width="100" height="100">
                 </div>
+
+                {{-- Info User --}}
+                <h4 class="fw-bold mb-2">{{ $user->name }}</h4>
+                <p class="text-success mb-1">{{ $user->email }}</p>
+                <p class="mb-1"><strong>Alamat:</strong> {{ $user->alamat ?? '-' }}</p>
+                <p class="mb-0"><strong>No HP:</strong> {{ $user->no_hp ?? '-' }}</p>
             </div>
         </div>
     </div>
@@ -76,14 +80,21 @@
 {{-- CSS tambahan --}}
 <style>
 .user-card {
-    border: 2px solid #0d6efd; /* biru Bootstrap */
-    border-radius: 15px;
+    width: 280px; /* sempit seperti potret */
+    min-height: 420px; /* tinggi biar seperti kartu */
+    border: 2px solid #0d6efd;
+    border-radius: 20px;
     transition: 0.3s ease;
+    overflow: hidden;
+    background-color: #fff;
 }
 
 .user-card:hover {
-    box-shadow: 0 0 15px rgba(13, 110, 253, 0.3);
+    box-shadow: 0 0 20px rgba(13, 110, 253, 0.3);
+}
+
+.profile-img img {
+    object-fit: cover;
 }
 </style>
-
 @endsection

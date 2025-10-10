@@ -15,9 +15,17 @@
         <p><strong>Bintang:</strong> {{ $hotel->bintang }} ⭐</p>
     </div>
 
-    <div class="mt-6">
-        <a href="{{ route('admin.hotels.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Kembali</a>
-        <a href="{{ route('admin.hotels.edit', $hotel->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Edit</a>
+     {{-- Tombol aksi --}}
+      <div class="mt-6 flex justify-end space-x-3">
+        <a href="{{ route('admin.hotels.index') }}" 
+           class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+           Kembali
+        </a>
+
+        <a href="{{ route('admin.hotels.edit', $hotel->id) }}" 
+           class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
+           Edit
+        </a>
     </div>
 </div>
 @endsection
