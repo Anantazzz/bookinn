@@ -15,43 +15,52 @@ class AdminKamarController extends Controller
         return view('admin.kamars.index', compact('kamars'));
     }
 
-    public function create()
+     public function create()
     {
         $hotels = Hotel::all();
         $tipeKamars = TipeKamar::all();
-
-        // ambil gambar dari folder public/images/kamars
-        $imageDir = public_path('images/kamars');
-        $imageFiles = is_dir($imageDir) ? array_diff(scandir($imageDir), ['.', '..']) : [];
-
-        return view('admin.kamars.create', compact('hotels', 'tipeKamars', 'imageFiles'));
+        return view('admin.kamars.create', compact('hotels', 'tipeKamars'));
     }
 
     public function store(Request $request)
     {
     $validated = $request->validate([
         'hotel_id' => 'required|exists:hotels,id',
-        'tipe_kamar_id' => 'required|exists:tipe_kamars,id',
-        'nomor_kamar' => 'required|string|unique:kamars,nomor_kamar',
+        'nomor_kamar' => 'required|string|max:255|unique:kamars,nomor_kamar',
         'harga' => 'required|numeric|min:0',
         'kapasitas' => 'required|integer|min:1',
         'jumlah_bed' => 'required|integer|min:1',
+        'internet' => 'required|boolean',
         'status' => 'required|in:tersedia,booking',
-        'internet' => 'boolean',
-        'gambar' => 'nullable|string'
+        'tipe_kamar_id' => 'required|exists:tipe_kamars,id',
+        'gambar' => 'required|image|mimes:jpg,jpeg,png,webp|max:102400',
     ]);
 
-    // simpan path gambar dengan folder-nya
-    if (!empty($validated['gambar'])) {
-        $validated['gambar'] = 'images/kamars/' . $validated['gambar'];
+    if ($request->hasFile('gambar')) {
+        $file = $request->file('gambar');
+        $filename = time() . '_' . $file->getClientOriginalName();
+
+        // pindahkan ke public/images/kamars
+        $file->move(public_path('images/kamars'), $filename);
+
+        // simpan nama file-nya aja
+        $validated['gambar'] = $filename;
     }
 
     Kamar::create($validated);
 
-    return redirect()->route('admin.kamars.index')->with('success', 'Data kamar berhasil ditambahkan!');
-    }      
+    return redirect()->route('admin.kamars.index')->with('success', 'Kamar berhasil ditambahkan!');
+    }
+    
+    public function show($id)
+    {
+        $kamar = Kamar::with(['hotel', 'tipeKamar'])->findOrFail($id);
 
- public function edit($id)
+        return view('admin.kamars.show', compact('kamar'));
+    }
+
+
+    public function edit($id)
     {
         $kamar = Kamar::findOrFail($id);
         $hotels = Hotel::all();

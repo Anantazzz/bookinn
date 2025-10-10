@@ -11,6 +11,7 @@ use App\Http\Controllers\InvoiceController;
 
 use App\Http\Controllers\AdminHotelController;
 use App\Http\Controllers\AdminKamarController;
+use App\Http\Controllers\AdminResepsionisController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,14 +64,33 @@ Route::prefix('admin')->group(function () {
     // CRUD Hotel
     Route::get('/hotels', [AdminHotelController::class, 'index'])->name('admin.hotels.index');
     Route::get('/hotels/create', [AdminHotelController::class, 'create'])->name('admin.hotels.create');
-    Route::get('/hotels/{id}', [AdminHotelController::class, 'show'])->name('admin.hotels.show');
     Route::post('/hotels', [AdminHotelController::class, 'store'])->name('admin.hotels.store');
+    Route::get('/hotels/{id}', [AdminHotelController::class, 'show'])->name('admin.hotels.show');
     Route::get('/hotels/{id}/edit', [AdminHotelController::class, 'edit'])->name('admin.hotels.edit');
     Route::put('/hotels/{id}', [AdminHotelController::class, 'update'])->name('admin.hotels.update');
     Route::delete('/hotels/{id}', [AdminHotelController::class, 'destroy'])->name('admin.hotels.destroy');
 });
      // ROUTE ADMIN KAMAR
-    Route::prefix('admin')->name('admin.')->group(function () {
-        Route::resource('kamars', AdminKamarController::class);
+Route::prefix('admin')->group(function () {
+        // CRUD Kamar
+    Route::get('/kamars', [AdminKamarController::class, 'index'])->name('admin.kamars.index');
+    Route::get('/kamars/create', [AdminKamarController::class, 'create'])->name('admin.kamars.create');
+    Route::post('/kamars', [AdminKamarController::class, 'store'])->name('admin.kamars.store');
+    Route::get('/kamars/{id}', [AdminKamarController::class, 'show'])->name('admin.kamars.show');
+    Route::get('/kamars/{id}/edit', [AdminKamarController::class, 'edit'])->name('admin.kamars.edit');
+    Route::put('/kamars/{id}', [AdminKamarController::class, 'update'])->name('admin.kamars.update');
+    Route::delete('/kamars/{id}', [AdminKamarController::class, 'destroy'])->name('admin.kamars.destroy');
+    
 });
 
+    // ROUTE ADMIN RESEPSIONIS
+Route::prefix('admin')->group(function () {
+            // CRUD Resepsionis
+    Route::get('/resepsionis', [AdminResepsionisController::class, 'index'])->name('admin.resepsionis.index');
+    Route::get('/resepsionis/create', [AdminResepsionisController::class, 'create'])->name('admin.resepsionis.create');
+    Route::post('/resepsionis', [AdminResepsionisController::class, 'store'])->name('admin.resepsionis.store');
+    Route::get('/resepsionis/{id}', [AdminResepsionisController::class, 'show'])->name('admin.resepsionis.show');
+    Route::get('/resepsionis{id}/edit', [AdminResepsionisController::class, 'edit'])->name('admin.resepsionis.edit');
+    Route::put('/resepsionis/{id}', [AdminResepsionisController::class, 'update'])->name('admin.resepsionis.update');
+    Route::delete('/resepsionis/{id}', [AdminResepsionisController::class, 'destroy'])->name('admin.resepsionis.destroy');
+});

@@ -6,6 +6,6 @@
             Hotel
         </a>
         <a href="{{ route('admin.kamars.index') }}" class="px-3 py-2 rounded-md hover:bg-gray-700 hover:text-white">Kamar</a>
-        <a href="#" class="px-3 py-2 rounded-md hover:bg-gray-700 hover:text-white">Resepsionis</a>
+        <a href="{{ route('admin.resepsionis.index') }}" class="px-3 py-2 rounded-md hover:bg-gray-700 hover:text-white">Resepsionis</a>
     </nav>
 </aside>

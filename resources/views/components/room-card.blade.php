@@ -2,10 +2,10 @@
 
 {{-- Header detail --}}
 <div class="card shadow-sm rounded-4 mb-3" style="width: 100%;">
-    <img src="{{ asset('images/' . $gambar) }}" 
-         class="card-img-top rounded-top-4" 
-         alt="{{ $tipeKamar }}" 
-         style="height: 160px; object-fit: cover;">
+   <img src="{{ asset('images/kamars/' . $gambar) }}" 
+     class="card-img-top rounded-top-4" 
+     alt="{{ $tipeKamar }}" 
+     style="height: 160px; object-fit: cover;">
 
 {{-- -Fasilitas Kamar --}}
     <div class="card-body">
