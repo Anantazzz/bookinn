@@ -12,6 +12,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\AdminHotelController;
 use App\Http\Controllers\AdminKamarController;
 use App\Http\Controllers\AdminResepsionisController;
+use App\Http\Controllers\AdminOwnerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,7 +81,6 @@ Route::prefix('admin')->group(function () {
     Route::get('/kamars/{id}/edit', [AdminKamarController::class, 'edit'])->name('admin.kamars.edit');
     Route::put('/kamars/{id}', [AdminKamarController::class, 'update'])->name('admin.kamars.update');
     Route::delete('/kamars/{id}', [AdminKamarController::class, 'destroy'])->name('admin.kamars.destroy');
-    
 });
 
     // ROUTE ADMIN RESEPSIONIS
@@ -93,4 +93,15 @@ Route::prefix('admin')->group(function () {
     Route::get('/resepsionis/{id}/edit', [AdminResepsionisController::class, 'edit'])->name('admin.resepsionis.edit');
     Route::put('/resepsionis/{id}', [AdminResepsionisController::class, 'update'])->name('admin.resepsionis.update');
     Route::delete('/resepsionis/{id}', [AdminResepsionisController::class, 'destroy'])->name('admin.resepsionis.destroy');
+});
+
+    // ROUTE ADMIN OWNER
+Route::prefix('admin')->group(function () {
+    Route::get('/owners', [AdminOwnerController::class, 'index'])->name('admin.owners.index');
+    Route::get('/owners/create', [AdminOwnerController::class, 'create'])->name('admin.owners.create');
+    Route::post('/owners', [AdminOwnerController::class, 'store'])->name('admin.owners.store');
+    Route::get('/owners/{id}', [AdminOwnerController::class, 'show'])->name('admin.owners.show');
+    Route::get('/owners/{id}/edit', [AdminOwnerController::class, 'edit'])->name('admin.owners.edit');
+    Route::put('/owners/{id}', [AdminOwnerController::class, 'update'])->name('admin.owners.update');
+    Route::delete('/owners/{id}', [AdminOwnerController::class, 'destroy'])->name('admin.owners.destroy');
 });

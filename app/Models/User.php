@@ -24,6 +24,8 @@ class User extends Authenticatable
         'alamat',
         'no_hp',
         'role',
+        'hotel_id',
+        'shift',
     ];
 
     /**
@@ -44,4 +46,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function hotel()
+    {
+        return $this->belongsTo(Hotel::class);
+    }
 }

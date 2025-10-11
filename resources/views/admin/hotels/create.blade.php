@@ -85,7 +85,7 @@
             {{-- Tombol --}}
             <div class="flex justify-end gap-3">
                 <a href="{{ route('admin.hotels.index') }}"
-                   class="bg-gray-400 text-white px-5 py-2 rounded-lg hover:bg-gray-500 transition">Kembali</a>
+                   class="bg-gray-400 text-white px-5 py-2 rounded-lg hover:bg-gray-500 transition">Batal</a>
                 <button type="submit"
                         class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition">Simpan</button>
             </div>

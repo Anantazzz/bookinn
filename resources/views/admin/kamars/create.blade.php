@@ -72,7 +72,7 @@
                        class="w-full border border-gray-500 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-600 px-3 py-2">
             </div>
 
-            {{-- Jumlah Bed --}}
+            {{-- Jumlah Bed --}}A
             <div class="mb-6">
                 <label class="block text-gray-700 font-semibold mb-2">Jumlah Bed</label>
                 <input type="number" name="jumlah_bed"
@@ -112,7 +112,7 @@
             {{-- Tombol --}}
             <div class="flex justify-end gap-3">
                 <a href="{{ route('admin.kamars.index') }}"
-                   class="bg-gray-400 text-white px-5 py-2 rounded-lg hover:bg-gray-500 transition">Kembali</a>
+                   class="bg-gray-400 text-white px-5 py-2 rounded-lg hover:bg-gray-500 transition">Batal</a>
                 <button type="submit"
                         class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition">Simpan</button>
             </div>

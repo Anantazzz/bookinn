@@ -52,17 +52,20 @@
         <div>
             <label class="block text-gray-700 font-semibold">Shift</label>
             <select name="shift" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400">
-                @foreach ($shiftOptions as $shift)
-                    <option value="{{ $shift }}">{{ $shift }}</option>
-                @endforeach
+                <option value="">-- Pilih Shift --</option>
+                <option value="pagi" {{ old('shift') == 'pagi' ? 'selected' : '' }}>Pagi</option>
+                <option value="malam" {{ old('shift') == 'malam' ? 'selected' : '' }}>Malam</option>
             </select>
         </div>
 
         <div>
-            <label class="block text-gray-700 font-semibold">Nama Hotel</label>
-            <input type="text" name="nama_hotel" value="{{ old('nama_hotel') }}" 
-                   placeholder="Ketik nama hotel di sini..."
-                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400">
+            <label class="block text-gray-700 font-semibold">Pilih Hotel</label>
+            <select name="hotel_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400">
+                <option value="">-- Pilih Hotel --</option>
+                @foreach ($hotels as $hotel)
+                    <option value="{{ $hotel->id }}">{{ $hotel->nama_hotel }}</option>
+                @endforeach
+            </select>
         </div>
 
         <div class="flex justify-end">

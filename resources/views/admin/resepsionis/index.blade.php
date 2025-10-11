@@ -36,8 +36,15 @@
                     <td class="py-3 px-4">{{ $r->email }}</td>
                     <td class="py-3 px-4">{{ $r->no_hp ?? '-' }}</td>
                     <td class="py-3 px-4">{{ $r->alamat ?? '-' }}</td>
-                    <td class="py-3 px-4">{{ $r->shift }}</td>
-                    <td class="py-3 px-4">{{ $r->nama_hotel }}</td>
+                    <td class="px-4 py-2">
+                        @if($r->role === 'resepsionis')
+                            {{ $r->shift ?? 'Belum ditentukan' }}
+                        @else
+                            <span class="text-gray-400 italic">-</span>
+                        @endif
+                    </td>
+                   <td class="py-3 px-4">{{ $r->hotel->nama_hotel ?? '-' }}</td>
+
                     <td class="py-3 px-4 space-x-2">
                         <a href="{{ route('admin.resepsionis.show', $r->id) }}" 
                             class="bg-sky-500 text-white px-3 py-1 rounded hover:bg-sky-600">

@@ -3,32 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Hotel;
 use Illuminate\Http\Request;
 
 class AdminResepsionisController extends Controller
 {
     public function index()
     {
-        $resepsionis = User::where('role', 'resepsionis')->get()->map(function ($user) {
-            // Ambil data dari session kalau ada, kalau tidak default
-            $user->shift = session("resepsionis_{$user->id}_shift", 'Pagi');
-            $user->nama_hotel = session("resepsionis_{$user->id}_hotel", 'Hotel ABC');
-            return $user;
-        });
+        $resepsionis = User::with('hotel')
+            ->where('role', 'resepsionis')
+            ->get();
 
         return view('admin.resepsionis.index', compact('resepsionis'));
     }
 
     public function create()
     {
-        // Default data buat tampilan aja
-        $shiftOptions = ['Pagi', 'Malam'];
-        $hotels = ['Hotel ABC', 'Hotel Bunga Indah', 'Hotel Mawar']; // contoh
+        $hotels = Hotel::all(); 
 
-        return view('admin.resepsionis.create', compact('shiftOptions', 'hotels'));
+        return view('admin.resepsionis.create', compact('hotels'));
     }
 
-     public function store(Request $request)
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -36,23 +32,20 @@ class AdminResepsionisController extends Controller
             'password' => 'required|string|min:6',
             'alamat' => 'nullable|string|max:255',
             'no_hp' => 'nullable|string|max:15',
-            'shift' => 'nullable|string',
-            'nama_hotel' => 'nullable|string',
+            'hotel_id' => 'required|exists:hotels,id',
+            'shift' => 'nullable|in:pagi,malam',
         ]);
 
-        // Buat user baru di database
-        $user = User::create([
+        User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => bcrypt($validated['password']),
             'alamat' => $validated['alamat'] ?? null,
             'no_hp' => $validated['no_hp'] ?? null,
             'role' => 'resepsionis',
+            'hotel_id' => $validated['hotel_id'], 
+            'shift' => $validated['shift'],
         ]);
-
-        // Simpan shift & nama_hotel sementara di session (key per user)
-        session()->put("resepsionis_{$user->id}_shift", $request->shift);
-        session()->put("resepsionis_{$user->id}_hotel", $request->nama_hotel);
 
         return redirect()->route('admin.resepsionis.index')
             ->with('success', 'Data resepsionis berhasil ditambahkan!');

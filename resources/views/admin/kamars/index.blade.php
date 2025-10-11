@@ -20,7 +20,7 @@
     <table class="min-w-full table-auto border-collapse">
         <thead class="bg-gray-100 text-gray-700 uppercase text-sm">
             <tr>
-                <th class="py-3 px-4 text-left">No</th>
+                <th class="py-3 px-4 text-left">ID</th>
                 <th class="py-3 px-4 text-left">Gambar</th>
                 <th class="py-3 px-4 text-left">Hotel</th>
                 <th class="py-3 px-4 text-left">Tipe Kamar</th>

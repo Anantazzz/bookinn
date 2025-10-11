@@ -26,4 +26,9 @@ class Hotel extends Model
     {
         return $this->hasMany(Kamar::class, 'hotel_id');
     }
+
+    public function resepsionis()
+    {
+        return $this->hasMany(User::class);
+    }
 }
