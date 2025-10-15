@@ -44,7 +44,7 @@ class AuthController extends Controller
     }
 
     // Proses login
-    public function login(Request $request)
+   public function login(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required|email',
@@ -53,14 +53,26 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/'); 
+
+            $user = Auth::user();
+
+            // Cek role dan arahkan sesuai peran
+            switch ($user->role) {
+                case 'admin':
+                    return redirect()->route('admin.dashboard');
+                case 'resepsionis':
+                    return redirect()->route('resepsionis.dashboard');
+                case 'owner':
+                    return redirect()->route('admin.owners.index'); // misal
+                default:
+                    return redirect()->route('home');
+            }
         }
 
         return back()->withErrors([
             'email' => 'Email atau password salah.',
         ]);
     }
-
     // Logout
     public function logout(Request $request)
     {

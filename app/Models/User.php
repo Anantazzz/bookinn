@@ -28,6 +28,11 @@ class User extends Authenticatable
         'shift',
     ];
 
+     public function hotel()
+    {
+        return $this->belongsTo(Hotel::class);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -47,8 +52,5 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function hotel()
-    {
-        return $this->belongsTo(Hotel::class);
-    }
+   
 }

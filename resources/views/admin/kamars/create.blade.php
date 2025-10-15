@@ -72,7 +72,7 @@
                        class="w-full border border-gray-500 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-600 px-3 py-2">
             </div>
 
-            {{-- Jumlah Bed --}}A
+            {{-- Jumlah Bed --}}
             <div class="mb-6">
                 <label class="block text-gray-700 font-semibold mb-2">Jumlah Bed</label>
                 <input type="number" name="jumlah_bed"

@@ -42,7 +42,46 @@ class HotelController extends Controller
 
     public function detail($id)
     {
-        $hotel = Hotel::with('kamars')->findOrFail($id);
-        return view('hotels.detail', compact('hotel'));
+        $hotel = Hotel::findOrFail($id);
+
+        // Ambil semua tipe kamar di hotel ini
+        $tipeKamars = \App\Models\TipeKamar::all();
+
+        $kamarData = [];
+
+        foreach ($tipeKamars as $tipe) {
+            // Total kamar untuk tipe ini di hotel ini
+            $totalKamar = \App\Models\Kamar::where('hotel_id', $hotel->id)
+                ->where('tipe_kamar_id', $tipe->id)
+                ->count();
+
+            // Jumlah kamar yang sudah dibooking
+            $booked = \App\Models\Reservasi::whereHas('kamar', function ($q) use ($hotel, $tipe) {
+                    $q->where('hotel_id', $hotel->id)
+                    ->where('tipe_kamar_id', $tipe->id);
+                })
+                ->whereIn('status', ['pending', 'aktif'])
+                ->count();
+
+            // Ambil contoh data kamar (buat harga, kapasitas, dll)
+            $contohKamar = \App\Models\Kamar::where('hotel_id', $hotel->id)
+                ->where('tipe_kamar_id', $tipe->id)
+                ->first();
+
+            if ($contohKamar) {
+                $kamarData[] = [
+                    'id' => $contohKamar->id,
+                    'gambar' => $contohKamar->gambar,
+                    'tipeKamar' => $tipe->nama_tipe,
+                    'harga' => $contohKamar->harga,
+                    'kapasitas' => $contohKamar->kapasitas,
+                    'jumlahBed' => $contohKamar->jumlah_bed,
+                    'internet' => $contohKamar->internet,
+                    'sisaKamar' => max(0, $totalKamar - $booked),
+                ];
+            }
+        }
+
+        return view('hotels.detail', compact('hotel', 'kamarData'));
     }
 }
