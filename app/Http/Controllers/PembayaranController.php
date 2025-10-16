@@ -72,10 +72,12 @@ class PembayaranController extends Controller
         'status_bayar' => 'pending',
     ]);
 
-    // Update status reservasi
-    $reservasi->update(['status' => 'aktif']);
+    // ✅ PERBAIKAN: Status reservasi tetap 'pending' setelah bayar
+    // Status baru berubah jadi 'aktif' saat resepsionis klik Check-in (di tanggal check-in)
+    // JANGAN update status di sini!
+    // $reservasi->update(['status' => 'aktif']); // <- DIHAPUS!
 
-    // --- Tambahkan kode generate invoice ---
+    // --- Generate invoice ---
     $malam = Carbon::parse($reservasi->tanggal_checkin)
                 ->diffInDays(Carbon::parse($reservasi->tanggal_checkout));
     $hargaPerMalam = $reservasi->kamar->harga;

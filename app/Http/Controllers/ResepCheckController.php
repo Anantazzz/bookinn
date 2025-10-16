@@ -15,7 +15,7 @@ class ResepCheckController extends Controller
         $this->middleware(['auth', 'role:resepsionis']);
     }
     
-    //Tampilkan daftar reservasi hotel milik resepsionis.   
+    // Tampilkan daftar reservasi hotel milik resepsionis.   
     public function index()
     {
         $hotelId = Auth::user()->hotel_id;
@@ -27,12 +27,10 @@ class ResepCheckController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        $now = Carbon::now(); // server time, consistent with Carbon throughout
+        $now = Carbon::now();
 
         foreach ($reservasis as $r) {
-            // --- BUILD DATETIME dari tanggal + jam --- //
-            // Pastikan field-nya memang ada: tanggal_checkin (date), jam_checkin (time)
-            // Kalau jam_checkin/ jam_checkout nullable pakai fallback '00:00:00'
+            // Build datetime dari tanggal + jam
             $checkinDatetime = null;
             $checkoutDatetime = null;
 
@@ -46,25 +44,24 @@ class ResepCheckController extends Controller
                 $checkoutDatetime = Carbon::parse($r->tanggal_checkout . ' ' . $jamCheckout);
             }
 
-            // Hanya ubah tampilan status kalau status DB masih 'pending'
-            // (atau jika kamu ingin auto-recover expired bookings, bisa ubah kebijakan)
+            // Simpan info apakah sudah waktunya checkin/checkout (untuk logika tombol di view)
+            $r->can_checkin = false;
+            $r->can_checkout = false;
+
+            // PENTING: status_for_display SELALU mengikuti status di database
+            // Jangan ubah tampilan status berdasarkan waktu!
+            $r->status_for_display = $r->status;
+
+            // Logika untuk tombol aksi
             if ($r->status === 'pending') {
-                if ($checkinDatetime && $now->lt($checkinDatetime)) {
-                    // masih sebelum waktu check-in -> pending (tetap)
-                    $r->status_for_display = 'pending';
-                } elseif ($checkinDatetime && $checkoutDatetime && $now->between($checkinDatetime, $checkoutDatetime)) {
-                    // antara checkin..checkout -> aktif
-                    $r->status_for_display = 'aktif';
-                } elseif ($checkoutDatetime && $now->gt($checkoutDatetime)) {
-                    // sudah lewat checkout -> selesai
-                    $r->status_for_display = 'selesai';
-                } else {
-                    // fallback
-                    $r->status_for_display = $r->status;
+                // Cek apakah sudah waktunya checkin (untuk munculkan tombol Check-in)
+                if ($checkinDatetime && $now->gte($checkinDatetime)) {
+                    $r->can_checkin = true;
                 }
-            } else {
-                // jika DB berisi 'aktif'/'selesai'/'batal', kita tampilkan apa adanya (tidak menimpa)
-                $r->status_for_display = $r->status;
+            } 
+            elseif ($r->status === 'aktif') {
+                // Jika sudah aktif, selalu bisa checkout (manual atau otomatis)
+                $r->can_checkout = true;
             }
         }
 
@@ -79,7 +76,16 @@ class ResepCheckController extends Controller
 
         $reservasi = Reservasi::findOrFail($id);
 
-        // update dan persist ke DB
+        // Validasi tambahan: pastikan perubahan status logis
+        if ($request->status === 'aktif' && $reservasi->status !== 'pending') {
+            return back()->with('error', 'Hanya reservasi dengan status pending yang bisa di-checkin.');
+        }
+
+        if ($request->status === 'selesai' && $reservasi->status !== 'aktif') {
+            return back()->with('error', 'Hanya reservasi dengan status aktif yang bisa di-checkout.');
+        }
+
+        // Update dan persist ke DB
         $reservasi->status = $request->status;
         $reservasi->save();
 

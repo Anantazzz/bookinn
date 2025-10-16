@@ -33,28 +33,33 @@
                             <td class="py-3 px-4">{{ $res->tanggal_checkin }} {{ $res->jam_checkin }}</td>
                             <td class="py-3 px-4">{{ $res->tanggal_checkout }} {{ $res->jam_checkout }}</td>
                             <td class="py-3 px-4">
-                          @php
-                          $statusToShow = $res->status_for_display ?? $res->status;
-                                $color = match($statusToShow) {
-                                    'pending' => 'bg-yellow-200 text-yellow-800',
-                                    'aktif' => 'bg-green-200 text-green-800',
-                                    'selesai' => 'bg-blue-200 text-blue-800',
-                                    'batal' => 'bg-red-200 text-red-800',
-                                    default => 'bg-gray-200 text-gray-800'
-                                };
-                            @endphp
-
-                            <span class="px-2 py-1 rounded {{ $color }}">
-                                {{ ucfirst($statusToShow) }}
-                            </span>
-
-                            </td>
-                            <td class="py-3 px-4">
-                              @php
-                                    $today = now()->toDateString();
+                                @php
+                                    $statusToShow = $res->status_for_display ?? $res->status;
+                                    $color = match($statusToShow) {
+                                        'pending' => 'bg-yellow-200 text-yellow-800',
+                                        'aktif' => 'bg-green-200 text-green-800',
+                                        'selesai' => 'bg-blue-200 text-blue-800',
+                                        'batal' => 'bg-red-200 text-red-800',
+                                        default => 'bg-gray-200 text-gray-800'
+                                    };
                                 @endphp
 
-                                @if($res->status == 'pending' && $res->tanggal_checkin <= $today)
+                                <span class="px-2 py-1 rounded {{ $color }}">
+                                    {{ ucfirst($statusToShow) }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4">
+                                @php
+                                    // PENTING: Gunakan status_for_display untuk logika tombol
+                                    $displayStatus = $res->status_for_display ?? $res->status;
+                                    $dbStatus = $res->status; // status asli di database
+                                @endphp
+
+                                {{-- Tombol Check-in: 
+                                     - Status DB masih 'pending' (belum di-checkin manual)
+                                     - Display status sudah 'aktif' (sudah waktunya checkin)
+                                --}}
+                                @if($dbStatus == 'pending')
                                     <form action="{{ route('resepsionis.check.updateStatus', $res->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
@@ -63,7 +68,26 @@
                                             Check-in
                                         </button>
                                     </form>
-                                @elseif($res->status == 'aktif' && $res->tanggal_checkout <= $today)
+
+                                {{-- Tombol Check-out: 
+                                     - Status DB sudah 'aktif' (sudah dicheckin)
+                                     - Display status sudah 'selesai' (sudah waktunya checkout)
+                                --}}
+
+                                @elseif($dbStatus == 'aktif' && $displayStatus == 'selesai')
+                                    <form action="{{ route('resepsionis.check.updateStatus', $res->id) }}" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <input type="hidden" name="status" value="selesai">
+                                        <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
+                                            Check-out
+                                        </button>
+                                    </form>
+
+                                {{-- Jika status DB = 'aktif' tapi belum waktunya checkout, 
+                                     bisa ditambahkan tombol checkout manual (opsional)
+                                --}}
+                                @elseif($dbStatus == 'aktif')
                                     <form action="{{ route('resepsionis.check.updateStatus', $res->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
@@ -73,7 +97,7 @@
                                         </button>
                                     </form>
                                 @else
-                                    -
+                                    <span class="text-gray-400">-</span>
                                 @endif
                             </td>
                         </tr>
