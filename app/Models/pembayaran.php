@@ -22,4 +22,9 @@ class pembayaran extends Model
     {
         return $this->belongsTo(Reservasi::class, 'reservasi_id', 'id');
     }
+
+    public function invoice()
+    {
+        return $this->hasMany(Invoice::class, 'pembayaran_id');
+    }
 }

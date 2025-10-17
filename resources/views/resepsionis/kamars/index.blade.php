@@ -3,7 +3,7 @@
 @section('content')
 <div class="min-h-screen bg-gray-100 py-10">
     <div class="max-w-6xl mx-auto bg-white p-6 rounded-2xl shadow-md">
-        <h1 class="text-2xl font-bold mb-6 text-gray-800 text-center">Ketersediaan Kamar</h1>
+        <h1 class="text-3xl font-bold text-gray-800 text-center mb-10">Ketersediaan Kamar</h1>
 
         <table class="min-w-full border border-gray-300 rounded-lg">
             <thead class="bg-blue-600 text-white">

@@ -23,7 +23,7 @@ class ResepCheckController extends Controller
         $reservasis = Reservasi::whereHas('kamar', function($q) use ($hotelId) {
                 $q->where('hotel_id', $hotelId);
             })
-            ->with('user', 'kamar.tipeKamar')
+            ->with(['user', 'kamar.tipeKamar'])
             ->orderBy('id', 'desc')
             ->get();
 

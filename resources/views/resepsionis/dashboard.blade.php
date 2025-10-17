@@ -33,7 +33,7 @@
             </a>
 
             {{-- Cetak Invoice --}}
-            <a href="#" 
+            <a href="{{ route('resepsionis.invoice.index') }}" 
             class="bg-indigo-400 shadow-md rounded-2xl p-6 text-center text-white hover:bg-indigo-500 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
                 <div class="mb-3">
                     <i class="fa-solid fa-file-invoice-dollar text-4xl"></i>

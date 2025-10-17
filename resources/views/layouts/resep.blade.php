@@ -22,22 +22,40 @@
 </head>
 
 <body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-100 text-gray-800">
+
     {{-- Navbar --}}
-    <nav class="bg-white shadow-md py-4 px-6 flex justify-between items-center">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-hotel text-blue-600 text-2xl"></i>
-            <span class="text-xl font-semibold text-gray-800">Resepsionis Panel</span>
+   <nav class="bg-white shadow-md py-4 px-8 flex justify-between items-center mb-8">
+        {{-- Kiri: Logo --}}
+        <div class="flex items-center gap-3 flex-shrink-0">
+            <i class="fa-solid fa-hotel text-blue-600 text-4xl"></i>
+            <img src="{{ asset('images/logo_bookin.png') }}" alt="Logo" class="h-14 w-auto object-contain">
         </div>
 
-        {{-- Info User / Logout --}}
-        <div class="flex items-center gap-4">
-            <span class="text-gray-700 font-medium">
-                {{ Auth::user()->name ?? 'Resepsionis' }}
-            </span>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">
-                    <i class="fa-solid fa-right-from-bracket mr-1"></i> Logout
+        {{-- Tengah: Sapaan --}}
+        <div class="absolute left-1/2 transform -translate-x-1/3 text-2xl font-semibold text-gray-800 tracking-wide">
+            @php
+                $shift = strtolower(trim(Auth::user()->shift ?? 'pagi'));
+            @endphp
+
+            @if ($shift === 'pagi')
+                Selamat Pagi ☀️
+            @elseif ($shift === 'sore')
+                Selamat Sore 🌇
+            @elseif ($shift === 'malam')
+                Selamat Malam 🌙
+            @else
+                Selamat Datang 👋
+            @endif
+        </div>
+
+        {{-- Kanan: Profil + Logout --}}
+        <div class="flex items-center gap-4 flex-shrink-0">
+            <span class="font-medium text-gray-700">{{ Auth::user()->name }}</span>
+           <form method="POST" action="{{ route('logout') }}">
+             @csrf
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-medium transition">
+                    Logout
                 </button>
             </form>
         </div>

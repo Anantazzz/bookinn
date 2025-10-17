@@ -1,8 +1,7 @@
 @extends('layouts.resep')
 
 @section('content')
-<div class="min-h-screen bg-gray-100 py-10">
-    <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-6xl mx-auto bg-white p-6 rounded-xl shadow-md">
         <h1 class="text-3xl font-bold text-gray-800 text-center mb-10">
             Check-in / Check-out Hotel {{ Auth::user()->hotel->nama ?? '' }}
         </h1>
@@ -13,12 +12,19 @@
             </div>
         @endif
 
+        @if(session('error'))
+            <div class="bg-red-100 text-red-700 px-4 py-2 rounded mb-6">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
                 <thead class="bg-gray-200 text-gray-700">
                     <tr>
                         <th class="py-3 px-4 text-left">Customer</th>
                         <th class="py-3 px-4 text-left">Kamar</th>
+                        <th class="py-3 px-4 text-left">Tipe Kamar</th>
                         <th class="py-3 px-4 text-left">Check-in</th>
                         <th class="py-3 px-4 text-left">Check-out</th>
                         <th class="py-3 px-4 text-left">Status</th>
@@ -29,7 +35,12 @@
                     @foreach($reservasis as $res)
                         <tr class="border-b">
                             <td class="py-3 px-4">{{ $res->user->name }}</td>
-                            <td class="py-3 px-4">{{ $res->kamar->nomor_kamar }} ({{ $res->kamar->tipeKamar->nama ?? '-' }})</td>
+                            <td class="py-3 px-4">{{ $res->kamar->nomor_kamar }}</td>
+                            <td class="py-3 px-4">
+                                <span class="px-2 py-1 bg-gray-100 rounded text-sm">
+                                    {{ $res->kamar->tipeKamar->nama_tipe ?? '-' }}
+                                </span>
+                            </td>
                             <td class="py-3 px-4">{{ $res->tanggal_checkin }} {{ $res->jam_checkin }}</td>
                             <td class="py-3 px-4">{{ $res->tanggal_checkout }} {{ $res->jam_checkout }}</td>
                             <td class="py-3 px-4">
@@ -49,17 +60,8 @@
                                 </span>
                             </td>
                             <td class="py-3 px-4">
-                                @php
-                                    // PENTING: Gunakan status_for_display untuk logika tombol
-                                    $displayStatus = $res->status_for_display ?? $res->status;
-                                    $dbStatus = $res->status; // status asli di database
-                                @endphp
-
-                                {{-- Tombol Check-in: 
-                                     - Status DB masih 'pending' (belum di-checkin manual)
-                                     - Display status sudah 'aktif' (sudah waktunya checkin)
-                                --}}
-                                @if($dbStatus == 'pending')
+                                {{-- Tombol Check-in: muncul jika status pending DAN sudah waktunya --}}
+                                @if($res->can_checkin ?? false)
                                     <form action="{{ route('resepsionis.check.updateStatus', $res->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')
@@ -69,25 +71,8 @@
                                         </button>
                                     </form>
 
-                                {{-- Tombol Check-out: 
-                                     - Status DB sudah 'aktif' (sudah dicheckin)
-                                     - Display status sudah 'selesai' (sudah waktunya checkout)
-                                --}}
-
-                                @elseif($dbStatus == 'aktif' && $displayStatus == 'selesai')
-                                    <form action="{{ route('resepsionis.check.updateStatus', $res->id) }}" method="POST">
-                                        @csrf
-                                        @method('PUT')
-                                        <input type="hidden" name="status" value="selesai">
-                                        <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">
-                                            Check-out
-                                        </button>
-                                    </form>
-
-                                {{-- Jika status DB = 'aktif' tapi belum waktunya checkout, 
-                                     bisa ditambahkan tombol checkout manual (opsional)
-                                --}}
-                                @elseif($dbStatus == 'aktif')
+                                {{-- Tombol Check-out: muncul jika status aktif --}}
+                                @elseif($res->can_checkout ?? false)
                                     <form action="{{ route('resepsionis.check.updateStatus', $res->id) }}" method="POST">
                                         @csrf
                                         @method('PUT')

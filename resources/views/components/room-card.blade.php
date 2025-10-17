@@ -6,7 +6,9 @@
     'kapasitas' => 0, 
     'jumlahBed' => 0, 
     'internet' => false, 
-    'sisaKamar' => 0
+    'sisaKamar' => 0,
+    'tanggalCheckin' => null,
+    'tanggalCheckout' => null
 ])
 
 <div class="card shadow-sm rounded-4 mb-3" style="width: 100%;">
@@ -50,7 +52,17 @@
         </div>
 
         <div class="d-grid mt-3">
-            <a href="{{ $sisaKamar > 0 ? route('hotel.reservasi', ['id' => $id]) : '#' }}" 
+            @php
+                // Build URL dengan query string untuk passing tanggal
+                $url = $sisaKamar > 0 ? route('hotel.reservasi', ['id' => $id]) : '#';
+                
+                // Tambahkan query parameter jika ada tanggal
+                if ($sisaKamar > 0 && $tanggalCheckin && $tanggalCheckout) {
+                    $url .= '?tanggal_checkin=' . $tanggalCheckin . '&tanggal_checkout=' . $tanggalCheckout;
+                }
+            @endphp
+
+            <a href="{{ $url }}" 
                class="btn btn-primary rounded-pill py-2 {{ $sisaKamar <= 0 ? 'disabled' : '' }}">
                 Pesan
             </a>

@@ -45,10 +45,7 @@
                 <option value="bca">BCA</option>
                 <option value="bni">BNI</option>
                 <option value="bri">BRI</option>
-                <option value="cimb">CIMB Niaga</option>
-                <option value="dbs">DBS</option>
                 <option value="btn">BTN</option>
-                <option value="other">Bank Lainnya</option>
               </select>
             </div>
 

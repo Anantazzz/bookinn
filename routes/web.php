@@ -16,6 +16,8 @@ use App\Http\Controllers\{
     DashResepsionisController,
     ResepKamarController,
     ResepCheckController,
+    ResepInvoiceController,
+    RiwayatController,
 };
 
 //PUBLIC (Tanpa Login)
@@ -38,6 +40,11 @@ Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+//Riwayat
+Route::middleware(['auth'])->group(function () {
+    Route::get('/riwayat', [RiwayatController::class, 'riwayat'])->name('hotel.riwayat');
 });
 
 //RESERVASI & PEMBAYARAN
@@ -80,6 +87,11 @@ Route::middleware(['auth', 'role:resepsionis'])->prefix('resepsionis')->group(fu
     // Kelola Check
     Route::get('/check', [ResepCheckController::class, 'index'])->name('resepsionis.check.index');
     Route::put('/check/{id}/status', [ResepCheckController::class, 'updateStatus'])->name('resepsionis.check.updateStatus');
+
+    // Kelola & Cetak Tagihan
+    Route::get('/invoice', [ResepInvoiceController::class, 'index'])->name('resepsionis.invoice.index');
+    Route::post('/invoice/{id}/accept', [ResepInvoiceController::class, 'accept'])->name('resepsionis.invoice.accept');
+    Route::get('/invoice/{id}/print', [ResepInvoiceController::class, 'print'])->name('resepsionis.invoice.print');
 });
 
 

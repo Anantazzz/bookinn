@@ -46,58 +46,51 @@ class PembayaranController extends Controller
     // proses pembayaran (form kedua)
     public function prosesPembayaran(Request $request, $id)
     {
-    $validated = $request->validate([
-        'bank' => 'required',
-        'nama_pengirim' => 'nullable|string|max:255',
-    ]);
+        $validated = $request->validate([
+            'bank' => 'required',
+            'nama_pengirim' => 'nullable|string|max:255',
+        ]);
 
-    $user = Auth::user();
-    $kamar = Kamar::findOrFail($id);
+        $user = Auth::user();
+        $kamar = Kamar::findOrFail($id);
 
-    // Ambil reservasi terbaru dari user ini untuk kamar tsb
-    $reservasi = Reservasi::where('user_id', $user->id)
-                          ->where('kamar_id', $kamar->id)
-                          ->latest()
-                          ->firstOrFail();
+        // Ambil reservasi terbaru dari user ini untuk kamar tsb
+        $reservasi = Reservasi::where('user_id', $user->id)
+                            ->where('kamar_id', $kamar->id)
+                            ->latest()
+                            ->firstOrFail();
 
-    // Ambil total harga dari reservasi (termasuk kasur tambahan)
-    $jumlahBayar = $reservasi->total_harga;
+        // ✅ Hitung ulang total harga berdasarkan lama menginap & kasur tambahan
+        $malam = Carbon::parse($reservasi->tanggal_checkin)
+                    ->diffInDays(Carbon::parse($reservasi->tanggal_checkout));
 
-    // Simpan data pembayaran
-    $pembayaran = Pembayaran::create([
-        'reservasi_id' => $reservasi->id,
-        'tanggal_bayar' => now()->toDateString(),
-        'jumlah_bayar' => $jumlahBayar,
-        'metode_bayar' => 'transfer',
-        'status_bayar' => 'pending',
-    ]);
+        $hargaPerMalam = $reservasi->kamar->harga;
+        $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0;
+        $jumlahBayar = ($hargaPerMalam * $malam) + $hargaKasur;
 
-    // ✅ PERBAIKAN: Status reservasi tetap 'pending' setelah bayar
-    // Status baru berubah jadi 'aktif' saat resepsionis klik Check-in (di tanggal check-in)
-    // JANGAN update status di sini!
-    // $reservasi->update(['status' => 'aktif']); // <- DIHAPUS!
+        // Simpan data pembayaran
+        $pembayaran = Pembayaran::create([
+            'reservasi_id' => $reservasi->id,
+            'tanggal_bayar' => now()->toDateString(),
+            'jumlah_bayar' => $jumlahBayar,
+            'metode_bayar' => 'transfer',
+            'status_bayar' => 'pending',
+        ]);
 
-    // --- Generate invoice ---
-    $malam = Carbon::parse($reservasi->tanggal_checkin)
-                ->diffInDays(Carbon::parse($reservasi->tanggal_checkout));
-    $hargaPerMalam = $reservasi->kamar->harga;
-    $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0;
-    $totalBayar = ($hargaPerMalam * $malam) + $hargaKasur;
+        // --- Generate invoice ---
+        $pdf = Pdf::loadView('hotels.invoice', compact('reservasi'));
+        $filename = 'invoice_' . $reservasi->id . '_' . time() . '.pdf';
+        Storage::put('public/invoices/' . $filename, $pdf->output());
 
-    // Generate PDF
-    $pdf = Pdf::loadView('hotels.invoice', compact('reservasi'));
-    $filename = 'invoice_' . $reservasi->id . '_' . time() . '.pdf';
-    Storage::put('public/invoices/' . $filename, $pdf->output());
+        // Simpan record invoice
+        Invoice::create([
+            'pembayaran_id' => $pembayaran->id,
+            'tanggal_cetak' => now(),
+            'total' => $jumlahBayar,
+            'file_invoice' => 'invoices/' . $filename,
+        ]);
 
-    // Simpan record invoice
-    Invoice::create([
-        'pembayaran_id' => $pembayaran->id,
-        'tanggal_cetak' => now(),
-        'total' => $totalBayar,
-        'file_invoice' => 'invoices/' . $filename,
-    ]);
-
-    return redirect()->route('invoice.show', ['id' => $reservasi->id])
-                    ->with('success', 'Pembayaran berhasil & invoice dibuat!');
-        }
+        return redirect()->route('invoice.show', ['id' => $reservasi->id])
+                        ->with('success', 'Pembayaran berhasil & invoice dibuat!');
+    }
     }

@@ -46,23 +46,55 @@
         <h6 class="fw-semibold text-secondary mb-3">Kamar {{ $kamar->tipeKamar->nama_tipe }}</h6>
 
         <div class="mb-3">
-          <label class="form-label fw-semibold">Tanggal Check-in</label>
-          <input type="date" name="tanggal_checkin" class="form-control" required>
+          <label class="form-label fw-semibold">Tanggal Check-in <span class="text-danger">*</span></label>
+          <input type="date" 
+                 name="tanggal_checkin" 
+                 class="form-control @error('tanggal_checkin') is-invalid @enderror" 
+                 value="{{ old('tanggal_checkin', $tanggalCheckin) }}"
+                 min="{{ date('Y-m-d') }}"
+                 required>
+          @error('tanggal_checkin')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
 
         <div class="mb-3">
-          <label class="form-label fw-semibold">Jam Check-in</label>
-          <input type="time" name="jam_checkin" class="form-control" required>
+          <label class="form-label fw-semibold">Jam Check-in <span class="text-danger">*</span></label>
+          <input type="time" 
+                 name="jam_checkin" 
+                 class="form-control @error('jam_checkin') is-invalid @enderror" 
+                 value="{{ old('jam_checkin', '14:00') }}"
+                 required>
+          @error('jam_checkin')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+          <small class="text-muted">Waktu check-in standar: 14:00</small>
         </div>
 
         <div class="mb-3">
-          <label class="form-label fw-semibold">Tanggal Check-out</label>
-          <input type="date" name="tanggal_checkout" class="form-control" required>
+          <label class="form-label fw-semibold">Tanggal Check-out <span class="text-danger">*</span></label>
+          <input type="date" 
+                 name="tanggal_checkout" 
+                 class="form-control @error('tanggal_checkout') is-invalid @enderror" 
+                 value="{{ old('tanggal_checkout', $tanggalCheckout) }}"
+                 min="{{ $tanggalCheckin ?? date('Y-m-d', strtotime('+1 day')) }}"
+                 required>
+          @error('tanggal_checkout')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
 
         <div class="mb-3">
-          <label class="form-label fw-semibold">Jam Check-out</label>
-          <input type="time" name="jam_checkout" class="form-control" required>
+          <label class="form-label fw-semibold">Jam Check-out <span class="text-danger">*</span></label>
+          <input type="time" 
+                 name="jam_checkout" 
+                 class="form-control @error('jam_checkout') is-invalid @enderror" 
+                 value="{{ old('jam_checkout', '12:00') }}"
+                 required>
+          @error('jam_checkout')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+          <small class="text-muted">Waktu check-out standar: 12:00</small>
         </div>
 
         <p class="mt-3 mb-0 fw-semibold fs-6 text-dark">
@@ -71,7 +103,12 @@
       </div>
 
       <div class="form-check mb-3">
-        <input class="form-check-input" type="checkbox" name="kasur_tambahan" id="kasur_tambahan" value="1">
+        <input class="form-check-input" 
+               type="checkbox" 
+               name="kasur_tambahan" 
+               id="kasur_tambahan" 
+               value="1"
+               {{ old('kasur_tambahan') ? 'checked' : '' }}>
         <label class="form-check-label fw-semibold" for="kasur_tambahan">
           Tambah kasur (+Rp100.000)
         </label>
@@ -100,3 +137,23 @@
   </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Auto-update min checkout date when checkin changes
+    document.querySelector('input[name="tanggal_checkin"]').addEventListener('change', function() {
+        const checkinDate = new Date(this.value);
+        const checkoutInput = document.querySelector('input[name="tanggal_checkout"]');
+        
+        // Set minimum checkout date to 1 day after checkin
+        checkinDate.setDate(checkinDate.getDate() + 1);
+        const minCheckout = checkinDate.toISOString().split('T')[0];
+        checkoutInput.setAttribute('min', minCheckout);
+        
+        // If current checkout is before new minimum, update it
+        if (checkoutInput.value && checkoutInput.value < minCheckout) {
+            checkoutInput.value = minCheckout;
+        }
+    });
+</script>
+@endpush
