@@ -51,12 +51,12 @@
 
                     {{-- Bantuan --}}
                     <div class="col-6 col-md-4 mb-3">
-                        <h6 class="fw-semibold mb-3">Bantuan</h6>
+                        <h6 class="fw-semibold mb-3">Sosial Media</h6>
                         <ul class="list-unstyled">
-                            <li><a href="#" class="text-white text-decoration-none">Pusat bantuan (FAQ)</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Kebijakan pembatalan</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Syarat dan ketentuan</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Kebijakan privasi</a></li>
+                            <li><a href="#" class="text-white text-decoration-none">Instagram @bookinn</a></li>
+                            <li><a href="#" class="text-white text-decoration-none">TikTok @bookinn</a></li>
+                            <li><a href="#" class="text-white text-decoration-none">Fb @bookinn</a></li>
+                            <li><a href="#" class="text-white text-decoration-none">X @bookinn</a></li>
                         </ul>
                     </div>
                 </div>

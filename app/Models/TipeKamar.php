@@ -17,9 +17,13 @@ class TipeKamar extends Model
         'deskripsi',
     ];
 
-    // relasi ke kamar
     public function kamars()
     {
         return $this->hasMany(Kamar::class, 'tipe_kamar_id');
+    }
+
+    public function hotel()
+    {
+        return $this->belongsTo(Hotel::class, 'hotel_id');
     }
 }

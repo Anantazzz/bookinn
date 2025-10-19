@@ -12,6 +12,7 @@ class invoice extends Model
     protected $table = 'invoices';
 
     protected $fillable = [
+        'kode_unik',
         'pembayaran_id',
         'tanggal_cetak',
         'total',

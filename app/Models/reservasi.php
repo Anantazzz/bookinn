@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class reservasi extends Model
+class Reservasi extends Model
 {
     use HasFactory;
 
@@ -36,5 +36,10 @@ class reservasi extends Model
     public function pembayaran()
     {
         return $this->hasOne(Pembayaran::class, 'reservasi_id', 'id');
+    }
+    
+    public function tipe_kamar()
+    {
+        return $this->belongsTo(TipeKamar::class, 'kamar_id', 'id');
     }
 }

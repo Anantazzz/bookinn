@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class pembayaran extends Model
+class Pembayaran extends Model
 {
     use HasFactory;
     protected $table = 'pembayarans';
@@ -15,6 +15,9 @@ class pembayaran extends Model
         'tanggal_bayar',
         'jumlah_bayar',
         'metode_bayar',
+        'bank',
+        'nomor_rekening',
+        'atas_nama',
         'status_bayar',
     ];
 
@@ -25,6 +28,6 @@ class pembayaran extends Model
 
     public function invoice()
     {
-        return $this->hasMany(Invoice::class, 'pembayaran_id');
+        return $this->hasOne(Invoice::class, 'pembayaran_id');
     }
 }

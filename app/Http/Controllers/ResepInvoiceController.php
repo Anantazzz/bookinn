@@ -11,10 +11,19 @@ use Carbon\Carbon;
 
 class ResepInvoiceController extends Controller
 {
-    // Tampilkan daftar pembayaran (yang pending & success)
-    public function index()
+    // Tampilkan daftar pembayaran (yang pending & success) + fitur search
+    public function index(Request $request)
     {
-        $pembayarans = Pembayaran::with(['reservasi.user', 'reservasi.kamar.tipeKamar'])
+        $search = $request->input('search');
+
+        $pembayarans = Pembayaran::with(['reservasi.user', 'reservasi.kamar.tipeKamar', 'invoice'])
+            ->when($search, function ($query, $search) {
+                $query->whereHas('reservasi.user', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })->orWhereHas('invoice', function($q) use ($search) {
+                    $q->where('kode_unik', 'like', "%{$search}%");
+                });
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -30,7 +39,7 @@ class ResepInvoiceController extends Controller
             return back()->with('error', 'Pembayaran sudah diterima sebelumnya.');
         }
 
-        // Generate invoice PDF
+        // Hitung total bayar
         $reservasi = $pembayaran->reservasi;
         $malam = Carbon::parse($reservasi->tanggal_checkin)
             ->diffInDays(Carbon::parse($reservasi->tanggal_checkout));
@@ -38,14 +47,18 @@ class ResepInvoiceController extends Controller
         $hargaPerMalam = $reservasi->kamar->harga;
         $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0;
         $totalBayar = ($hargaPerMalam * $malam) + $hargaKasur;
-  
-        // Ubah status pembayaran jadi success
+
+        // Ubah status pembayaran jadi lunas
         $pembayaran->update([
             'status_bayar' => 'lunas',
-            'harga' => $totalBayar, // update harga totalnya juga
+            'harga' => $totalBayar,
         ]);
 
-        $pdf = Pdf::loadView('hotels.invoice', compact('reservasi'));
+        // Generate kode unik untuk invoice
+        $kode_unik = 'INV-' . strtoupper(\Illuminate\Support\Str::random(7));
+
+        // Generate invoice PDF
+        $pdf = Pdf::loadView('hotels.invoice', compact('reservasi', 'kode_unik'));
         $filename = 'invoice_' . $pembayaran->id . '_' . time() . '.pdf';
         Storage::put('public/invoices/' . $filename, $pdf->output());
 
@@ -55,9 +68,10 @@ class ResepInvoiceController extends Controller
             'tanggal_cetak' => now(),
             'total' => $totalBayar,
             'file_invoice' => 'invoices/' . $filename,
+            'kode_unik' => $kode_unik,
         ]);
 
-        return back()->with('lunas', 'Pembayaran berhasil diterima & invoice dibuat.');
+        return back()->with('success', 'Pembayaran berhasil diterima & invoice dibuat.');
     }
 
     // Cetak ulang invoice
@@ -66,7 +80,10 @@ class ResepInvoiceController extends Controller
         $invoice = Invoice::with('pembayaran.reservasi.kamar')->findOrFail($id);
         $reservasi = $invoice->pembayaran->reservasi;
 
-        $pdf = Pdf::loadView('hotels.invoice', compact('reservasi'));
+        $pdf = Pdf::loadView('hotels.invoice', [
+            'reservasi' => $reservasi,
+            'kode_unik' => $invoice->kode_unik,
+        ]);
         return $pdf->download('invoice_' . $invoice->id . '.pdf');
     }
 }

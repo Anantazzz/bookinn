@@ -18,6 +18,13 @@
             </div>
         @endif
 
+        <form method="GET" action="{{ route('resepsionis.check.index') }}" class="mb-5 flex gap-2">
+            <input type="text" name="search" placeholder="Cari nama pelanggan" 
+                value="{{ request('search') }}" 
+                class="border px-3 py-1 rounded w-64">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-1 rounded">Cari</button>
+        </form>
+
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
                 <thead class="bg-gray-200 text-gray-700">

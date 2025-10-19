@@ -4,96 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice Pemesanan</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body style="background-color: #f8f9fa;">
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
 
 @php
   \Carbon\Carbon::setLocale('id');
+  $malam = \Carbon\Carbon::parse($reservasi->tanggal_checkin)
+              ->diffInDays(\Carbon\Carbon::parse($reservasi->tanggal_checkout));
+  $hargaPerMalam = $reservasi->kamar->harga;
+  $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0;
+  $totalBayar = ($hargaPerMalam * $malam) + $hargaKasur;
 @endphp
 
-<div class="container py-5 d-flex justify-content-center">
-  <div class="card shadow-sm p-4" style="max-width: 480px; border: 1.5px solid #ddd; border-radius: 12px;">
-    <h5 class="fw-bold text-center mb-4">Invoice Pemesanan</h5>
+<div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md border border-gray-200">
+    <h2 class="text-xl font-semibold text-center mb-5 text-gray-800">Invoice Pemesanan</h2>
+    <p class="text-gray-700 mb-2">
+      Kode Invoice:
+    <span class="font-semibold text-blue-600">{{ $kode_unik ?? 'Belum ada' }}</span>
+  </p>
 
-    <div class="border p-3 rounded mb-3">
-      <div class="d-flex justify-content-between">
-        <p class="mb-1 fw-semibold">Tanggal Check-in</p>
-        <div class="text-end">
-          <p class="mb-0 fw-semibold">
-            {{ \Carbon\Carbon::parse($reservasi->tanggal_checkin)->translatedFormat('l, d F Y') }}
-          </p>
-          <small>({{ $reservasi->jam_checkin }})</small>
+    {{-- Informasi Pembayaran --}}
+    @if ($reservasi->pembayaran)
+        <div class="border border-gray-200 rounded-lg p-3 mb-4 bg-gray-50">
+            <p class="font-medium text-gray-800">Atas Nama: <span class="font-normal">{{ $reservasi->pembayaran->atas_nama }}</span></p>
+            <p class="font-medium text-gray-800">Bank: <span class="font-normal uppercase">{{ $reservasi->pembayaran->bank }}</span></p>
+            <p class="font-medium text-gray-800">No. Rekening: <span class="font-normal">{{ $reservasi->pembayaran->nomor_rekening }}</span></p>
         </div>
-      </div>
-
-      <div class="d-flex justify-content-between mt-2">
-        <p class="mb-1 fw-semibold">Tanggal Check-out</p>
-        <div class="text-end">
-          <p class="mb-0 fw-semibold">
-            {{ \Carbon\Carbon::parse($reservasi->tanggal_checkout)->translatedFormat('l, d F Y') }}
-          </p>
-          <small>({{ $reservasi->jam_checkout }})</small>
+    @else
+        <div class="border border-gray-200 rounded-lg p-3 mb-4 text-gray-500 text-center bg-gray-50">
+            Belum ada data pembayaran.
         </div>
-      </div>
-
-      @php
-        $malam = \Carbon\Carbon::parse($reservasi->tanggal_checkin)
-                    ->diffInDays(\Carbon\Carbon::parse($reservasi->tanggal_checkout));
-        $hargaPerMalam = $reservasi->kamar->harga;
-        $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0;
-        $totalBayar = ($hargaPerMalam * $malam) + $hargaKasur;
-      @endphp
-
-      <div class="text-center mt-3">
-        <span class="badge bg-light text-dark border">{{ $malam }} malam, 1 kamar</span>
-      </div>
-    </div>
-
-    <h6 class="fw-semibold mb-2">Kamar {{ $reservasi->kamar->tipeKamar->nama_tipe }}</h6>
-    <hr>
-
-    @for ($i = 0; $i < $malam; $i++)
-      @php
-        $tanggal = \Carbon\Carbon::parse($reservasi->tanggal_checkin)->addDays($i);
-      @endphp
-      <div class="d-flex justify-content-between">
-        <p class="mb-1">{{ $tanggal->translatedFormat('l, d F Y') }}</p>
-        <p class="mb-1">Rp{{ number_format($reservasi->kamar->harga, 0, ',', '.') }}</p>
-      </div>
-    @endfor
-
-    @if ($reservasi->kasur_tambahan)
-      <hr>
-      <div class="d-flex justify-content-between">
-        <p class="mb-1 fw-semibold">Kasur tambahan</p>
-        <p class="mb-1">Rp{{ number_format($hargaKasur, 0, ',', '.') }}</p>
-      </div>
     @endif
 
-    <hr>
-    <div class="d-flex justify-content-between fw-bold">
-      <p class="mb-0">Total Bayar</p>
-      <p class="mb-0 text-dark">Rp{{ number_format($totalBayar, 0, ',', '.') }}</p>
+    {{-- Detail Tanggal --}}
+    <div class="border border-gray-200 rounded-lg p-3 mb-4 bg-gray-50">
+        <div class="flex justify-between mb-2">
+            <p class="font-medium text-gray-700">Check-in</p>
+            <div class="text-right">
+                <p class="text-gray-800">{{ \Carbon\Carbon::parse($reservasi->tanggal_checkin)->translatedFormat('l, d F Y') }}</p>
+                <p class="text-sm text-gray-500">{{ $reservasi->jam_checkin }}</p>
+            </div>
+        </div>
+        <div class="flex justify-between">
+            <p class="font-medium text-gray-700">Check-out</p>
+            <div class="text-right">
+                <p class="text-gray-800">{{ \Carbon\Carbon::parse($reservasi->tanggal_checkout)->translatedFormat('l, d F Y') }}</p>
+                <p class="text-sm text-gray-500">{{ $reservasi->jam_checkout }}</p>
+            </div>
+        </div>
+
+        <div class="text-center mt-3">
+            <span class="px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
+                {{ $malam }} malam, 1 kamar
+            </span>
+        </div>
+    </div>
+
+    {{-- Detail Kamar & Harga --}}
+    <div class="mb-4">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">
+           <p>Kamar {{ $reservasi->kamar->tipeKamar->nama_tipe }}</p>
+        </h3>
+
+        <div class="flex justify-between text-gray-700">
+            <p>Harga per malam</p>
+            <p>Rp{{ number_format($hargaPerMalam, 0, ',', '.') }}</p>
+        </div>
+
+        <div class="flex justify-between text-gray-700 mt-1">
+            <p>Lama menginap</p>
+            <p>{{ $malam }} malam</p>
+        </div>
+
+        @if ($reservasi->kasur_tambahan)
+            <div class="flex justify-between text-gray-700 mt-1">
+                <p>Kasur Tambahan</p>
+                <p>Rp{{ number_format($hargaKasur, 0, ',', '.') }}</p>
+            </div>
+        @endif
+
+        <hr class="my-3">
+
+        <div class="flex justify-between font-semibold text-gray-900">
+            <p>Total Bayar</p>
+            <p>Rp{{ number_format($totalBayar, 0, ',', '.') }}</p>
+        </div>
     </div>
     
-    <p class="text-center text-muted small mt-2">
-      Kami akan mengonfirmasi pesanan Anda dan pembayaran akan diproses hari ini.
+    <p class="text-center text-gray-500 text-sm mb-3">
+        Terima kasih.<br>Tunjukkan invoice ini saat check-in di hotel.
     </p>
 
-    <div class="d-grid gap-2 mt-3">
-      <a href="{{ route('invoice.download', $reservasi->id) }}" 
-        class="btn btn-outline-secondary rounded-pill py-2">
-        Unduh PDF
-      </a>
+    <div class="space-y-2">
+        <a href="{{ route('invoice.download', $reservasi->id) }}"
+           class="block text-center bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-full py-2 transition">
+           Unduh PDF
+        </a>
 
-      {{-- Tombol kembali ke beranda --}}
-      <a href="{{ route('home') }}" 
-        class="btn btn-success rounded-pill py-2">
-        Kembali ke Beranda
-      </a>
+        <a href="{{ route('home') }}"
+           class="block text-center bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-full py-2 transition">
+           Kembali ke Beranda
+        </a>
     </div>
-  </div>
 </div>
 
 </body>

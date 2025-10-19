@@ -21,13 +21,9 @@ use App\Http\Controllers\{
 };
 
 //PUBLIC (Tanpa Login)
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/hotel', [HotelController::class, 'index'])->name('hotel');
 Route::get('/hotel/{id}', [HotelController::class, 'detail'])->name('hotel.detail');
-
-//Hanya Customer
-Route::middleware(['auth', 'role:user'])->group(function () {
-    Route::get('/', [HomeController::class, 'index'])->name('home');
-});
 
 //Auth
 Route::get('register', [AuthController::class, 'showRegister'])->name('register');

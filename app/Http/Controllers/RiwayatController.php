@@ -7,16 +7,9 @@ use Illuminate\Http\Request;
 
 class RiwayatController extends Controller
 {
-     public function riwayat()
+    public function riwayat()
     {
-        $user = Auth::user();
-
-        // Ambil semua reservasi user login
-        $reservasis = Reservasi::with(['kamar.hotel', 'kamar.tipeKamar'])
-            ->where('user_id', $user->id)
-            ->orderByDesc('id')
-            ->get();
-
+        $reservasis = Reservasi::with(['tipe_kamar.hotel'])->where('user_id', auth()->id())->get();
         return view('hotels.riwayat', compact('reservasis'));
     }
 }

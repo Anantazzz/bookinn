@@ -36,7 +36,7 @@ class HotelController extends Controller
         }
 
         // Ambil semua hasil query
-        $hotels = $query->paginate(10); // otomatis pagination
+        $hotels = $query->get(); 
 
         return view('hotels.hotel', ['hotels' => $hotels]);
     }

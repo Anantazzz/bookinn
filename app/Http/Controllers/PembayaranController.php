@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 
 class PembayaranController extends Controller
@@ -19,6 +20,7 @@ class PembayaranController extends Controller
    {
     $user = Auth::user(); // data user login
     $kamar = Kamar::findOrFail($id); // data kamar sesuai id
+    $kode_unik = 'INV-' . strtoupper(Str::random(7));
 
     // Ambil reservasi terbaru milik user untuk kamar ini
     $reservasi = Reservasi::where('user_id', $user->id)
@@ -47,8 +49,9 @@ class PembayaranController extends Controller
     public function prosesPembayaran(Request $request, $id)
     {
         $validated = $request->validate([
-            'bank' => 'required',
-            'nama_pengirim' => 'nullable|string|max:255',
+            'bank' => 'required|in:mandiri,bca,bri,bni,btn',
+            'atas_nama' => 'nullable|string|max:255',
+            'nomor_rekening' => 'required|string|max:20',
         ]);
 
         $user = Auth::user();
@@ -68,12 +71,15 @@ class PembayaranController extends Controller
         $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0;
         $jumlahBayar = ($hargaPerMalam * $malam) + $hargaKasur;
 
-        // Simpan data pembayaran
+        // ✅ Simpan data pembayaran (termasuk bank & no rekening)
         $pembayaran = Pembayaran::create([
             'reservasi_id' => $reservasi->id,
             'tanggal_bayar' => now()->toDateString(),
             'jumlah_bayar' => $jumlahBayar,
             'metode_bayar' => 'transfer',
+            'bank' => $validated['bank'],
+            'atas_nama' => $validated['atas_nama'] ?? null,
+            'nomor_rekening' => $validated['nomor_rekening'],
             'status_bayar' => 'pending',
         ]);
 
@@ -81,6 +87,9 @@ class PembayaranController extends Controller
         $pdf = Pdf::loadView('hotels.invoice', compact('reservasi'));
         $filename = 'invoice_' . $reservasi->id . '_' . time() . '.pdf';
         Storage::put('public/invoices/' . $filename, $pdf->output());
+ 
+        // Generate kode unik otomatis
+        $kode_unik = 'INV-' . strtoupper(Str::random(7));
 
         // Simpan record invoice
         Invoice::create([
@@ -88,9 +97,10 @@ class PembayaranController extends Controller
             'tanggal_cetak' => now(),
             'total' => $jumlahBayar,
             'file_invoice' => 'invoices/' . $filename,
+            'kode_unik' => $kode_unik, // ✅ wajib diisi
         ]);
 
         return redirect()->route('invoice.show', ['id' => $reservasi->id])
                         ->with('success', 'Pembayaran berhasil & invoice dibuat!');
     }
-    }
+}

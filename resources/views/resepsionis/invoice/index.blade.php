@@ -11,6 +11,13 @@
         <div class="bg-red-100 text-red-700 p-3 rounded mb-4">{{ session('error') }}</div>
     @endif
 
+    <form method="GET" action="{{ route('resepsionis.invoice.index') }}" class="mb-5 flex gap-2">
+        <input type="text" name="search" placeholder="Cari nama pelanggan/kode invoice" 
+            value="{{ request('search') }}" 
+            class="border px-3 py-1 rounded w-64">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-1 rounded">Cari</button>
+    </form>
+
     <table class="table-auto w-full border border-gray-200">
         <thead class="bg-gray-100">
             <tr>
@@ -21,6 +28,7 @@
                 <th class="p-3 text-left">Tanggal Bayar</th>
                 <th class="p-3 text-left">Jumlah Bayar</th>
                 <th class="p-3 text-left">Status</th>
+                <th class="p-3 text-left">Kode Invoice</th> 
                 <th class="p-3 text-left">Aksi</th>
             </tr>
         </thead>
@@ -31,10 +39,10 @@
                     <td class="p-3">{{ $p->reservasi->user->name }}</td>
                     <td class="p-3">{{ $p->reservasi->kamar->nomor_kamar }}</td>
                     <td class="py-3 px-4">
-                            <span class="px-2 py-1 bg-gray-100 rounded text-sm">
-                                {{ $p->reservasi->kamar->tipeKamar->nama_tipe ?? '-' }}
-                            </span>
-                        </td>
+                        <span class="px-2 py-1 bg-gray-100 rounded text-sm">
+                            {{ $p->reservasi->kamar->tipeKamar->nama_tipe ?? '-' }}
+                        </span>
+                    </td>
                     <td class="p-3">{{ $p->tanggal_bayar }}</td>
                     <td class="p-3">Rp {{ number_format($p->jumlah_bayar, 0, ',', '.') }}</td>
                     <td class="p-3">
@@ -43,6 +51,13 @@
                         @else
                             <span class="text-green-600 font-semibold">Success</span>
                         @endif
+                    </td>
+                    <td class="p-3">
+                        @php
+                            // Ambil invoice terbaru untuk pembayaran ini
+                            $invoice = $p->invoice()->latest()->first();
+                        @endphp
+                        {{ $invoice->kode_unik ?? '-' }}
                     </td>
                     <td class="p-3 flex gap-2">
                         @if($p->status_bayar === 'pending')
@@ -53,9 +68,6 @@
                                 </button>
                             </form>
                         @else
-                            @php
-                                $invoice = $p->invoice()->latest()->first();
-                            @endphp
                             @if($invoice)
                                 <a href="{{ route('resepsionis.invoice.print', $invoice->id) }}"
                                    class="bg-yellow-600 text-white px-3 py-1 rounded hover:bg-yellow-700">
