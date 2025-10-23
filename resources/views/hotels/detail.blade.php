@@ -31,10 +31,6 @@
                 <span class="text-warning" style="font-size: 1.2rem;">★</span>
                 <span class="fw-bold">{{ $hotel->bintang }}</span>
             </div>
-            <span class="badge rounded-pill px-3 py-2" 
-                  style="background-color: #059669; font-size: 0.9rem;">
-                {{ number_format($hotel->rating, 1) }}
-            </span>
         </div>
     </div>
 </section>

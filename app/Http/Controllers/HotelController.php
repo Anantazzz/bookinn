@@ -67,7 +67,6 @@ class HotelController extends Controller
                 ->where('tipe_kamar_id', $tipe->id)
                 ->count();
 
-            // PERBAIKAN: Hitung kamar yang terpesan HANYA pada range tanggal tertentu
             $booked = 0;
             
             if ($tanggalCheckin && $tanggalCheckout) {
@@ -92,7 +91,6 @@ class HotelController extends Controller
                     })
                     ->count();
            } else {
-                // ✅ Jika tidak ada filter tanggal, tampilkan semua kamar tersedia
                 $booked = 0;
             }
 

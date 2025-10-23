@@ -41,9 +41,8 @@
                         <p class="text-muted mb-1">{{ $hotel->kota }}</p>
                         <p class="text-muted small">{{ $hotel->alamat }}</p>
 
-                        <div class="d-flex align-items-center justify-content-between mt-2">
-                            <span class="badge bg-success">{{ number_format($hotel->rating,1) }}</span>
-                            <span class="text-warning fw-bold">★ {{ $hotel->bintang }}</span>
+                        <div class="d-flex align-items-center mt-2">
+                            <span class="text-warning fw-bold ms-auto">★ {{ $hotel->bintang }}</span>
                         </div>
                     </div>
                   </a>
@@ -55,7 +54,7 @@
 
     {{-- Pilih Kota --}}
     <section class="mb-5">
-        <h4 class="fw-bold mb-4">Pilih Kota tujuanmu</h4>
+        <h4 class="fw-bold mb-4">Kota Wisata</h4>
         <div class="row g-3">
             @php
                 $cities = [

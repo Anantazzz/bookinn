@@ -14,33 +14,33 @@ class AdminHotelController extends Controller
         return view('admin.hotels.index', compact('hotels'));
     }
 
-    public function create()
-    {
-        $imageFiles = collect(File::files(public_path('images')))
-            ->map(fn($file) => $file->getFilename());
-
-        return view('admin.hotels.create', compact('imageFiles'));
-    }
-
     public function show($id)
     {
     $hotel = Hotel::findOrFail($id);
     return view('admin.hotels.show', compact('hotel'));
     }
 
-   public function store(Request $request)
+    public function store(Request $request)
     {
-    $validated = $request->validate([
-        'nama_hotel' => 'required|string|max:255',
-        'gambar' => 'required|string', // bukan file lagi, tapi path string
-        'kota' => 'required|string|max:255',
-        'alamat' => 'nullable|string',
-        'bintang' => 'required|integer|min:1|max:5',
-    ]);
+        $validated = $request->validate([
+            'nama_hotel' => 'required|string|max:255',
+            'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'kota' => 'required|string|max:255',
+            'alamat' => 'required|string|max:255',
+            'bintang' => 'required|integer|min:1|max:5',
+        ]);
 
-    Hotel::create($validated);
+        if ($request->hasFile('gambar')) {
+            $file = $request->file('gambar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('images'), $filename);
+            $validated['gambar'] = $filename;
+        }
 
-    return redirect()->route('admin.hotels.index')->with('success', 'Hotel berhasil ditambahkan.');
+        Hotel::create($validated);
+
+        return redirect()->route('admin.hotels.index')
+                        ->with('success', 'Hotel berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -56,7 +56,7 @@ class AdminHotelController extends Controller
         $validated = $request->validate([
             'nama_hotel' => 'required|string|max:255',
             'kota' => 'required|string|max:255',
-            'alamat' => 'nullable|string',
+            'alamat' => 'required|string|max:255',
             'bintang' => 'required|integer|min:1|max:5',
         ]);
 

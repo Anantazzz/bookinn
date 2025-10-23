@@ -14,14 +14,9 @@ class AdminResepsionisController extends Controller
             ->where('role', 'resepsionis')
             ->get();
 
-        return view('admin.resepsionis.index', compact('resepsionis'));
-    }
-
-    public function create()
-    {
         $hotels = Hotel::all(); 
 
-        return view('admin.resepsionis.create', compact('hotels'));
+        return view('admin.resepsionis.index', compact('resepsionis', 'hotels'));
     }
 
     public function store(Request $request)

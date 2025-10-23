@@ -4,10 +4,10 @@
 <div class="max-w-7xl mx-auto bg-white p-6 rounded-2xl shadow-md">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800">Daftar Owner</h1>
-        <a href="{{ route('admin.owners.create') }}" 
-           class="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition">
+        <button onclick="openModal('addOwnerModal')"
+            class="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition">
             Tambah Owner
-        </a>
+        </button>
     </div>
 
     {{-- Notifikasi sukses --}}
@@ -17,6 +17,7 @@
         </div>
     @endif
 
+    {{-- Tabel --}}
     <table class="min-w-full table-auto border-collapse">
         <thead class="bg-gray-100 text-gray-700 uppercase text-sm">
             <tr>
@@ -29,47 +30,33 @@
                 <th class="py-3 px-4 text-left">Aksi</th>
             </tr>
         </thead>
-
         <tbody class="divide-y divide-gray-200">
             @forelse ($owners as $index => $owner)
                 <tr class="hover:bg-gray-50">
-                    {{-- ID --}}
                     <td class="py-3 px-4">{{ $index + 1 }}</td>
-
-                    {{-- Nama --}}
                     <td class="py-3 px-4 font-medium text-gray-800">{{ $owner->name }}</td>
-
-                     {{-- Hotel --}}
                     <td class="py-3 px-4 text-gray-700">{{ $owner->hotel->nama_hotel ?? '-' }}</td>
-
-                    {{-- Email --}}
                     <td class="py-3 px-4 text-gray-700">{{ $owner->email }}</td>
-
-                    {{-- No HP --}}
                     <td class="py-3 px-4 text-gray-700">{{ $owner->no_hp ?? '-' }}</td>
-
-                    {{-- Alamat --}}
                     <td class="py-3 px-4 text-gray-700">{{ $owner->alamat ?? '-' }}</td>
 
-                    {{-- Aksi --}}
                     <td class="py-3 px-4 space-x-2">
+                        {{-- Detail --}}
                         <a href="{{ route('admin.owners.show', $owner->id) }}" 
-                           class="bg-sky-500 text-white px-3 py-1 rounded hover:bg-sky-600">
-                            Detail
-                        </a>
-                        <a href="{{ route('admin.owners.edit', $owner->id) }}" 
-                           class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">
-                            Edit
-                        </a>
+                           class="bg-sky-500 text-white px-3 py-1 rounded hover:bg-sky-600">Detail</a>
+
+                        {{-- Edit --}}
+                        <button onclick="openEditModal({{ $owner->id }}, '{{ $owner->name }}', '{{ $owner->hotel_id }}', '{{ $owner->email }}', '{{ $owner->no_hp ?? '' }}', '{{ $owner->alamat ?? '' }}')"
+                            class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Edit</button>
+
+                        {{-- Hapus --}}
                         <form action="{{ route('admin.owners.destroy', $owner->id) }}" 
                               method="POST" class="inline"
                               onsubmit="return confirm('Yakin ingin menghapus owner ini?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" 
-                                    class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                                Hapus
-                            </button>
+                                    class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Hapus</button>
                         </form>
                     </td>
                 </tr>
@@ -83,4 +70,114 @@
         </tbody>
     </table>
 </div>
+
+{{-- ==================== MODAL TAMBAH OWNER ==================== --}}
+<div id="addOwnerModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white rounded-2xl shadow-lg w-full max-w-2xl p-6 relative">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Tambah Owner</h2>
+        <form action="{{ route('admin.owners.store') }}" method="POST">
+            @csrf
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block mb-2 text-gray-700">Nama Lengkap</label>
+                    <input type="text" name="name" class="w-full border rounded-lg px-3 py-2" required>
+                </div>
+                <div>
+                    <label class="block mb-2 text-gray-700">Email</label>
+                    <input type="email" name="email" class="w-full border rounded-lg px-3 py-2" required>
+                </div>
+                <div>
+                    <label class="block mb-2 text-gray-700">Password</label>
+                    <input type="password" name="password" class="w-full border rounded-lg px-3 py-2" required>
+                </div>
+                <div>
+                    <label class="block mb-2 text-gray-700">Nomor Telepon</label>
+                    <input type="text" name="no_hp" class="w-full border rounded-lg px-3 py-2">
+                </div>
+                <div class="col-span-2">
+                    <label class="block mb-2 text-gray-700">Hotel yang Dimiliki</label>
+                    <select name="hotel_id" class="w-full border rounded-lg px-3 py-2" required>
+                        <option value="">-- Pilih Hotel --</option>
+                        @foreach ($hotels as $hotel)
+                            <option value="{{ $hotel->id }}">{{ $hotel->nama_hotel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-span-2">
+                    <label class="block mb-2 text-gray-700">Alamat</label>
+                    <textarea name="alamat" rows="3" class="w-full border rounded-lg px-3 py-2"></textarea>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end space-x-3">
+                <button type="button" onclick="closeModal('addOwnerModal')" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- ==================== MODAL EDIT OWNER ==================== --}}
+<div id="editOwnerModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+    <div class="bg-white rounded-2xl shadow-lg w-full max-w-2xl p-6 relative">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Edit Owner</h2>
+        <form id="editOwnerForm" method="POST">
+            @csrf
+            @method('PUT')
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block mb-2 text-gray-700">Nama Lengkap</label>
+                    <input type="text" id="editName" name="name" class="w-full border rounded-lg px-3 py-2" required>
+                </div>
+                <div>
+                    <label class="block mb-2 text-gray-700">Email</label>
+                    <input type="email" id="editEmail" name="email" class="w-full border rounded-lg px-3 py-2" required>
+                </div>
+                <div>
+                    <label class="block mb-2 text-gray-700">Nomor Telepon</label>
+                    <input type="text" id="editNoHp" name="no_hp" class="w-full border rounded-lg px-3 py-2">
+                </div>
+                <div class="col-span-2">
+                    <label class="block mb-2 text-gray-700">Hotel yang Dimiliki</label>
+                    <select id="editHotel" name="hotel_id" class="w-full border rounded-lg px-3 py-2" required>
+                        <option value="">-- Pilih Hotel --</option>
+                        @foreach ($hotels as $hotel)
+                            <option value="{{ $hotel->id }}">{{ $hotel->nama_hotel }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-span-2">
+                    <label class="block mb-2 text-gray-700">Alamat</label>
+                    <textarea id="editAlamat" name="alamat" rows="3" class="w-full border rounded-lg px-3 py-2"></textarea>
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-end space-x-3">
+                <button type="button" onclick="closeModal('editOwnerModal')" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Perbarui</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{{-- ==================== SCRIPT MODAL ==================== --}}
+<script>
+    function openModal(id) {
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).classList.add('hidden');
+    }
+
+    function openEditModal(id, name, hotel_id, email, no_hp, alamat) {
+        document.getElementById('editOwnerForm').action = `/admin/owners/${id}`;
+        document.getElementById('editName').value = name;
+        document.getElementById('editHotel').value = hotel_id;
+        document.getElementById('editEmail').value = email;
+        document.getElementById('editNoHp').value = no_hp;
+        document.getElementById('editAlamat').value = alamat;
+        openModal('editOwnerModal');
+    }
+</script>
 @endsection

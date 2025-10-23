@@ -23,4 +23,17 @@ class invoice extends Model
     {
         return $this->belongsTo(Pembayaran::class, 'pembayaran_id', 'id');
     }
+
+     // Relasi ke tabel reservasi (lewat pembayaran)
+    public function reservasi()
+    {
+        return $this->hasOneThrough(
+            Reservasi::class,   // model tujuan akhir
+            Pembayaran::class,  // model perantara
+            'id',               // kolom id di tabel pembayaran
+            'id',               // kolom id di tabel reservasi
+            'pembayaran_id',    // kolom di tabel invoice
+            'reservasi_id'      // kolom di tabel pembayaran
+        );
+    }
 }

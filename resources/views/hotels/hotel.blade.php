@@ -49,7 +49,6 @@
                         {{-- Bintang & Rating Hotel --}}
                         <div class="p-3 d-flex flex-column align-items-end justify-content-end h-100">
                             <span class="text-warning fw-bold">★ {{ $hotel->bintang }}</span>
-                            <span class="badge bg-success mt-2">{{ $hotel->rating }}</span>
                         </div>
                     </div>
                 @empty

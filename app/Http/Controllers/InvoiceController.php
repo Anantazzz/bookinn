@@ -13,20 +13,14 @@ class InvoiceController extends Controller
     // Tampilkan halaman invoice
     public function show($id)
     {
-        $reservasi = Reservasi::with(['kamar.tipeKamar', 'pembayaran'])->findOrFail($id);
+        // Ambil invoice berdasarkan ID invoice
+        $invoice = Invoice::with(['pembayaran.reservasi.kamar.tipeKamar'])->findOrFail($id);
 
-        // Cek apakah invoice sudah ada untuk reservasi ini
-        $invoice = Invoice::where('pembayaran_id', $reservasi->pembayaran->id ?? 0)->first();
+        // Ambil data reservasi lewat pembayaran
+        $reservasi = $invoice->pembayaran->reservasi ?? null;
 
-
-        if (!$invoice) {
-            // kalau belum ada → generate dan simpan
-            $kode_unik = 'INV-' . strtoupper(Str::random(7));
-
-            $invoice = Invoice::create([
-                'reservasi_id' => $reservasi->id,
-                'kode_unik' => $kode_unik,
-            ]);
+        if (!$reservasi) {
+            abort(404, 'Data reservasi tidak ditemukan untuk invoice ini.');
         }
 
         return view('hotels.invoice', [
@@ -34,21 +28,25 @@ class InvoiceController extends Controller
             'kode_unik' => $invoice->kode_unik,
         ]);
     }
-
+    
     // Download invoice sebagai PDF
     public function download($id)
     {
+        // Ambil data reservasi beserta pembayaran
         $reservasi = Reservasi::with(['kamar.tipeKamar', 'pembayaran'])->findOrFail($id);
-        $invoice = Invoice::where('reservasi_id', $reservasi->id)->first();
 
+        // Ambil invoice berdasarkan pembayaran
+        $invoice = Invoice::where('pembayaran_id', $reservasi->pembayaran->id ?? null)->first();
+
+        // Kalau belum ada invoice, buat baru
         if (!$invoice) {
-            // fallback kalau belum ada
             $invoice = Invoice::create([
-                'reservasi_id' => $reservasi->id,
+                'pembayaran_id' => $reservasi->pembayaran->id,
                 'kode_unik' => 'INV-' . strtoupper(Str::random(7)),
             ]);
         }
 
+        // Buat PDF
         $pdf = Pdf::loadView('hotels.invoice', [
             'reservasi' => $reservasi,
             'kode_unik' => $invoice->kode_unik,

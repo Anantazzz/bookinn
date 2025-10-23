@@ -18,6 +18,7 @@ use App\Http\Controllers\{
     ResepCheckController,
     ResepInvoiceController,
     RiwayatController,
+    PembatalanController,
 };
 
 //PUBLIC (Tanpa Login)
@@ -38,21 +39,29 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-//Riwayat
-Route::middleware(['auth'])->group(function () {
-    Route::get('/riwayat', [RiwayatController::class, 'riwayat'])->name('hotel.riwayat');
-});
-
-//RESERVASI & PEMBAYARAN
+//RESERVASI
 Route::middleware('auth')->group(function () {
     Route::get('/reservasi/{id}', [ReservasiController::class, 'showForm'])->name('hotel.reservasi');
     Route::post('/reservasi/{id}', [ReservasiController::class, 'store'])->name('reservasi.store');
 });
 
+//PEMBAYARAN
 Route::get('/pembayaran/{id}', [PembayaranController::class, 'show'])->name('hotel.pembayaran');
 Route::post('/pembayaran/{id}', [PembayaranController::class, 'prosesPembayaran'])->name('hotel.prosesPembayaran');
 Route::get('/invoice/{id}', [InvoiceController::class, 'show'])->name('invoice.show');
 Route::get('/invoice/{id}/download', [InvoiceController::class, 'download'])->name('invoice.download');
+
+//Riwayat
+Route::middleware(['auth'])->group(function () {
+    Route::get('/riwayat', [RiwayatController::class, 'riwayat'])->name('riwayat');
+});
+
+// Pembatalan
+Route::middleware(['auth'])->group(function () {
+    Route::get('/pembatalan/struk/{id}', [PembatalanController::class, 'show'])->name('pembatalan.show');
+    Route::get('/pembatalan/{reservasi_id}', [PembatalanController::class, 'form'])->name('pembatalan.form');
+    Route::post('/pembatalan/{reservasi_id}', [PembatalanController::class, 'store'])->name('pembatalan.store');
+});
 
 //ADMIN (auth + role:admin)
 Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {

@@ -15,13 +15,6 @@ class AdminKamarController extends Controller
         return view('admin.kamars.index', compact('kamars'));
     }
 
-     public function create()
-    {
-        $hotels = Hotel::all();
-        $tipeKamars = TipeKamar::all();
-        return view('admin.kamars.create', compact('hotels', 'tipeKamars'));
-    }
-
     public function store(Request $request)
     {
     $validated = $request->validate([

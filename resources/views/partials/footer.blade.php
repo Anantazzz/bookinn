@@ -42,10 +42,10 @@
                     <div class="col-6 col-md-4 mb-3">
                         <h6 class="fw-semibold mb-3">Menu</h6>
                         <ul class="list-unstyled">
-                            <li><a href="#" class="text-white text-decoration-none">Beranda</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Hotel</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Tentang Kami</a></li>
-                            <li><a href="#" class="text-white text-decoration-none">Kontak</a></li>
+                            <li><a href="{{ route("home") }}" class="text-white text-decoration-none">Beranda</a></li>
+                            <li><a href="{{ route("hotel") }}" class="text-white text-decoration-none">Hotel</a></li>
+                            <li><a href="{{ route("riwayat") }}" class="text-white text-decoration-none">Riwayat</a></li>
+                            <li><a href="{{ route("profile") }}" class="text-white text-decoration-none">Profile</a></li>
                         </ul>
                     </div>
 

@@ -44,7 +44,7 @@
                 <small class="px-2 py-1 rounded-pill text-white" style="background-color: #ef4444;">
                     Habis
                 </small>
-            @elseif($sisaKamar <= 5)
+            @elseif($sisaKamar <= 4)
                 <small class="px-2 py-1 rounded-pill text-white" style="background-color: #f59e0b;">
                     Tersisa {{ $sisaKamar }} kamar
                 </small>

@@ -91,16 +91,17 @@ class PembayaranController extends Controller
         // Generate kode unik otomatis
         $kode_unik = 'INV-' . strtoupper(Str::random(7));
 
-        // Simpan record invoice
-        Invoice::create([
+       // Simpan record invoice dan ambil hasilnya
+        $invoice = Invoice::create([
             'pembayaran_id' => $pembayaran->id,
             'tanggal_cetak' => now(),
             'total' => $jumlahBayar,
             'file_invoice' => 'invoices/' . $filename,
-            'kode_unik' => $kode_unik, // ✅ wajib diisi
+            'kode_unik' => $kode_unik,
         ]);
 
-        return redirect()->route('invoice.show', ['id' => $reservasi->id])
+        // Redirect ke halaman invoice dengan ID invoice yang baru dibuat
+        return redirect()->route('invoice.show', ['id' => $invoice->id])
                         ->with('success', 'Pembayaran berhasil & invoice dibuat!');
-    }
+         }
 }

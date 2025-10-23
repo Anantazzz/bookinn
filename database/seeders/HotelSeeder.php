@@ -18,8 +18,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Cendana Inn',
             'gambar' => 'hotel4.jpg',
             'kota' => 'Jakarta',
-            'alamat' => 'Jl. Merdeka No. 1, Jakarta Pusat',
-            'rating' => 4.5,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 5,
         ]);
 
@@ -28,8 +27,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Merapi Hotel',
             'gambar' => 'hotel16.jpg',
             'kota' => 'Yogyakarta',
-            'alamat' => 'Jl. Merdeka No. 1, Yogyakarta',
-            'rating' => 4.5,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 5,
         ]);
 
@@ -37,8 +35,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Nava Inn',
             'gambar' => 'hotel6.jpg',
             'kota' => 'Yogyakarta',
-            'alamat' => 'Jl. Merdeka No. 1, Yogyakarta',
-            'rating' => 4.5,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 3,
         ]);
 
@@ -46,8 +43,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Nirwana Hotel',
             'gambar' => 'hotel13.jpg',
             'kota' => 'Yogyakarta',
-            'alamat' => 'Jl. Merdeka No. 1, Yogyakarta',
-            'rating' => 3.8,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 3,
         ]);
 
@@ -55,8 +51,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Prambanan Inn',
             'gambar' => 'hotel15.jpg',
             'kota' => 'Yogyakarta',
-            'alamat' => 'Jl. Merdeka No. 1, Yogyakarta',
-            'rating' => 4.4,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 4,
         ]);
 
@@ -64,8 +59,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Arjuna Hotel',
             'gambar' => 'hotel17.jpg',
             'kota' => 'Yogyakarta',
-            'alamat' => 'Jl. Merdeka No. 1, Yogyakarta',
-            'rating' => 4.1,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 5,
         ]);
 
@@ -73,8 +67,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Kenanga Stay',
             'gambar' => 'hotel15.jpg',
             'kota' => 'Yogyakarta',
-            'alamat' => 'Jl. Merdeka No. 1, Yogyakarta',
-            'rating' => 3.9,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 3,
         ]);
         
@@ -83,8 +76,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Lavenda Hotel',
             'gambar' => 'hotel3.jpg',
             'kota' => 'Palembang',
-            'alamat' => 'Jl. Merdeka No. 1, Palembang',
-            'rating' => 4.0,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 4,
         ]);
 
@@ -92,8 +84,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Astra Inn',
             'gambar' => 'hotel8.jpg',
             'kota' => 'Malang',
-            'alamat' => 'Jl. Merdeka No. 1, Malang',
-            'rating' => 4.5,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 5,
         ]);
 
@@ -101,8 +92,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Azurea Lodge',
             'gambar' => 'hotel7.jpg',
             'kota' => 'Maluku',
-            'alamat' => 'Jl. Merdeka No. 1, Maluku',
-            'rating' => 4.5,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 4,
         ]);
             
@@ -110,8 +100,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Aruna Stay',
             'gambar' => 'hotel2.jpg',
             'kota' => 'Maluku',
-            'alamat' => 'Jl. Merdeka No. 1, Maluku',
-            'rating' => 4.5,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 3,
         ]);
 
@@ -119,8 +108,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Biru Hotel',
             'gambar' => 'hotel9.jpg',
             'kota' => 'Pangandaran',
-            'alamat' => 'Jl. Merdeka No. 1, Pangandaran',
-            'rating' => 4.1,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 4,
         ]);
 
@@ -128,8 +116,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Velora Stay',
             'gambar' => 'hotel10.jpg',
             'kota' => 'Sukabumi',
-            'alamat' => 'Jl. Merdeka No. 1, Sukabumi',
-            'rating' => 4.4,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 4,
         ]);
         
@@ -137,8 +124,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Samudra Hotel',
             'gambar' => 'hotel1.jpg',
             'kota' => 'Bali',
-            'alamat' => 'Jl. Merdeka No. 1, Bali',
-            'rating' => 4.5,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 5,
         ]);
 
@@ -146,8 +132,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Cendrawasih Hotel',
             'gambar' => 'hotel20.jpg',
             'kota' => 'Papua',
-            'alamat' => 'Jl. Merdeka No. 1, Papua',
-            'rating' => 4.3,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 4,
         ]);
 
@@ -155,8 +140,7 @@ class HotelSeeder extends Seeder
             'nama_hotel' => 'Sura Inn',
             'gambar' => 'hotel22.jpg',
             'kota' => 'Surabaya',
-            'alamat' => 'Jl. Merdeka No. 1, Surabaya',
-            'rating' => 4.4,
+            'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 4,
         ]);
     }

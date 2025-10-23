@@ -40,6 +40,6 @@ class Reservasi extends Model
     
     public function tipe_kamar()
     {
-        return $this->belongsTo(TipeKamar::class, 'kamar_id', 'id');
+        return $this->belongsTo(TipeKamar::class, 'tipe_kamar_id'); 
     }
 }

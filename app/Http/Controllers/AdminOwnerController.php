@@ -11,14 +11,9 @@ class AdminOwnerController extends Controller
     {
         $owners = User::where('role', 'owner')->with('hotel')->get();
 
-        return view('admin.owners.index', compact('owners'));
+        $hotels = Hotel::all(); 
 
-    }
-
-    public function create()
-    {
-        $hotels = Hotel::all();
-        return view('admin.owners.create', compact('hotels'));
+        return view('admin.owners.index', compact('owners', 'hotels'));
     }
 
     public function store(Request $request)

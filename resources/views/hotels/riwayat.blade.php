@@ -13,30 +13,27 @@
           'selesai' => 'badge bg-success',
           'batal'   => 'badge bg-danger',
         ];
+
+        $pembatalan = \App\Models\Pembatalan::where('reservasi_id', $reservasi->id)->first();
       @endphp
 
-      {{-- 🔗 UBAHAN: Bungkus card dalam tag <a> supaya bisa diklik --}}
-      @if($reservasi->pembayaran && $reservasi->pembayaran->invoice)
-        <a href="{{ route('invoice.show', $reservasi->pembayaran->invoice->id) }}" 
-           class="text-decoration-none text-dark">
-      @else
-        <a href="#" class="text-decoration-none text-muted" onclick="return false;">
-      @endif
-      {{-- 🔗 END UBAHAN --}}
-
-      <div class="card shadow-sm border-0 rounded-4 hover-shadow">
-        <div class="card-body d-flex justify-content-between align-items-center">
+      <div class="card shadow-sm border-0 rounded-4 hover-shadow mb-3">
+        <div class="card-body d-flex justify-content-between align-items-start">
+          
+          {{-- Kiri: Info Hotel --}}
           <div class="d-flex align-items-center">
             <img 
-              src="{{ asset('images/' . $reservasi->kamar->hotel->gambar) }}" 
+              src="{{ asset('images/' . optional($reservasi->kamar->hotel)->gambar) }}" 
               alt="Gambar Kamar" 
               class="rounded-3 me-3"
               style="width: 180px; height: 120px; object-fit: cover;"
             >
 
             <div>
-              <h5 class="fw-semibold mb-1">{{ $reservasi->kamar->hotel->nama_hotel }}</h5>
-              <p class="mb-1 text-muted">Tipe Kamar: {{ $reservasi->tipe_kamar->nama_tipe }}</p>
+              <h5 class="fw-semibold mb-1">{{ optional($reservasi->kamar->hotel)->nama_hotel ?? 'Tidak tersedia' }}</h5>
+              <p class="mb-1 text-muted">
+                Tipe Kamar: {{ optional($reservasi->tipe_kamar)->nama_tipe ?? 'Tidak tersedia' }}
+              </p>
               <p class="mb-1 text-muted">
                 Total: 
                 @if ($reservasi->pembayaran && $reservasi->pembayaran->invoice)
@@ -45,20 +42,43 @@
                     <span class="text-muted">Belum ada invoice</span>
                 @endif
               </p>
-              <p class="mb-0 text-muted">
+              <p class="mb-2 text-muted">
                 Tanggal: {{ \Carbon\Carbon::parse($reservasi->tanggal_checkin)->format('d M Y') }} - 
                 {{ \Carbon\Carbon::parse($reservasi->tanggal_checkout)->format('d M Y') }}
               </p>
+
+              {{-- Link ke invoice / struk --}}
+              @if($reservasi->status !== 'batal' && $reservasi->pembayaran && $reservasi->pembayaran->invoice)
+                  <a href="{{ route('invoice.show', $reservasi->pembayaran->invoice->id) }}" 
+                    class="btn btn-sm btn-outline-primary">
+                    Lihat Invoice
+                  </a>
+              @elseif($reservasi->status === 'batal' && $pembatalan)
+                  <a href="{{ route('pembatalan.show', $pembatalan->id) }}" 
+                    class="btn btn-sm btn-outline-secondary">
+                    Lihat Struk Pembatalan
+                  </a>
+              @endif
             </div>
           </div>
 
-          <span class="{{ $statusColors[$reservasi->status] ?? 'badge bg-secondary' }}">
-            {{ ucfirst($reservasi->status) }}
-          </span>
+          {{-- Kanan: Status + Tombol Pembatalan --}}
+          <div class="d-flex flex-column align-items-end justify-content-start" style="min-width: 200px;">
+            <span class="{{ $statusColors[$reservasi->status] ?? 'badge bg-secondary' }}">
+              {{ ucfirst($reservasi->status) }}
+            </span>
+
+            {{-- Tombol Batalkan Booking (di bawah status) --}}
+            @if ($reservasi->status === 'pending' && now()->lt(\Carbon\Carbon::parse($reservasi->tanggal_checkin)->subDay()))
+              <a href="{{ route('pembatalan.form', $reservasi->id) }}" 
+                 class="btn btn-sm btn-danger mt-5">
+                Batalkan Booking
+              </a>
+            @endif
+          </div>
+
         </div>
       </div>
-
-      </a> {{-- 🔗 Tutup tag link --}}
     @endforeach
   </div>
 </div>
