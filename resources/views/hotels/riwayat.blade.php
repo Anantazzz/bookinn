@@ -31,19 +31,17 @@
 
             <div>
               <h5 class="fw-semibold mb-1">{{ optional($reservasi->kamar->hotel)->nama_hotel ?? 'Tidak tersedia' }}</h5>
-              <p class="mb-1 text-muted">
-                Tipe Kamar: {{ optional($reservasi->tipe_kamar)->nama_tipe ?? 'Tidak tersedia' }}
-              </p>
-              <p class="mb-1 text-muted">
-                Total: 
+              <p class="mb-1 text-muted">Tipe Kamar : {{ $reservasi->kamar->tipeKamar->nama_tipe ?? '-' }}</p>
+              <p class="mb-2 text-muted">
+                Total : 
                 @if ($reservasi->pembayaran && $reservasi->pembayaran->invoice)
                     Rp {{ number_format($reservasi->pembayaran->invoice->total, 0, ',', '.') }}
                 @else
                     <span class="text-muted">Belum ada invoice</span>
                 @endif
-              </p>
-              <p class="mb-2 text-muted">
-                Tanggal: {{ \Carbon\Carbon::parse($reservasi->tanggal_checkin)->format('d M Y') }} - 
+              </p >
+              <p class="mb- text-muted">
+                Tanggal : {{ \Carbon\Carbon::parse($reservasi->tanggal_checkin)->format('d M Y') }} - 
                 {{ \Carbon\Carbon::parse($reservasi->tanggal_checkout)->format('d M Y') }}
               </p>
 
@@ -55,7 +53,7 @@
                   </a>
               @elseif($reservasi->status === 'batal' && $pembatalan)
                   <a href="{{ route('pembatalan.show', $pembatalan->id) }}" 
-                    class="btn btn-sm btn-outline-secondary">
+                    class="btn btn-sm btn-outline-danger">
                     Lihat Struk Pembatalan
                   </a>
               @endif

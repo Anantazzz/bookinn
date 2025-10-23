@@ -12,7 +12,7 @@ class PembatalanController extends Controller
 {
     public function form($reservasi_id)
     {
-        $reservasi = Reservasi::with(['kamar.hotel', 'tipe_kamar', 'pembayaran.invoice'])->findOrFail($reservasi_id);
+        $reservasi = Reservasi::with(['kamar.hotel', 'tipeKamar', 'pembayaran.invoice'])->findOrFail($reservasi_id);
         $pembayaran = $reservasi->pembayaran;
         $invoice = $pembayaran ? $pembayaran->invoice : null;
 

@@ -9,7 +9,7 @@ class RiwayatController extends Controller
 {
    public function riwayat()
     {
-        $reservasis = Reservasi::with(['tipe_kamar.hotel', 'pembayaran.invoice'])
+        $reservasis = Reservasi::with(['tipeKamar.hotel', 'pembayaran.invoice'])
             ->where('user_id', Auth::id())
             ->latest()
             ->get();

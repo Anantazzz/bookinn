@@ -3,7 +3,15 @@
 @section('content')
 <div class="min-h-screen bg-gray-100 py-10">
     <div class="max-w-6xl mx-auto bg-white p-6 rounded-2xl shadow-md">
-        <h1 class="text-3xl font-bold text-gray-800 text-center mb-10">Ketersediaan Kamar</h1>
+        <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Ketersediaan Kamar</h1>
+
+        {{-- Form Search --}}
+        <form method="GET" action="{{ route('resepsionis.kamars.index') }}" class="mb-5 flex gap-2">
+            <input type="text" name="search" placeholder="Cari nomor kamar" 
+                value="{{ request('search') }}" 
+                class="border px-3 py-1 rounded w-64">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-1 rounded">Cari</button>
+        </form>
 
         <table class="min-w-full border border-gray-300 rounded-lg">
             <thead class="bg-blue-600 text-white">
@@ -26,9 +34,9 @@
                         <td class="py-2 px-4">Rp {{ number_format($kamar->harga, 0, ',', '.') }}</td>
                         <td class="py-2 px-4">{{ $kamar->kapasitas }} orang</td>
                         <td class="py-2 px-4">{{ $kamar->internet ? 'Ya' : 'Tidak' }}</td>
-                         <td class="py-2 px-4">
-                          <form action="{{ route('resepsionis.kamars.update', $kamar->id) }}" method="POST" class="inline-block">
-                             @csrf
+                        <td class="py-2 px-4">
+                            <form action="{{ route('resepsionis.kamars.update', $kamar->id) }}" method="POST" class="inline-block">
+                                @csrf
                                 @method('PUT')
                                 <select name="status" 
                                         onchange="this.form.submit(); this.style.backgroundColor = this.value == 'tersedia' ? '#10B981' : '#EF4444';"

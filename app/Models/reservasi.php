@@ -38,7 +38,7 @@ class Reservasi extends Model
         return $this->hasOne(Pembayaran::class, 'reservasi_id', 'id');
     }
     
-    public function tipe_kamar()
+    public function tipeKamar()
     {
         return $this->belongsTo(TipeKamar::class, 'tipe_kamar_id'); 
     }

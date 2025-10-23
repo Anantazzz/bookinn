@@ -7,10 +7,15 @@ use Illuminate\Http\Request;
 
 class ResepKamarController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $hotelId = auth()->user()->hotel_id; 
-        $kamars = Kamar::where('hotel_id', $hotelId)->with('tipeKamar')->get();
+        $query = Kamar::with('tipeKamar');
+
+        if ($request->filled('search')) {
+            $query->where('nomor_kamar', 'like', '%' . $request->search . '%');
+        }
+
+        $kamars = $query->orderBy('id', 'asc')->get();
 
         return view('resepsionis.kamars.index', compact('kamars'));
     }

@@ -13,23 +13,23 @@
 @endphp
 
 <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md border border-gray-200">
-    <h2 class="text-xl font-semibold text-center mb-5 text-gray-800">Struk Pembatalan Reservasi</h2>
+    <h2 class="text-xl font-semibold text-center mb-5 text-blue-600">Struk Pembatalan Reservasi</h2>
 
     {{-- Detail Pembatalan --}}
-     <div class="border border-gray-200 rounded-lg p-3 mb-4 bg-gray-50">
+    <div class="border border-gray-200 rounded-lg p-3 mb-4 bg-gray-50">
+        <div class="flex justify-between text-gray-700 mb-1">
+                <p>Nama Tamu :</p>
+                <p class="font-medium">{{ $pembatalan->reservasi->user->name ?? '-' }}</p>
+        </div>
+
         <div class="flex justify-between text-gray-700 mb-1">
             <p>Hotel :</p>
             <p class="font-medium">{{ $pembatalan->reservasi->kamar->hotel->nama_hotel ?? '-' }}</p>
         </div>
 
         <div class="flex justify-between text-gray-700 mb-1">
-            <p>Kode Reservasi :</p>
-            <p class="font-medium">{{ $pembatalan->reservasi->id }}</p>
-        </div>
-
-        <div class="flex justify-between text-gray-700 mb-1">
-            <p>Nama Tamu :</p>
-            <p class="font-medium">{{ $pembatalan->reservasi->nama_tamu ?? '-' }}</p>
+            <p>Kode Invoice :</p>
+            <p class="font-medium text-orange-600">{{ $pembatalan->reservasi->pembayaran->invoice->kode_unik ?? '-' }}</p>
         </div>
 
         <div class="flex justify-between text-gray-700 mb-1">
