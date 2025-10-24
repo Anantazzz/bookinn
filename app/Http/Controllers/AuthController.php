@@ -63,7 +63,7 @@ class AuthController extends Controller
                 case 'resepsionis':
                     return redirect()->route('resepsionis.dashboard');
                 case 'owner':
-                    return redirect()->route('admin.owners.index'); // misal
+                    return redirect()->route('owner.dashboard');
                 default:
                     return redirect()->route('home');
             }

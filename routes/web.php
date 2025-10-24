@@ -19,6 +19,7 @@ use App\Http\Controllers\{
     ResepInvoiceController,
     RiwayatController,
     PembatalanController,
+    DashOwnerController,
 };
 
 //PUBLIC (Tanpa Login)
@@ -98,5 +99,10 @@ Route::middleware(['auth', 'role:resepsionis'])->prefix('resepsionis')->group(fu
     Route::post('/invoice/{id}/accept', [ResepInvoiceController::class, 'accept'])->name('resepsionis.invoice.accept');
     Route::get('/invoice/{id}/print', [ResepInvoiceController::class, 'print'])->name('resepsionis.invoice.print');
 });
+
+Route::middleware(['auth', 'role:owner'])->prefix('owner')->group(function () {
+    Route::get('/owner/dashboard', [DashOwnerController::class, 'index'])->name('owner.dashboard');
+});
+
 
 
