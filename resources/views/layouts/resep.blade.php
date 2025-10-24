@@ -40,8 +40,6 @@
 
             @if ($shift === 'pagi')
                 Selamat Pagi ☀️
-            @elseif ($shift === 'sore')
-                Selamat Sore 🌇
             @elseif ($shift === 'malam')
                 Selamat Malam 🌙
             @else

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pembayaran;
+use App\Models\Hotel;
 use Illuminate\Support\Facades\Auth;
 
 class DashOwnerController extends Controller
@@ -12,8 +13,11 @@ class DashOwnerController extends Controller
     {
         $owner = Auth::user();
 
-        // ambil ID hotel milik owner
+        // Ambil ID hotel milik owner
         $hotelId = $owner->hotel_id;
+
+        // Ambil data hotel
+        $hotel = Hotel::find($hotelId);
 
         // Ambil semua pembayaran dengan status lunas, hanya untuk hotel milik owner
         $pembayarans = Pembayaran::where('status_bayar', 'lunas')
@@ -35,6 +39,7 @@ class DashOwnerController extends Controller
             return $group->sum('jumlah_bayar');
         });
 
-        return view('owner.dashboard', compact('totalPemasukan', 'totalTransaksi', 'pemasukanBulanan'));
+        // Kirim data ke view
+        return view('owner.dashboard', compact('hotel', 'totalPemasukan', 'totalTransaksi', 'pemasukanBulanan'));
     }
 }
