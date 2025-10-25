@@ -67,6 +67,12 @@
            <p>Kamar {{ $reservasi->kamar->tipeKamar->nama_tipe }}</p>
         </h3>
 
+    {{-- 🏷️ Tambahin nomor kamar di sini --}}
+    <div class="flex justify-between text-gray-700 mb-1">
+        <p>Nomor Kamar</p>
+        <p>{{ $reservasi->kamar->nomor_kamar ?? '-' }}</p>
+    </div>
+
         <div class="flex justify-between text-gray-700">
             <p>Harga per malam</p>
             <p>Rp{{ number_format($hargaPerMalam, 0, ',', '.') }}</p>

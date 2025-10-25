@@ -24,7 +24,7 @@ class ReservasiController extends Controller
     public function store(Request $request, $id)
     {
         $user = Auth::user();
-        $kamar = Kamar::findOrFail($id);
+        $tipeKamar = Kamar::findOrFail($id); // ini id yang diklik user (anggap tipe kamar)
 
         $request->validate([
             'tanggal_checkin' => 'required|date|after_or_equal:today',
@@ -33,50 +33,54 @@ class ReservasiController extends Controller
             'jam_checkout' => 'required',
         ]);
 
-        // Validasi: Cek apakah kamar masih tersedia pada tanggal yang dipilih
         $tanggalCheckin = $request->tanggal_checkin;
         $tanggalCheckout = $request->tanggal_checkout;
 
-        $kamarTerpesan = Reservasi::where('kamar_id', $kamar->id)
-            ->whereIn('status', ['pending', 'aktif'])
-            ->where(function($query) use ($tanggalCheckin, $tanggalCheckout) {
-                // Cek overlap booking
-                $query->whereBetween('tanggal_checkin', [$tanggalCheckin, $tanggalCheckout])
-                      ->orWhereBetween('tanggal_checkout', [$tanggalCheckin, $tanggalCheckout])
-                      ->orWhere(function($q) use ($tanggalCheckin, $tanggalCheckout) {
-                          $q->where('tanggal_checkin', '<=', $tanggalCheckin)
-                            ->where('tanggal_checkout', '>=', $tanggalCheckout);
-                      });
+        // Cari kamar ID yang masih tersedia untuk tipe kamar ini
+        $kamarTersedia = Kamar::where('tipe_kamar_id', $tipeKamar->tipe_kamar_id)
+            ->whereDoesntHave('reservasis', function ($query) use ($tanggalCheckin, $tanggalCheckout) {
+                $query->whereIn('status', ['pending', 'aktif'])
+                    ->where(function ($q) use ($tanggalCheckin, $tanggalCheckout) {
+                        $q->whereBetween('tanggal_checkin', [$tanggalCheckin, $tanggalCheckout])
+                            ->orWhereBetween('tanggal_checkout', [$tanggalCheckin, $tanggalCheckout])
+                            ->orWhere(function ($r) use ($tanggalCheckin, $tanggalCheckout) {
+                                $r->where('tanggal_checkin', '<=', $tanggalCheckin)
+                                ->where('tanggal_checkout', '>=', $tanggalCheckout);
+                            });
+                    });
             })
-            ->exists();
+            ->first(); // ambil satu kamar kosong
 
-        if ($kamarTerpesan) {
-            return back()->withErrors(['tanggal_checkin' => 'Kamar tidak tersedia pada tanggal yang dipilih. Silakan pilih tanggal lain.'])
+        if (!$kamarTersedia) {
+            return back()->withErrors(['tanggal_checkin' => 'Semua kamar pada tipe ini sudah penuh di tanggal tersebut.'])
                         ->withInput();
         }
 
-        // Cek apakah user centang kasur tambahan
         $kasurTambahan = $request->has('kasur_tambahan') ? 1 : 0;
-
-        // Hitung total harga
-        $hargaKamar = $kamar->harga;
+        $hargaKamar = $kamarTersedia->harga;
         $biayaKasur = $kasurTambahan ? 100000 : 0;
         $totalHarga = $hargaKamar + $biayaKasur;
 
-        // Simpan data reservasi
+        // Tentukan status otomatis
+        if ($tanggalCheckin == date('Y-m-d')) {
+            $status = 'aktif'; // langsung aktif kalau checkin hari ini
+        } else {
+            $status = 'pending'; // kalau belum hari H, pending dulu
+        }
+
         $reservasi = Reservasi::create([
             'user_id' => $user->id,
-            'kamar_id' => $kamar->id,
-            'tanggal_checkin' => $request->tanggal_checkin,
+            'kamar_id' => $kamarTersedia->id, // 🧠 ini penting: kamar kosong yang ditemukan
+            'tanggal_checkin' => $tanggalCheckin,
             'jam_checkin' => $request->jam_checkin,
-            'tanggal_checkout' => $request->tanggal_checkout,
+            'tanggal_checkout' => $tanggalCheckout,
             'jam_checkout' => $request->jam_checkout,
-            'status' => 'pending',
+            'status' => $status,
             'kasur_tambahan' => $kasurTambahan,
             'total_harga' => $totalHarga,
         ]);
-
-        return redirect()->route('hotel.pembayaran', ['id' => $kamar->id])
-                         ->with('success', 'Reservasi berhasil! Silakan lanjutkan ke pembayaran.'); 
-    }   
+        
+        return redirect()->route('hotel.pembayaran', ['id' => $kamarTersedia->id])
+                        ->with('success', 'Reservasi berhasil! Silakan lanjutkan ke pembayaran.'); 
+    } 
 }

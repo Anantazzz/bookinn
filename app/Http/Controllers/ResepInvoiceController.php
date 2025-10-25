@@ -17,6 +17,9 @@ class ResepInvoiceController extends Controller
         $search = $request->input('search');
 
         $pembayarans = Pembayaran::with(['reservasi.user', 'reservasi.kamar.tipeKamar', 'invoice'])
+            ->whereHas('reservasi', function ($query) {
+                $query->whereIn('status', ['pending', 'aktif']); // hanya ambil reservasi pending & aktif
+            })
             ->when($search, function ($query, $search) {
                 $query->whereHas('reservasi.user', function($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");

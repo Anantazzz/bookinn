@@ -8,10 +8,21 @@ use Illuminate\Support\Facades\File;
 
 class AdminHotelController extends Controller
 {
-    public function index()
+   public function index(Request $request)
     {
-        $hotels = Hotel::all();
-        return view('admin.hotels.index', compact('hotels'));
+        $query = Hotel::query();
+
+        // Filter berdasarkan kota jika ada
+        if ($request->has('kota') && $request->kota != '') {
+            $query->where('kota', $request->kota);
+        }
+
+        $hotels = $query->get();
+
+        // Ambil daftar kota unik dari tabel hotels
+        $kotas = Hotel::select('kota')->distinct()->pluck('kota');
+
+        return view('admin.hotels.index', compact('hotels', 'kotas'));
     }
 
     public function show($id)

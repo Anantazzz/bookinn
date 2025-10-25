@@ -33,4 +33,9 @@ class Kamar extends Model
     {
           return $this->belongsTo(TipeKamar::class, 'tipe_kamar_id');
     }
+
+    public function reservasis()
+    {
+        return $this->hasMany(\App\Models\Reservasi::class, 'kamar_id');
+    }
 }

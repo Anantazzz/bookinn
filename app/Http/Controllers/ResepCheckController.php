@@ -72,8 +72,9 @@ class ResepCheckController extends Controller
             'status' => 'required|in:pending,aktif,selesai,batal'
         ]);
 
-        $reservasi = Reservasi::findOrFail($id);
+        $reservasi = Reservasi::with('kamar')->findOrFail($id);
 
+        // Validasi status transisi
         if ($request->status === 'aktif' && $reservasi->status !== 'pending') {
             return back()->with('error', 'Hanya reservasi dengan status pending yang bisa di-checkin.');
         }
@@ -82,9 +83,22 @@ class ResepCheckController extends Controller
             return back()->with('error', 'Hanya reservasi dengan status aktif yang bisa di-checkout.');
         }
 
+        // Update status reservasi
         $reservasi->status = $request->status;
         $reservasi->save();
 
-        return back()->with('success', 'Status reservasi berhasil diubah.');
+        // 🔄 Update otomatis status kamar
+        if ($reservasi->kamar) {
+            if ($request->status === 'aktif') {
+                // Saat Check-In → kamar jadi booking
+                $reservasi->kamar->status = 'booking';
+            } elseif ($request->status === 'selesai') {
+                // Saat Check-Out → kamar jadi tersedia
+                $reservasi->kamar->status = 'tersedia';
+            }
+            $reservasi->kamar->save();
+        }
+        
+        return back()->with('success', 'Status reservasi & kamar berhasil diperbarui.');
     }
 }

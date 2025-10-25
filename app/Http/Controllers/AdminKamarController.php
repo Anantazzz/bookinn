@@ -9,10 +9,18 @@ use Illuminate\Http\Request;
 
 class AdminKamarController extends Controller
 {
-    public function index()
+   public function index(Request $request)
     {
-        $kamars = Kamar::with(['hotel', 'tipeKamar'])->get();
-        return view('admin.kamars.index', compact('kamars'));
+        $query = Kamar::with('hotel', 'tipeKamar');
+
+        if ($request->has('hotel_id')) {
+            $query->where('hotel_id', $request->hotel_id);
+        }
+
+        $kamars = $query->get();
+        $hotels = Hotel::all(); // untuk sidebar dropdown
+
+        return view('admin.kamars.index', compact('kamars', 'hotels'));
     }
 
     public function store(Request $request)
