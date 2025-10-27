@@ -103,6 +103,3 @@ Route::middleware(['auth', 'role:resepsionis'])->prefix('resepsionis')->group(fu
 Route::middleware(['auth', 'role:owner'])->prefix('owner')->group(function () {
     Route::get('/dashboard', [DashOwnerController::class, 'index'])->name('owner.dashboard');
 });
-
-
-

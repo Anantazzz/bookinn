@@ -16,9 +16,6 @@
     {{-- Hero Content --}}
     <div class="position-absolute top-50 start-50 translate-middle w-100 text-center px-4">
         <div class="mb-4">
-            <h1 class="display-4 fw-bold text-white mb-3" style="text-shadow: 0 4px 12px rgba(0,0,0,0.4);">
-                Temukan Hotel Impian Anda
-            </h1>
         </div>
         
         {{-- Search Bar Component --}}
