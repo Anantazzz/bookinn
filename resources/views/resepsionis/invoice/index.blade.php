@@ -14,7 +14,6 @@
                     </div>
                     <div>
                         <h1 class="text-3xl font-bold text-gray-800">Kelola & Cetak Invoice</h1>
-                        <p class="text-gray-600 text-sm mt-1">Manajemen tagihan pelanggan</p>
                     </div>
                 </div>
             </div>

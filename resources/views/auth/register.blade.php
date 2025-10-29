@@ -41,32 +41,32 @@
 
                     <div class="mb-3">
                         <label class="form-label">Nama</label>
-                        <input type="text" name="name" class="form-control" placeholder="Masukkan nama">
+                        <input type="text" name="name" class="form-control">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" placeholder="Masukkan email">
+                        <input type="email" name="email" class="form-control">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" placeholder="Masukkan password">
+                        <input type="password" name="password" class="form-control">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Konfirmasi Password</label>
-                        <input type="password" name="password_confirmation" class="form-control" placeholder="Ulangi password">
+                        <input type="password" name="password_confirmation" class="form-control" >
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Alamat</label>
-                        <input type="text" name="alamat" class="form-control" placeholder="Masukkan alamat">
+                        <input type="text" name="alamat" class="form-control">
                     </div>
 
                     <div class="mb-4">
                         <label class="form-label">No HP</label>
-                        <input type="text" name="no_hp" class="form-control" placeholder="Masukkan nomor HP">
+                        <input type="text" name="no_hp" class="form-control">
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 py-2">Register</button>

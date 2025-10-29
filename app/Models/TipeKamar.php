@@ -14,7 +14,6 @@ class TipeKamar extends Model
     protected $fillable = [
         'nama_tipe',
         'harga',
-        'deskripsi',
     ];
 
     public function kamars()

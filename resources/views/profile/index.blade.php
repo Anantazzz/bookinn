@@ -112,9 +112,9 @@
                 @error('alamat')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
 
-            {{-- No HP --}}
+            {{-- No Hp --}}
             <div class="mb-4">
-                <label class="form-label fw-semibold" style="color: #1a1a1a;">No HP</label>
+                <label class="form-label fw-semibold" style="color: #1a1a1a;">No Hp</label>
                 <input type="text" class="form-control rounded-3 @error('no_hp') is-invalid @enderror" 
                        name="no_hp" value="{{ old('no_hp', $user->no_hp) }}"
                        style="padding: 0.75rem 1rem; border: 1.5px solid #e0e0e0;">

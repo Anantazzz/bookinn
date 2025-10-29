@@ -16,7 +16,6 @@
                       </div>
                       <span class="break-words">Manajemen Owner</span>
                   </h1>
-                  <p class="text-sm sm:text-base text-gray-600">Kelola data owner hotel dengan mudah dan efisien</p>
               </div>
               <button 
                   onclick="openModal('addOwnerModal')" 
@@ -24,7 +23,7 @@
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 16 16">
                       <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                   </svg>
-                  Tambah Owner
+                  Tambah Data
               </button>
           </div>
       </div>
@@ -45,7 +44,6 @@
               <table class="min-w-full">
                   <thead>
                       <tr class="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
-                          <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">#</th>
                           <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nama</th>
                           <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Hotel</th>
                           <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Email</th>
@@ -57,7 +55,6 @@
                   <tbody class="divide-y divide-gray-100">
                       @forelse ($owners as $index => $owner)
                           <tr class="hover:bg-gray-50 transition-colors duration-150">
-                              <td class="py-4 px-6 text-gray-700 font-semibold">{{ $index + 1 }}</td>
                               <td class="py-4 px-6 font-semibold text-gray-800">{{ $owner->name }}</td>
                               <td class="py-4 px-6 text-gray-700">{{ $owner->hotel->nama_hotel ?? '-' }}</td>
                               <td class="py-4 px-6 text-sm text-gray-600">{{ $owner->email }}</td>

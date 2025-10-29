@@ -17,7 +17,6 @@
                     <h1 class="text-3xl font-bold text-gray-800">{{ $hotel->nama_hotel }}</h1>
                 </div>
             </div>
-            <p class="text-gray-500 text-sm mt-2">Kelola operasional hotel dengan mudah</p>
         </div>
         
         {{-- Grid Card Menu --}}

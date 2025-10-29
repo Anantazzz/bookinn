@@ -60,7 +60,6 @@
               <div class="mb-4">
                 <label class="form-label fw-semibold text-dark mb-2">
                   <i class="bi bi-person-badge-fill text-primary me-2"></i>Atas Nama Rekening
-                  <span class="text-danger">*</span>
                 </label>
                 <input type="text" 
                        name="atas_nama" 
@@ -76,7 +75,6 @@
               <div class="mb-4">
                 <label class="form-label fw-semibold text-dark mb-2">
                   <i class="bi bi-bank2 text-primary me-2"></i>Bank Tujuan
-                  <span class="text-danger">*</span>
                 </label>
                 <select name="bank" class="form-select form-select-lg rounded-3" style="border: 2px solid #e9ecef;" required>
                   <option value="">-- Pilih Bank --</option>
@@ -87,16 +85,12 @@
                   <option value="bri">Bank BRI</option>
                   <option value="bni">Bank BNI</option>
                 </select>
-                <small class="text-muted">
-                  <i class="bi bi-info-circle me-1"></i>Pilih bank yang akan Anda gunakan untuk transfer
-                </small>
               </div>
 
               {{-- Nomor Rekening Pengirim --}}
               <div class="mb-4">
                 <label class="form-label fw-semibold text-dark mb-2">
-                  <i class="bi bi-credit-card-2-front-fill text-primary me-2"></i>Nomor Rekening Pengirim
-                  <span class="text-danger">*</span>
+                  <i class="bi bi-credit-card-2-front-fill text-primary me-2"></i>Nomor Rekening
                 </label>
                 <input type="text" 
                        name="nomor_rekening" 

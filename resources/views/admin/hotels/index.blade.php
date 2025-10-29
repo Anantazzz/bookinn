@@ -16,7 +16,6 @@
                         </div>
                         <span class="break-words">Manajemen Hotel</span>
                     </h1>
-                    <p class="text-gray-600 text-sm sm:text-base">Kelola data hotel dengan mudah dan efisien</p>
                 </div>
                 <button 
                     onclick="openAddModal()" 
@@ -50,7 +49,7 @@
                             <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Nama Hotel</th>
                             <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Kota</th>
                             <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Alamat</th>
-                            <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Rating</th>
+                            <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Bintang</th>
                             <th class="py-4 px-6 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
@@ -82,9 +81,6 @@
                                 </td>
                                 <td class="py-4 px-6">
                                     <span class="inline-flex items-center gap-1 text-gray-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 16 16">
-                                            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
-                                        </svg>
                                         {{ $hotel->kota }}
                                     </span>
                                 </td>

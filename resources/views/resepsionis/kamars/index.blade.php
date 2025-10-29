@@ -14,7 +14,6 @@
                     </div>
                     <div>
                         <h1 class="text-3xl font-bold text-gray-800">Ketersediaan Kamar</h1>
-                        <p class="text-gray-600 text-sm mt-1">Kelola status dan informasi kamar hotel</p>
                     </div>
                 </div>
             </div>
@@ -79,18 +78,12 @@
                                     </td>
                                     <td class="py-4 px-6">
                                         <div class="flex items-center gap-2">
-                                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                            </svg>
                                             <span class="font-medium text-gray-800">{{ $kamar->kapasitas }} orang</span>
                                         </div>
                                     </td>
                                     <td class="py-4 px-6">
                                         @if($kamar->internet)
                                             <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-100 to-blue-50 border border-blue-200 rounded-lg text-blue-800 font-semibold text-sm">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
-                                                </svg>
                                                 Ya
                                             </span>
                                         @else

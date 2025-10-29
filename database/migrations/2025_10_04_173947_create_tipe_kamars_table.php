@@ -17,7 +17,6 @@ class CreateTipeKamarsTable extends Migration
         $table->id();
         $table->string('nama_tipe'); 
         $table->decimal('harga', 10, 2);
-        $table->text('deskripsi')->nullable();
         $table->timestamps();
         });
     }

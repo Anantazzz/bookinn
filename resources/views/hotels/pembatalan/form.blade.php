@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="container py-5">
-  <div class="card p-4 mb-4 shadow-sm border border-2 border-secondary-subtle rounded-3">
     <h4 class="text-center text-danger fw-bold mb-4">Form Pembatalan Reservasi</h4>
 
     <div class="row g-4">

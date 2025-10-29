@@ -44,7 +44,6 @@
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-dark">
                     <i class="bi bi-person-fill text-primary me-2"></i>Nama Lengkap 
-                    <span class="text-danger">*</span>
                   </label>
                   <input type="text" name="nama" class="form-control form-control-lg rounded-3" value="{{ $user->name }}" readonly style="background-color: #f8f9fa; border: 2px solid #e9ecef;">
                 </div>
@@ -100,7 +99,6 @@
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-dark">
                     <i class="bi bi-box-arrow-in-right text-success me-2"></i>Tanggal Check-in 
-                    <span class="text-danger">*</span>
                   </label>
                   <input type="date" 
                          name="tanggal_checkin" 
@@ -117,7 +115,6 @@
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-dark">
                     <i class="bi bi-clock-fill text-success me-2"></i>Jam Check-in 
-                    <span class="text-danger">*</span>
                   </label>
                   <input type="time" 
                          name="jam_checkin" 
@@ -136,7 +133,6 @@
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-dark">
                     <i class="bi bi-box-arrow-right text-danger me-2"></i>Tanggal Check-out 
-                    <span class="text-danger">*</span>
                   </label>
                   <input type="date" 
                          name="tanggal_checkout" 
@@ -153,7 +149,6 @@
                 <div class="col-md-6">
                   <label class="form-label fw-semibold text-dark">
                     <i class="bi bi-clock-fill text-danger me-2"></i>Jam Check-out 
-                    <span class="text-danger">*</span>
                   </label>
                   <input type="time" 
                          name="jam_checkout" 
