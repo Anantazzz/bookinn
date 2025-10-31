@@ -30,6 +30,10 @@
             <p class="font-medium text-gray-800">Atas Nama: <span class="font-normal">{{ $reservasi->pembayaran->atas_nama }}</span></p>
             <p class="font-medium text-gray-800">Bank: <span class="font-normal uppercase">{{ $reservasi->pembayaran->bank }}</span></p>
             <p class="font-medium text-gray-800">No. Rekening: <span class="font-normal">{{ $reservasi->pembayaran->nomor_rekening }}</span></p>
+            {{-- Informasi transfer ke hotel (tujuan) --}}
+            <hr class="my-3">
+            <p class="font-medium text-gray-800">Transfer ke Hotel: <span class="font-normal">{{ $reservasi->kamar->hotel->nama_hotel ?? '-' }}</span></p>
+            <p class="font-medium text-gray-800">No. Rekening Hotel: <span class="font-normal">{{ $reservasi->kamar->hotel->norek ?? '-' }}</span></p>
         </div>
     @else
         <div class="border border-gray-200 rounded-lg p-3 mb-4 text-gray-500 text-center bg-gray-50">
