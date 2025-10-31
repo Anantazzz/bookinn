@@ -15,10 +15,12 @@ class ResepInvoiceController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search');
+        $statusFilter = $request->input('status');
 
         $pembayarans = Pembayaran::with(['reservasi.user', 'reservasi.kamar.tipeKamar', 'invoice'])
-            ->whereHas('reservasi', function ($query) {
-                $query->whereIn('status', ['pending', 'aktif']); // hanya ambil reservasi pending & aktif
+            ->when($statusFilter && $statusFilter !== 'all', function ($query) use ($statusFilter) {
+                // Jika ada filter status pembayaran yang dipilih selain 'all', gunakan itu
+                $query->where('status_bayar', $statusFilter);
             })
             ->when($search, function ($query, $search) {
                 $query->whereHas('reservasi.user', function($q) use ($search) {
@@ -88,5 +90,21 @@ class ResepInvoiceController extends Controller
             'kode_unik' => $invoice->kode_unik,
         ]);
         return $pdf->download('invoice_' . $invoice->id . '.pdf');
+    }
+
+    // Tolak pembayaran (mark as batal)
+    public function reject($id)
+    {
+        $pembayaran = Pembayaran::findOrFail($id);
+
+        if ($pembayaran->status_bayar !== 'pending') {
+            return back()->with('error', 'Hanya pembayaran dengan status pending yang bisa ditolak.');
+        }
+
+        $pembayaran->update([
+            'status_bayar' => 'batal',
+        ]);
+
+        return back()->with('success', 'Pembayaran berhasil ditolak dan status diubah menjadi batal.');
     }
 }

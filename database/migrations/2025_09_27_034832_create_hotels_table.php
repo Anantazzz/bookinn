@@ -19,7 +19,6 @@ class CreateHotelsTable extends Migration
             $table->string('gambar')->nullable();
             $table->string('kota');
             $table->string('alamat')->nullable();
-            $table->decimal('rating', 3,2)->default(0);
             $table->unsignedTinyInteger('bintang')->default(0);
             $table->timestamps();
         });

@@ -45,7 +45,7 @@
 
             {{-- Search Bar --}}
             <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 mb-6">
-                <form method="GET" action="{{ route('resepsionis.check.index') }}" class="flex gap-3">
+                <form method="GET" action="{{ route('resepsionis.check.index') }}" class="flex gap-3 items-center">
                     <div class="flex-1 relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,6 +58,18 @@
                             value="{{ request('search') }}" 
                             class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                     </div>
+
+                    <div class="w-56">
+                        <label for="status" class="sr-only">Status</label>
+                        <select id="status" name="status" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
+                            <option value="all" {{ (isset($statusFilter) && $statusFilter == 'all') ? 'selected' : (!isset($statusFilter) ? 'selected' : '') }}>Semua Status</option>
+                            <option value="pending" {{ isset($statusFilter) && $statusFilter == 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="aktif" {{ isset($statusFilter) && $statusFilter == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                            <option value="selesai" {{ isset($statusFilter) && $statusFilter == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                            <option value="batal" {{ isset($statusFilter) && $statusFilter == 'batal' ? 'selected' : '' }}>Batal</option>
+                        </select>
+                    </div>
+
                     <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg transition-all duration-200">
                         Cari
                     </button>

@@ -40,6 +40,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });
 
+//HOTEL
+Route::get('/hotel', [HotelController::class, 'index'])->name('hotel');
+Route::get('/hotel/{id}', [HotelController::class, 'detail'])->name('hotel.detail');
+
 //RESERVASI
 Route::middleware('auth')->group(function () {
     Route::get('/reservasi/{id}', [ReservasiController::class, 'showForm'])->name('hotel.reservasi');
@@ -97,6 +101,7 @@ Route::middleware(['auth', 'role:resepsionis'])->prefix('resepsionis')->group(fu
     // Kelola & Cetak Tagihan
     Route::get('/invoice', [ResepInvoiceController::class, 'index'])->name('resepsionis.invoice.index');
     Route::post('/invoice/{id}/accept', [ResepInvoiceController::class, 'accept'])->name('resepsionis.invoice.accept');
+    Route::post('/invoice/{id}/reject', [ResepInvoiceController::class, 'reject'])->name('resepsionis.invoice.reject');
     Route::get('/invoice/{id}/print', [ResepInvoiceController::class, 'print'])->name('resepsionis.invoice.print');
 });
 

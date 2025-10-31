@@ -50,6 +50,7 @@
                             <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Kota</th>
                             <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Alamat</th>
                             <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Bintang</th>
+                            <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">No. Rekening</th>
                             <th class="py-4 px-6 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
@@ -96,6 +97,9 @@
                                     </span>
                                 </td>
                                 <td class="py-4 px-6">
+                                  <span class="text-gray-700">{{ $hotel->norek ?? '-' }}</span>
+                             </td>
+                                <td class="py-4 px-6">
                                     <div class="flex items-center justify-center gap-2">
                                         <a href="{{ route('admin.hotels.show', $hotel->id) }}" 
                                            class="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-200 font-semibold text-sm">
@@ -103,9 +107,9 @@
                                         </a>
 
                                         <button 
-                                            onclick="openEditModal('{{ $hotel->id }}', '{{ $hotel->nama_hotel }}', '{{ $hotel->kota }}', '{{ $hotel->bintang }}')" 
+                                            onclick="openEditModal('{{ $hotel->id }}', '{{ $hotel->nama_hotel }}', '{{ $hotel->kota }}', '{{ $hotel->alamat }}', '{{ $hotel->bintang }}', '{{ $hotel->norek }}')" 
                                             class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-200 font-semibold text-sm">
-                                            Edit
+                                            <i class="bi bi-pencil-square mr-1"></i> Edit
                                         </button>
 
                                         <form action="{{ route('admin.hotels.destroy', $hotel->id) }}" 
@@ -175,6 +179,7 @@
                             </span>
                         </div>
                     </div>
+                  <div>
 
                     {{-- Card Body --}}
                     <div class="p-4">
@@ -250,29 +255,77 @@
       @csrf
 
       <div class="space-y-3 sm:space-y-4">
+        @if($errors->any())
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4 rounded-lg">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-red-700">
+                        Mohon periksa kembali form anda
+                    </p>
+                </div>
+            </div>
+            <div class="mt-2 text-sm text-red-600">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+        @endif
+
         <div>
-          <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Nama Hotel</label>
-          <input type="text" name="nama_hotel" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Masukkan nama hotel" required>
+          <label for="add_nama_hotel" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Nama Hotel <span class="text-red-500">*</span></label>
+          <input type="text" id="add_nama_hotel" name="nama_hotel" value="{{ old('nama_hotel') }}" placeholder="Contoh: Grand Hotel Malioboro" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all @error('nama_hotel') border-red-500 @enderror" required>
+          @error('nama_hotel')
+              <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+          @enderror
         </div>
 
         <div>
-          <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Kota</label>
-          <input type="text" name="kota" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Masukkan kota" required>
+          <label for="add_kota" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Kota <span class="text-red-500">*</span></label>
+          <input type="text" id="add_kota" name="kota" value="{{ old('kota') }}" placeholder="Contoh: Yogyakarta" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all @error('kota') border-red-500 @enderror" required>
+          @error('kota')
+              <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+          @enderror
         </div>
 
         <div>
-          <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Alamat</label>
-          <textarea name="alamat" rows="3" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="Masukkan alamat lengkap" required></textarea>
+          <label for="add_alamat" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Alamat Lengkap <span class="text-red-500">*</span></label>
+          <textarea id="add_alamat" name="alamat" rows="3" placeholder="Contoh: Jl. Malioboro No. 123, Yogyakarta" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all @error('alamat') border-red-500 @enderror" required>{{ old('alamat') }}</textarea>
+          @error('alamat')
+              <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+          @enderror
         </div>
 
         <div>
-          <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Bintang</label>
-          <input type="number" name="bintang" min="1" max="5" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" placeholder="1-5" required>
+          <label for="add_bintang" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Bintang <span class="text-red-500">*</span></label>
+          <input type="number" id="add_bintang" name="bintang" min="1" max="5" value="{{ old('bintang') }}" placeholder="1-5" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all @error('bintang') border-red-500 @enderror" required>
+          @error('bintang')
+              <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+          @enderror
         </div>
 
         <div>
-          <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Gambar Hotel</label>
-          <input type="file" name="gambar" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all file:mr-2 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-full file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+          <label for="add_norek" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">No Rekening <span class="text-red-500">*</span></label>
+          <input type="text" id="add_norek" name="norek" value="{{ old('norek') }}" placeholder="Contoh: 1234567890" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all @error('norek') border-red-500 @enderror" required>
+          @error('norek')
+              <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+          @enderror
+        </div>
+
+        <div>
+          <label for="add_gambar" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Gambar Hotel</label>
+          <input type="file" id="add_gambar" name="gambar" accept="image/*" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all @error('gambar') border-red-500 @enderror file:mr-2 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-full file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+          <p class="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG, atau WEBP. Maksimal 2MB</p>
+          @error('gambar')
+              <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+          @enderror
         </div>
       </div>
 
@@ -300,32 +353,48 @@
     <form id="editHotelForm" method="POST" enctype="multipart/form-data" class="p-4 sm:p-6">
       @csrf
       @method('PUT')
+      <input type="hidden" name="_method" value="PUT">
 
       <div class="space-y-3 sm:space-y-4">
         <div>
-          <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Nama Hotel</label>
-          <input type="text" name="nama_hotel" id="edit_nama_hotel" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all" required>
+          <label for="edit_nama_hotel" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Nama Hotel <span class="text-red-500">*</span></label>
+          <input type="text" name="nama_hotel" id="edit_nama_hotel" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all" required placeholder="Masukkan nama hotel">
         </div>
 
         <div>
-          <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Kota</label>
-          <input type="text" name="kota" id="edit_kota" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all" required>
+          <label for="edit_kota" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Kota <span class="text-red-500">*</span></label>
+          <input type="text" name="kota" id="edit_kota" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all" required placeholder="Masukkan nama kota">
         </div>
 
         <div>
-          <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Bintang</label>
-          <input type="number" name="bintang" id="edit_bintang" min="1" max="5" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all" required>
+          <label for="edit_alamat" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Alamat <span class="text-red-500">*</span></label>
+          <input type="text" name="alamat" id="edit_alamat" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all" required placeholder="Masukkan alamat lengkap">
         </div>
 
         <div>
-          <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Ganti Gambar (opsional)</label>
-          <input type="file" name="gambar" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all file:mr-2 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-full file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
+          <label for="edit_bintang" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Bintang <span class="text-red-500">*</span></label>
+          <input type="number" name="bintang" id="edit_bintang" min="1" max="5" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all" required placeholder="1-5">
+        </div>
+
+       <div>
+          <label for="edit_norek" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">No Rekening <span class="text-red-500">*</span></label>
+          <input type="number" name="norek" id="edit_norek" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all" required placeholder="Masukkan nomor rekening">
+        </div>
+
+        <div>
+          <label for="edit_gambar" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">Ganti Gambar <span class="text-gray-500 text-xs">(Opsional)</span></label>
+          <input type="file" name="gambar" id="edit_gambar" accept="image/*" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all file:mr-2 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4 file:rounded-full file:border-0 file:text-xs sm:file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
+          <p class="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG, atau WEBP. Maksimal 2MB</p>
         </div>
       </div>
 
       <div class="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4 sm:mt-6">
-        <button type="button" onclick="closeEditModal()" class="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all font-semibold text-sm sm:text-base">Batal</button>
-        <button type="submit" class="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all font-semibold text-sm sm:text-base">Update Hotel</button>
+        <button type="button" onclick="closeEditModal()" class="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all font-semibold text-sm sm:text-base">
+          <i class="bi bi-x-circle mr-1"></i> Batal
+        </button>
+        <button type="submit" class="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl hover:shadow-lg hover:scale-105 transition-all font-semibold text-sm sm:text-base">
+          <i class="bi bi-check-circle mr-1"></i> Simpan Perubahan
+        </button>
       </div>
     </form>
   </div>
@@ -385,13 +454,15 @@ function closeAddModal() {
   document.body.style.overflow = 'auto';
 }
 
-function openEditModal(id, nama, kota, bintang) {
+function openEditModal(id, nama, kota, alamat, bintang, norek) {
   document.getElementById('editHotelModal').classList.remove('hidden');
+  document.getElementById('editHotelForm').action = `{{ route('admin.hotels.index') }}/${id}`;
   document.body.style.overflow = 'hidden';
   document.getElementById('edit_nama_hotel').value = nama;
   document.getElementById('edit_kota').value = kota;
+  document.getElementById('edit_alamat').value = alamat;
   document.getElementById('edit_bintang').value = bintang;
-  document.getElementById('editHotelForm').action = `/admin/hotels/${id}`;
+  document.getElementById('edit_norek').value = norek || '';
 }
 
 function closeEditModal() {

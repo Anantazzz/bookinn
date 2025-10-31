@@ -137,6 +137,17 @@
                         </div>
                     </div>
 
+                     <div class="bg-gradient-to-br from-grey-50 to-teal-50 rounded-2xl p-6 border border-grey-100 hover:shadow-lg transition-shadow">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-black-600 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">No Rekening</p>
+                                <p class="text-xl font-bold text-gray-900">{{ $hotel->norek }}</p>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 {{-- Action Buttons --}}

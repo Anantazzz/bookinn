@@ -19,6 +19,7 @@ class Pembayaran extends Model
         'nomor_rekening',
         'atas_nama',
         'status_bayar',
+        'bukti_transfer',
     ];
 
     public function reservasi()

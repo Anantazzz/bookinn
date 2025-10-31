@@ -20,6 +20,7 @@ class ResepCheckController extends Controller
     {
         $hotelId = Auth::user()->hotel_id;
         $search = $request->input('search'); // ambil keyword dari form
+        $statusFilter = $request->input('status');
 
         $reservasis = Reservasi::whereHas('kamar', function($q) use ($hotelId) {
                 $q->where('hotel_id', $hotelId);
@@ -28,6 +29,9 @@ class ResepCheckController extends Controller
                 $query->whereHas('user', function($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 });
+            })
+            ->when($statusFilter && $statusFilter !== 'all', function($query) use ($statusFilter) {
+                $query->where('status', $statusFilter);
             })
             ->with(['user', 'kamar.tipeKamar'])
             ->orderBy('id', 'desc')
@@ -63,7 +67,7 @@ class ResepCheckController extends Controller
             }
         }
 
-        return view('resepsionis.check.index', compact('reservasis', 'search'));
+        return view('resepsionis.check.index', compact('reservasis', 'search', 'statusFilter'));
     }
 
     public function updateStatus(Request $request, $id)

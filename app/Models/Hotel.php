@@ -20,6 +20,7 @@ class Hotel extends Model
         'alamat',
         'rating',
         'bintang',
+        'norek',
     ];
     
     public function kamars()
