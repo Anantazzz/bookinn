@@ -10,13 +10,10 @@ use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
-    // Tampilkan halaman invoice
     public function show($id)
     {
-        // Ambil invoice berdasarkan ID invoice
         $invoice = Invoice::with(['pembayaran.reservasi.kamar.tipeKamar'])->findOrFail($id);
 
-        // Ambil data reservasi lewat pembayaran
         $reservasi = $invoice->pembayaran->reservasi ?? null;
 
         if (!$reservasi) {
@@ -28,17 +25,13 @@ class InvoiceController extends Controller
             'kode_unik' => $invoice->kode_unik,
         ]);
     }
-    
-    // Download invoice sebagai PDF
+   
     public function download($id)
     {
-        // Ambil data reservasi beserta pembayaran
         $reservasi = Reservasi::with(['kamar.tipeKamar', 'pembayaran'])->findOrFail($id);
 
-        // Ambil invoice berdasarkan pembayaran
         $invoice = Invoice::where('pembayaran_id', $reservasi->pembayaran->id ?? null)->first();
 
-        // Kalau belum ada invoice, buat baru
         if (!$invoice) {
             $invoice = Invoice::create([
                 'pembayaran_id' => $reservasi->pembayaran->id,
@@ -46,7 +39,6 @@ class InvoiceController extends Controller
             ]);
         }
 
-        // Buat PDF
         $pdf = Pdf::loadView('hotels.invoice', [
             'reservasi' => $reservasi,
             'kode_unik' => $invoice->kode_unik,

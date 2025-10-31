@@ -66,6 +66,27 @@
                 </div>
             </div>
 
+            {{-- Grafik Pemasukan --}}
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden max-w-5xl mx-auto mb-10">
+                <div class="bg-gradient-to-r from-gray-50 to-white px-6 py-5 border-b border-gray-200">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-800">Grafik Pemasukan Bulanan</h3>
+                            <p class="text-gray-500 text-sm mt-0.5">Visualisasi pendapatan per bulan</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <canvas id="revenueChart" class="w-full" style="max-height: 400px;"></canvas>
+                </div>
+            </div>
+
             {{-- Table Section --}}
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden max-w-5xl mx-auto">
                 <div class="bg-gradient-to-r from-gray-50 to-white px-6 py-5 border-b border-gray-200">
@@ -152,4 +173,95 @@
             </div>
         </div>
     </div>
+
+    {{-- Chart.js Script --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('revenueChart');
+            
+            // Data dari backend
+            const pemasukanData = @json($pemasukanBulanan);
+            const labels = Object.keys(pemasukanData);
+            const data = Object.values(pemasukanData);
+            
+            // Membuat gradient
+            const gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.8)');
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0.1)');
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pemasukan (Rp)',
+                        data: data,
+                        backgroundColor: gradient,
+                        borderColor: 'rgb(16, 185, 129)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'Rp ' + value.toLocaleString('id-ID');
+                                },
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11,
+                                    weight: '500'
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 @endsection

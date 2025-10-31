@@ -81,13 +81,13 @@
                         <thead>
                             <tr class="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
                                 <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">#</th>
-                                <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Pelanggan</th>
+                                <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Customer</th>
                                 <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Kamar</th>
                                 <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Tipe Kamar</th>
                                 <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Tanggal Bayar</th>
                                 <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Jumlah Bayar</th>
                                 <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Status</th>
-                                <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Hotel</th>
+                                <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Kode Invoice</th>
                                 <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Informasi Transfer</th>
                                 <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Bukti Transfer</th>
                                 <th class="py-4 px-6 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
