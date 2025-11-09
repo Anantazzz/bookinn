@@ -29,6 +29,7 @@ class Kamar extends Model
     {
          return $this->belongsTo(Hotel::class, 'hotel_id', 'id');
     }
+    
     public function tipeKamar()
     {
           return $this->belongsTo(TipeKamar::class, 'tipe_kamar_id');

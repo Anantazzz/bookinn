@@ -21,6 +21,43 @@
                 </div>
             </div>
 
+            {{-- Filter Section --}}
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 mb-8 max-w-5xl mx-auto">
+                <form method="GET" action="{{ route('owner.dashboard') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Dari Tanggal</label>
+                        <input type="date" name="start_date" value="{{ $startDate }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Sampai Tanggal</label>
+                        <input type="date" name="end_date" value="{{ $endDate }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tahun</label>
+                        <select name="year" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Semua Tahun</option>
+                            @for($i = date('Y'); $i >= date('Y') - 5; $i--)
+                                <option value="{{ $i }}" {{ $year == $i ? 'selected' : '' }}>{{ $i }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Bulan</label>
+                        <select name="month" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
+                            <option value="">Semua Bulan</option>
+                            @for($i = 1; $i <= 12; $i++)
+                                <option value="{{ $i }}" {{ $month == $i ? 'selected' : '' }}>{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div>
+                        <button type="submit" class="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
+                            Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             {{-- Cards --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 max-w-5xl mx-auto">
                 <!-- Total Pemasukan -->
@@ -69,15 +106,20 @@
             {{-- Grafik Pemasukan --}}
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden max-w-5xl mx-auto mb-10">
                 <div class="bg-gradient-to-r from-gray-50 to-white px-6 py-5 border-b border-gray-200">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
-                            </svg>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg shadow-md">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-800">Grafik Pemasukan Bulanan</h3>
+                                <p class="text-gray-500 text-sm mt-0.5">Visualisasi pendapatan per bulan</p>
+                            </div>
                         </div>
-                        <div>
-                            <h3 class="text-lg font-bold text-gray-800">Grafik Pemasukan Bulanan</h3>
-                            <p class="text-gray-500 text-sm mt-0.5">Visualisasi pendapatan per bulan</p>
+                        <div class="text-sm text-gray-500">
+                            Periode: {{ \Carbon\Carbon::parse($startDate)->format('d M Y') }} - {{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}
                         </div>
                     </div>
                 </div>
@@ -99,18 +141,10 @@
                             </div>
                             <div>
                                 <h3 class="text-lg font-bold text-gray-800">Pemasukan per Bulan</h3>
-                                <p class="text-gray-500 text-sm mt-0.5">5 bulan terakhir</p>
+                                <p class="text-gray-500 text-sm mt-0.5">Detail pemasukan bulanan</p>
                             </div>
                         </div>
-                        @if(count($pemasukanBulanan) > 5)
-                            <a href="{{ route('owner.laporan') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-sm font-medium rounded-lg hover:from-emerald-600 hover:to-emerald-700 shadow-md hover:shadow-lg transition-all duration-200">
-                                Lihat Semua
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                </svg>
-                            </a>
-                        @endif
-                    </div>
+                     </div>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -122,12 +156,7 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
-                            @php
-                                $previewData = count($pemasukanBulanan) > 5 
-                                    ? array_slice($pemasukanBulanan->toArray(), -5, 5, true)
-                                    : $pemasukanBulanan;
-                            @endphp
-                            @forelse($previewData as $bulan => $total)
+                            @forelse($pemasukanBulanan as $bulan => $total)
                                 <tr class="hover:bg-gradient-to-r hover:from-gray-50 hover:to-transparent transition-all duration-200 group">
                                     <td class="py-4 px-6">
                                         <div class="flex items-center gap-3">
@@ -159,17 +188,6 @@
                         </tbody>
                     </table>
                 </div>
-
-                @if(count($pemasukanBulanan) > 5)
-                    <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 text-center">
-                        <a href="{{ route('owner.laporan') }}" class="inline-flex items-center gap-2 text-gray-700 hover:text-emerald-600 font-medium text-sm transition-colors group">
-                            Lihat {{ count($pemasukanBulanan) - 5 }} bulan lainnya
-                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
-                            </svg>
-                        </a>
-                    </div>
-                @endif
             </div>
         </div>
     </div>

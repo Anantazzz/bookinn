@@ -1,85 +1,85 @@
-<?php
+<?php // Tag pembuka PHP
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers; // Namespace controller
 
-use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Request; // Import Request
+use App\Models\User; // Import model User
+use Illuminate\Support\Facades\Auth; // Import facade Auth
+use Illuminate\Support\Facades\Hash; // Import facade Hash
 
-class AuthController extends Controller
+class AuthController extends Controller // Deklarasi class controller untuk autentikasi
 {
     // Tampilkan form register
-    public function showRegister()
+    public function showRegister() // Menampilkan halaman register
     {
-        return view('auth.register');
+        return view('auth.register'); // Render view auth.register
     }
 
     // Proses register
-    public function register(Request $request)
+    public function register(Request $request) // Menangani proses pendaftaran user
     {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed',
-            'alamat' => 'nullable|string',
-            'no_hp' => 'nullable|string|max:15',
+        $request->validate([ // Validasi input request
+            'name' => 'required', // Nama wajib diisi
+            'email' => 'required|email|unique:users', // Email wajib, format email, unik di tabel users
+            'password' => 'required|min:6|confirmed', // Password wajib, minimal 6, harus ada konfirmasi
+            'alamat' => 'nullable|string', // Alamat opsional
+            'no_hp' => 'nullable|string|max:15', // Nomor HP opsional
         ]);
 
-        $user =User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'alamat' => $request->alamat,
-            'no_hp' => $request->no_hp,
+        $user =User::create([ // Buat user baru di database
+            'name' => $request->name, // Simpan nama dari request
+            'email' => $request->email, // Simpan email dari request
+            'password' => Hash::make($request->password), // Hash password sebelum disimpan
+            'alamat' => $request->alamat, // Simpan alamat jika ada
+            'no_hp' => $request->no_hp, // Simpan no_hp jika ada
         ]);
 
-        return redirect()->route('login')->with('success', 'Registrasi berhasil, silakan login.');
+        return redirect()->route('login')->with('success', 'Registrasi berhasil, silakan login.'); // Redirect ke halaman login dengan pesan sukses
     }
 
     // Tampilkan form login
-    public function showLogin()
+    public function showLogin() // Menampilkan halaman login
     {
-        return view('auth.login');
+        return view('auth.login'); // Render view auth.login
     }
 
     // Proses login
-   public function login(Request $request)
+   public function login(Request $request) // Menangani proses autentikasi/login
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
+        $credentials = $request->validate([ // Validasi kredensial
+            'email' => 'required|email', // Email wajib dan harus valid
+            'password' => 'required' // Password wajib
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        if (Auth::attempt($credentials)) { // Coba authenticate dengan kredensial
+            $request->session()->regenerate(); // Regenerasi session setelah login
 
-            $user = Auth::user();
+            $user = Auth::user(); // Ambil user yang terautentikasi
 
             // Cek role dan arahkan sesuai peran
-            switch ($user->role) {
+            switch ($user->role) { // Pengalihan berdasarkan role user
                 case 'admin':
-                    return redirect()->route('admin.dashboard');
+                    return redirect()->route('admin.dashboard'); // Jika admin => dashboard admin
                 case 'resepsionis':
-                    return redirect()->route('resepsionis.dashboard');
+                    return redirect()->route('resepsionis.dashboard'); // Jika resepsionis => dashboard resepsionis
                 case 'owner':
-                    return redirect()->route('owner.dashboard');
+                    return redirect()->route('owner.dashboard'); // Jika owner => dashboard owner
                 default:
-                    return redirect()->route('home');
+                    return redirect()->route('home'); // Default arahkan ke home
             }
         }
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
+        return back()->withErrors([ // Jika autentikasi gagal, kembali dengan error
+            'email' => 'Email atau password salah.', // Pesan error
         ]);
     }
     // Logout
-    public function logout(Request $request)
+    public function logout(Request $request) // Menangani proses logout
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        Auth::logout(); // Logout user
+        $request->session()->invalidate(); // Invalidate session
+        $request->session()->regenerateToken(); // Regenerasi CSRF token
 
-        return redirect()->route('home');
+        return redirect()->route('home'); // Redirect ke halaman home
     }
-}
+} 

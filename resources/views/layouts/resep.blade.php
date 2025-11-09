@@ -27,10 +27,10 @@
     {{-- Navbar --}}
    <nav class="bg-white shadow-md py-4 px-8 flex justify-between items-center mb-8">
         {{-- Kiri: Logo --}}
-        <div class="flex items-center gap-3 flex-shrink-0">
+        <a href="{{ route('resepsionis.dashboard') }}" class="flex items-center gap-3 flex-shrink-0 hover:opacity-80 transition">
             <i class="fa-solid fa-hotel text-blue-600 text-4xl"></i>
             <img src="{{ asset('images/logo_bookin.png') }}" alt="Logo" class="h-14 w-auto object-contain">
-        </div>
+        </a>
 
         {{-- Tengah: Sapaan --}}
         <div class="absolute left-1/2 transform -translate-x-1/3 text-2xl font-semibold text-gray-800 tracking-wide">
@@ -58,7 +58,7 @@
             </form>
         </div>
     </nav>
-
+    
     {{-- Main Content --}}
     <main class="py-10">
         @yield('content')

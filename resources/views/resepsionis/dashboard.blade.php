@@ -20,16 +20,16 @@
         </div>
         
         {{-- Grid Card Menu --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 
-            {{-- Ketersediaan Kamar --}}
+             {{-- Ketersediaan Kamar --}}
             <a href="{{ route('resepsionis.kamars.index') }}"
             class="group relative bg-white shadow-xl rounded-3xl p-8 text-center overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-amber-100">
                 {{-- Background Decoration --}}
-                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-200 to-amber-300 rounded-full opacity-20 -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pink-200 to-pink-300 rounded-full opacity-20 -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
                 
                 <div class="relative z-10">
-                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-pink-400 to-pink-500 rounded-2xl mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                         <i class="fa-solid fa-bed text-3xl text-white"></i>
                     </div>
                     <h2 class="text-xl font-bold text-gray-800 mb-2">Ketersediaan Kamar</h2>
@@ -39,6 +39,28 @@
                 {{-- Hover Arrow --}}
                 <div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                    </svg>
+                </div>
+            </a>
+
+             {{-- Pemesanan Offline --}}
+            <a href="{{ route('resepsionis.offline.create') }}" 
+            class="group relative bg-white shadow-xl rounded-3xl p-8 text-center overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-emerald-100">
+                {{-- Background Decoration --}}
+                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-200 to-orange-300 rounded-full opacity-20 -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
+                
+                <div class="relative z-10">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-400 to-orange-500 rounded-2xl mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <i class="fa-solid fa-door-open text-3xl text-white"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">Pemesanan Offline</h2>
+                    <p class="text-gray-600 text-sm">Booking kamar offline</p>
+                </div>
+                
+                {{-- Hover Arrow --}}
+                <div class="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                     </svg>
                 </div>
@@ -70,10 +92,10 @@
             <a href="{{ route('resepsionis.invoice.index') }}" 
             class="group relative bg-white shadow-xl rounded-3xl p-8 text-center overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 border border-indigo-100">
                 {{-- Background Decoration --}}
-                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-200 to-indigo-300 rounded-full opacity-20 -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-200 to-indigo-300 rounded-full opacity-20 -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
                 
                 <div class="relative z-10">
-                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-indigo-400 to-indigo-500 rounded-2xl mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-400 to-blue-500 rounded-2xl mb-5 group-hover:scale-110 transition-transform duration-300 shadow-lg">
                         <i class="fa-solid fa-file-invoice-dollar text-3xl text-white"></i>
                     </div>
                     <h2 class="text-xl font-bold text-gray-800 mb-2">Cetak Invoice</h2>

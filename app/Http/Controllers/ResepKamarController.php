@@ -9,7 +9,9 @@ class ResepKamarController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Kamar::with('tipeKamar');
+        $this->updateKamarStatus();
+        
+        $query = Kamar::with('tipeKamar')->where('hotel_id', Auth::user()->hotel_id);
 
         if ($request->filled('search')) {
             $query->where('nomor_kamar', 'like', '%' . $request->search . '%');
@@ -18,6 +20,18 @@ class ResepKamarController extends Controller
         $kamars = $query->orderBy('id', 'asc')->get();
 
         return view('resepsionis.kamars.index', compact('kamars'));
+    }
+    
+    private function updateKamarStatus()
+    {
+        $reservasiSelesai = \App\Models\Reservasi::where('tanggal_checkout', '<', now()->toDateString())
+            ->where('status', 'aktif')
+            ->get();
+            
+        foreach ($reservasiSelesai as $reservasi) {
+            $reservasi->update(['status' => 'selesai']);
+            $reservasi->kamar->update(['status' => 'tersedia']);
+        }
     }
 
     public function update(Request $request, $id)
@@ -32,3 +46,7 @@ class ResepKamarController extends Controller
         return redirect()->back()->with('success', 'Status kamar berhasil diubah!');
     }
 }
+
+
+
+

@@ -28,12 +28,12 @@ class invoice extends Model
     public function reservasi()
     {
         return $this->hasOneThrough(
-            Reservasi::class,   // model tujuan akhir
-            Pembayaran::class,  // model perantara
-            'id',               // kolom id di tabel pembayaran
-            'id',               // kolom id di tabel reservasi
-            'pembayaran_id',    // kolom di tabel invoice
-            'reservasi_id'      // kolom di tabel pembayaran
+            Reservasi::class, 
+            Pembayaran::class, 
+            'id',              
+            'id',               
+            'pembayaran_id',    
+            'reservasi_id'      
         );
     }
 }

@@ -96,18 +96,21 @@
                                 <tr class="hover:bg-gradient-to-r hover:from-gray-50 hover:to-transparent transition-all duration-200 group">
                                     <td class="py-4 px-6">
                                         <div class="flex items-center gap-3">
+                                            @php
+                                                // Ambil nama dari user login atau tamu offline
+                                                $namaCustomer = $res->user->name ?? $res->tamu_offline->nama ?? 'Tamu';
+                                                $inisial = strtoupper(substr($namaCustomer, 0, 1));
+                                            @endphp
+
                                             <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
-                                                {{ substr($res->user->name, 0, 1) }}
+                                                {{ $inisial }}
                                             </div>
-                                            <span class="font-semibold text-gray-800">{{ $res->user->name }}</span>
+                                            <span class="font-semibold text-gray-800">{{ $namaCustomer }}</span>
                                         </div>
                                     </td>
                                     <td class="py-4 px-6">
-                                        <span class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-lg font-medium text-gray-800">
-                                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                                            </svg>
-                                            {{ $res->kamar->nomor_kamar }}
+                                        <span class="px-3 py-1.5 bg-gradient-to-r from-indigo-100 to-indigo-50 border border-indigo-200 rounded-lg text-sm font-medium text-indigo-800">
+                                            {{ $res->kamar->nomor_kamar ?? '-' }}
                                         </span>
                                     </td>
                                     <td class="py-4 px-6">

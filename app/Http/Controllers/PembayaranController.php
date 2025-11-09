@@ -1,103 +1,103 @@
-<?php
+<?php // Tag pembuka PHP
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers; // Namespace controller
 
-use App\Models\Reservasi;
-use App\Models\Kamar;
-use App\Models\Pembayaran;
-use App\Models\Invoice;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Reservasi; // Import model Reservasi
+use App\Models\Kamar; // Import model Kamar
+use App\Models\Pembayaran; // Import model Pembayaran
+use App\Models\Invoice; // Import model Invoice
+use Illuminate\Support\Facades\Auth; // Import facade Auth
+use Illuminate\Http\Request; // Import Request
+use Carbon\Carbon; // Import Carbon untuk tanggal
+use Barryvdh\DomPDF\Facade\Pdf; // Import PDF facade
+use Illuminate\Support\Str; // Import Str helper
+use Illuminate\Support\Facades\Storage; // Import Storage facade
 
-class PembayaranController extends Controller
+class PembayaranController extends Controller // Deklarasi class PembayaranController
 {
-    public function show($id)
+    public function show($id) // Fungsi untuk menampilkan halaman pembayaran
     {
-        $user = Auth::user(); 
-        $kamar = Kamar::findOrFail($id);
-        $kode_unik = 'INV-' . strtoupper(Str::random(7)); 
+        $user = Auth::user(); // Ambil user yang sedang login
+        $kamar = Kamar::findOrFail($id); // Cari kamar berdasarkan id atau 404
+        $kode_unik = 'INV-' . strtoupper(Str::random(7)); // Buat kode unik sementara
 
-        $reservasi = Reservasi::where('user_id', $user->id)
+        $reservasi = Reservasi::where('user_id', $user->id) // Cari reservasi user untuk kamar ini
                               ->where('kamar_id', $kamar->id)
-                              ->latest() 
-                              ->first(); 
+                              ->latest() // Ambil reservasi terbaru
+                              ->first(); // Ambil hasil pertama
 
-        if ($reservasi) {
+        if ($reservasi) { // Jika ada reservasi
     
-            $malam = Carbon::parse($reservasi->tanggal_checkin)
+            $malam = Carbon::parse($reservasi->tanggal_checkin) // Hitung jumlah malam
                         ->diffInDays(Carbon::parse($reservasi->tanggal_checkout));
 
-            $hargaPerMalam = $kamar->harga;
+            $hargaPerMalam = $kamar->harga; // Harga per malam dari kamar
 
-            $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0;
+            $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0; // Tambahan kasur jika ada
 
-            $totalBayar = ($hargaPerMalam * $malam) + $hargaKasur;
+            $totalBayar = ($hargaPerMalam * $malam) + $hargaKasur; // Total yang harus dibayar
 
-            $reservasi->total_harga = $totalBayar;
+            $reservasi->total_harga = $totalBayar; // Set total harga di object reservasi
         }
 
-        return view('hotels.pembayaran', compact('user', 'kamar', 'reservasi'));
+        return view('hotels.pembayaran', compact('user', 'kamar', 'reservasi')); // Render view pembayaran
     }
 
-    public function prosesPembayaran(Request $request, $id)
+    public function prosesPembayaran(Request $request, $id) // Fungsi untuk memproses pembayaran
     {
         try {
-            logger()->info('Data yang diterima:', [
+            logger()->info('Data yang diterima:', [ // Log data request untuk debugging
                 'request_all' => $request->all(),
                 'files' => $request->allFiles(),
                 'id' => $id
             ]);
 
-            $validated = $request->validate([
-                'bank' => 'required|in:mandiri,bca,bri,bni,btn',
-                'atas_nama' => 'nullable|string|max:255',
-                'nomor_rekening' => 'required|string|max:20',
-                'bukti_transfer' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            $validated = $request->validate([ // Validasi input
+                'bank' => 'required|in:mandiri,bca,bri,bni,btn', // Pilihan bank
+                'atas_nama' => 'nullable|string|max:255', // Nama pemilik rekening
+                'nomor_rekening' => 'required|string|max:20', // Nomor rekening
+                'bukti_transfer' => 'required|image|mimes:jpg,jpeg,png|max:2048', // Bukti transfer
             ]);
 
-        $user = Auth::user();
-        $kamar = Kamar::findOrFail($id); 
+        $user = Auth::user(); // Ambil user
+        $kamar = Kamar::findOrFail($id); // Ambil kamar
 
-        $reservasi = Reservasi::where('user_id', $user->id)
+        $reservasi = Reservasi::where('user_id', $user->id) // Ambil reservasi terkait
                               ->where('kamar_id', $kamar->id)
                               ->latest()
-                              ->firstOrFail();
+                              ->firstOrFail(); // Ambil atau fail
 
-        $malam = Carbon::parse($reservasi->tanggal_checkin)
+        $malam = Carbon::parse($reservasi->tanggal_checkin) // Hitung lama menginap
                     ->diffInDays(Carbon::parse($reservasi->tanggal_checkout));
 
-        $hargaPerMalam = $reservasi->kamar->harga;
+        $hargaPerMalam = $reservasi->kamar->harga; // Harga kamar dari reservasi
 
-        $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0;
+        $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0; // Biaya kasur tambahan
 
-        $jumlahBayar = ($hargaPerMalam * $malam) + $hargaKasur;
+        $jumlahBayar = ($hargaPerMalam * $malam) + $hargaKasur; // Hitung jumlah bayar
 
-        $buktiTransfer = null;
-        if ($request->hasFile('bukti_transfer')) {
-            $file = $request->file('bukti_transfer');
+        $buktiTransfer = null; // Inisialisasi path bukti transfer
+        if ($request->hasFile('bukti_transfer')) { // Jika ada file bukti transfer
+            $file = $request->file('bukti_transfer'); // Ambil file
    
-            $fileName = 'bukti_' . time() . '_' . Str::random(5) . '.' . $file->getClientOriginalExtension();
+            $fileName = 'bukti_' . time() . '_' . Str::random(5) . '.' . $file->getClientOriginalExtension(); // Buat nama file unik
 
-            $uploadPath = public_path('images');
-            if (!file_exists($uploadPath)) {
-                mkdir($uploadPath, 0755, true);
+            $uploadPath = public_path('images'); // Path upload
+            if (!file_exists($uploadPath)) { // Jika folder tidak ada
+                mkdir($uploadPath, 0755, true); // Buat folder
             }
             
-            if ($file->move($uploadPath, $fileName)) {
-                $buktiTransfer = 'images/' . $fileName;
-                logger()->info('Bukti transfer berhasil diupload', ['path' => $buktiTransfer]);
+            if ($file->move($uploadPath, $fileName)) { // Pindahkan file
+                $buktiTransfer = 'images/' . $fileName; // Simpan path relatif
+                logger()->info('Bukti transfer berhasil diupload', ['path' => $buktiTransfer]); // Log sukses
             } else {
-                throw new \Exception('Gagal mengupload bukti transfer');
+                throw new \Exception('Gagal mengupload bukti transfer'); // Throw jika gagal
             }
         } else {
-            throw new \Exception('File bukti transfer tidak ditemukan');
+            throw new \Exception('File bukti transfer tidak ditemukan'); // Throw jika file tidak ditemukan
         }
 
-        $pembayaran = Pembayaran::create([
+        $pembayaran = Pembayaran::create([ // Simpan data pembayaran
             'reservasi_id' => $reservasi->id,
             'tanggal_bayar' => now()->toDateString(),
             'jumlah_bayar' => $jumlahBayar,
@@ -110,42 +110,42 @@ class PembayaranController extends Controller
         ]);
 
         try {
-            $invoiceData = [
+            $invoiceData = [ // Siapkan data untuk invoice PDF
                 'reservasi' => $reservasi,
                 'pembayaran' => $pembayaran,
                 'hotel' => $kamar->hotel,
                 'user' => Auth::user()
             ];
 
-            $pdf = Pdf::loadView('hotels.invoice', $invoiceData);
+            $pdf = Pdf::loadView('hotels.invoice', $invoiceData); // Generate PDF dari view
             
-            $invoiceDir = public_path('invoices');
-            if (!file_exists($invoiceDir)) {
-                mkdir($invoiceDir, 0755, true);
+            $invoiceDir = public_path('invoices'); // Path folder invoices
+            if (!file_exists($invoiceDir)) { // Jika folder invoices tidak ada
+                mkdir($invoiceDir, 0755, true); // Buat folder invoices
             }
 
-            $filename = 'invoice_' . $reservasi->id . '_' . time() . '_' . Str::random(5) . '.pdf';
-            $pdfPath = public_path('invoices/' . $filename);
+            $filename = 'invoice_' . $reservasi->id . '_' . time() . '_' . Str::random(5) . '.pdf'; // Nama file invoice
+            $pdfPath = public_path('invoices/' . $filename); // Path lengkap file
 
-            logger()->info('Mencoba menyimpan PDF:', [
+            logger()->info('Mencoba menyimpan PDF:', [ // Log sebelum menyimpan
                 'path' => $pdfPath
             ]);
 
-            $pdf->save($pdfPath);
+            $pdf->save($pdfPath); // Simpan PDF ke disk
 
-            logger()->info('PDF berhasil dibuat', [
+            logger()->info('PDF berhasil dibuat', [ // Log sukses pembuatan PDF
                 'filename' => $filename
             ]);
         } catch (\Exception $e) {
-            logger()->error('Error saat membuat PDF:', [
+            logger()->error('Error saat membuat PDF:', [ // Log error pembuatan PDF
                 'message' => $e->getMessage()
             ]);
-            throw new \Exception('Gagal membuat invoice PDF: ' . $e->getMessage());
+            throw new \Exception('Gagal membuat invoice PDF: ' . $e->getMessage()); // Throw exception baru
         }
 
-        $kode_unik = 'INV-' . strtoupper(Str::random(7));
+        $kode_unik = 'INV-' . strtoupper(Str::random(7)); // Buat kode unik untuk invoice
 
-        $invoice = Invoice::create([
+        $invoice = Invoice::create([ // Simpan data invoice ke database
             'pembayaran_id' => $pembayaran->id, 
             'tanggal_cetak' => now(), 
             'total' => $jumlahBayar,
@@ -153,30 +153,30 @@ class PembayaranController extends Controller
             'kode_unik' => $kode_unik, 
         ]);
 
-        return redirect()->route('invoice.show', ['id' => $invoice->id])
-                        ->with('success', 'Pembayaran berhasil & invoice dibuat!');
+        return redirect()->route('invoice.show', ['id' => $invoice->id]) // Redirect ke halaman invoice
+                        ->with('success', 'Pembayaran berhasil & invoice dibuat!'); // Flash pesan sukses
 
         } catch (\Exception $e) {
-            logger()->error('Error dalam proses pembayaran:', [
+            logger()->error('Error dalam proses pembayaran:', [ // Log error umum proses pembayaran
                 'message' => $e->getMessage(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
             
-            $imageDir = public_path('images');
-            $invoiceDir = public_path('invoices');
+            $imageDir = public_path('images'); // Path images
+            $invoiceDir = public_path('invoices'); // Path invoices
             
-            logger()->info('Directory Status:', [
+            logger()->info('Directory Status:', [ // Log status direktori
                 'images_exists' => file_exists($imageDir),
                 'images_writable' => is_writable($imageDir),
                 'invoices_exists' => file_exists($invoiceDir),
                 'invoices_writable' => is_writable($invoiceDir)
             ]);
             
-            return back()
+            return back() // Kembali ke halaman sebelumnya dengan error
                 ->withErrors(['error' => 'Error: ' . $e->getMessage()])
                 ->withInput();
         }
     }
-}
+} 

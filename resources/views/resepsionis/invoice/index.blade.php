@@ -100,13 +100,19 @@
                                         <span class="font-semibold text-gray-600">{{ $index + 1 }}</span>
                                     </td>
                                     <td class="py-4 px-6">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
-                                                {{ substr($p->reservasi->user->name, 0, 1) }}
-                                            </div>
-                                            <span class="font-semibold text-gray-800">{{ $p->reservasi->user->name }}</span>
+                                    <div class="flex items-center gap-3">
+                                        @php
+                                            // Cek nama customer dari user login atau tamu offline
+                                            $namaCustomer = $p->reservasi->user->name ?? $p->reservasi->tamu_offline->nama ?? 'Tamu';
+                                            $inisial = strtoupper(substr($namaCustomer, 0, 1));
+                                        @endphp
+
+                                        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold shadow-md">
+                                            {{ $inisial }}
                                         </div>
-                                    </td>
+                                        <span class="font-semibold text-gray-800">{{ $namaCustomer }}</span>
+                                    </div>
+                                </td>
                                     <td class="py-4 px-6">
                                         <span class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-lg font-medium text-gray-800">
                                             <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

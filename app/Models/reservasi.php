@@ -42,4 +42,9 @@ class Reservasi extends Model
     {
         return $this->belongsTo(TipeKamar::class, 'tipe_kamar_id'); 
     }
+
+    public function tamuOffline()
+    {
+        return $this->belongsTo(TamuOffline::class, 'tamu_offline_id');
+    }
 }

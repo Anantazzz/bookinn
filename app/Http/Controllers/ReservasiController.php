@@ -9,9 +9,7 @@ use App\Models\Kamar;
 
 class ReservasiController extends Controller
 {
-    // ====================================
-    // 🔹 TAMPILKAN FORM RESERVASI
-    // ====================================
+    // TAMPILKAN FORM RESERVASI
     public function showForm(Request $request, $id)
     {
         $user = Auth::user(); // Ambil data user yang sedang login
@@ -25,9 +23,7 @@ class ReservasiController extends Controller
         return view('hotels.reservasi', compact('user', 'kamar', 'tanggalCheckin', 'tanggalCheckout'));
     }
 
-    // ====================================
-    // 🔹 SIMPAN DATA RESERVASI KE DATABASE
-    // ====================================
+    // SIMPAN DATA RESERVASI KE DATABASE
     public function store(Request $request, $id)
     {
         $user = Auth::user(); // Ambil data user login
@@ -45,9 +41,7 @@ class ReservasiController extends Controller
         $tanggalCheckin = $request->tanggal_checkin;
         $tanggalCheckout = $request->tanggal_checkout;
 
-        // ========================================
-        // 🔸 CARI KAMAR YANG MASIH TERSEDIA
-        // ========================================
+        // CARI KAMAR YANG MASIH TERSEDIA
         $kamarTersedia = Kamar::where('tipe_kamar_id', $tipeKamar->tipe_kamar_id) // Cari kamar berdasarkan tipe
             ->whereDoesntHave('reservasis', function ($query) use ($tanggalCheckin, $tanggalCheckout) {
                 // Filter kamar yang sedang punya reservasi aktif atau pending
@@ -72,26 +66,21 @@ class ReservasiController extends Controller
             ])->withInput();
         }
 
-        // ========================================
-        // 🔸 HITUNG TOTAL HARGA
-        // ========================================
+        // HITUNG TOTAL HARGA
         $kasurTambahan = $request->has('kasur_tambahan') ? 1 : 0; // Apakah user menambah kasur?
-        $hargaKamar = $kamarTersedia->harga; // Harga kamar
+        $jumlahHari = \Carbon\Carbon::parse($tanggalCheckin)->diffInDays(\Carbon\Carbon::parse($tanggalCheckout));
+        $hargaKamar = $kamarTersedia->harga * $jumlahHari; // Harga kamar dikali jumlah hari
         $biayaKasur = $kasurTambahan ? 100000 : 0; // Tambahan biaya kasur
         $totalHarga = $hargaKamar + $biayaKasur; // Total harga keseluruhan
 
-        // ========================================
-        // 🔸 TENTUKAN STATUS RESERVASI OTOMATIS
-        // ========================================
+        // TENTUKAN STATUS RESERVASI OTOMATIS
         if ($tanggalCheckin == date('Y-m-d')) {
             $status = 'aktif'; // Kalau check-in hari ini, langsung aktif
         } else {
             $status = 'pending'; // Kalau belum hari H, status pending dulu
         }
 
-        // ========================================
-        // 🔸 SIMPAN DATA RESERVASI KE DATABASE
-        // ========================================
+        // SIMPAN DATA RESERVASI KE DATABASE
         $reservasi = Reservasi::create([
             'user_id' => $user->id, // User yang melakukan reservasi
             'kamar_id' => $kamarTersedia->id, // ID kamar yang kosong
@@ -103,10 +92,18 @@ class ReservasiController extends Controller
             'kasur_tambahan' => $kasurTambahan, // Apakah pakai kasur tambahan
             'total_harga' => $totalHarga, // Total biaya yang harus dibayar
         ]);
+        
+        // UPDATE STATUS KAMAR MENJADI BOOKING
+        $kamarTersedia->update(['status' => 'booking']);
+        
+        // Debug: Log untuk memastikan status kamar terupdate
+        \Log::info('Status kamar diupdate', [
+            'kamar_id' => $kamarTersedia->id,
+            'nomor_kamar' => $kamarTersedia->nomor_kamar,
+            'status_baru' => 'booking'
+        ]);
 
-        // ========================================
-        // 🔸 ARAHKAN KE HALAMAN PEMBAYARAN
-        // ========================================
+        // ARAHKAN KE HALAMAN PEMBAYARAN
         return redirect()->route('hotel.pembayaran', ['id' => $kamarTersedia->id])
                         ->with('success', 'Reservasi berhasil! Silakan lanjutkan ke pembayaran.');
     } 
