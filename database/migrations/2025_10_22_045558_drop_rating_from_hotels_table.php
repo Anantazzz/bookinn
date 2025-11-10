@@ -14,7 +14,9 @@ class DropRatingFromHotelsTable extends Migration
     public function up()
     {
         Schema::table('hotels', function (Blueprint $table) {
-             $table->dropColumn('rating');
+            if (Schema::hasColumn('hotels', 'rating')) {
+                $table->dropColumn('rating');
+            }
         });
     }
 

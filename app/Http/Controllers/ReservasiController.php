@@ -97,12 +97,15 @@ class ReservasiController extends Controller
         $kamarTersedia->update(['status' => 'booking']);
         
         // Debug: Log untuk memastikan status kamar terupdate
-        \Log::info('Status kamar diupdate', [
+        logger()->info('Status kamar diupdate', [
             'kamar_id' => $kamarTersedia->id,
             'nomor_kamar' => $kamarTersedia->nomor_kamar,
             'status_baru' => 'booking'
         ]);
 
+        // SIMPAN ID RESERVASI TERBARU KE SESSION
+        session(['latest_reservation_id' => $reservasi->id]);
+        
         // ARAHKAN KE HALAMAN PEMBAYARAN
         return redirect()->route('hotel.pembayaran', ['id' => $kamarTersedia->id])
                         ->with('success', 'Reservasi berhasil! Silakan lanjutkan ke pembayaran.');

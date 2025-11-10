@@ -22,7 +22,6 @@ class HotelSeeder extends Seeder
             'bintang' => 5,
         ]);
 
-       // Yogyakarta
         Hotel::create([
             'nama_hotel' => 'Merapi Hotel',
             'gambar' => 'hotel16.jpg',
@@ -30,48 +29,7 @@ class HotelSeeder extends Seeder
             'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 5,
         ]);
-
-        Hotel::create([
-            'nama_hotel' => 'Nava Inn',
-            'gambar' => 'hotel6.jpg',
-            'kota' => 'Yogyakarta',
-            'alamat' => 'Jl. Merdeka No. 1',
-            'bintang' => 3,
-        ]);
-
-        Hotel::create([
-            'nama_hotel' => 'Nirwana Hotel',
-            'gambar' => 'hotel13.jpg',
-            'kota' => 'Yogyakarta',
-            'alamat' => 'Jl. Merdeka No. 1',
-            'bintang' => 3,
-        ]);
-
-        Hotel::create([
-            'nama_hotel' => 'Prambanan Inn',
-            'gambar' => 'hotel15.jpg',
-            'kota' => 'Yogyakarta',
-            'alamat' => 'Jl. Merdeka No. 1',
-            'bintang' => 4,
-        ]);
-
-          Hotel::create([
-            'nama_hotel' => 'Arjuna Hotel',
-            'gambar' => 'hotel17.jpg',
-            'kota' => 'Yogyakarta',
-            'alamat' => 'Jl. Merdeka No. 1',
-            'bintang' => 5,
-        ]);
-
-          Hotel::create([
-            'nama_hotel' => 'Kenanga Stay',
-            'gambar' => 'hotel15.jpg',
-            'kota' => 'Yogyakarta',
-            'alamat' => 'Jl. Merdeka No. 1',
-            'bintang' => 3,
-        ]);
         
-        //Palembang
          Hotel::create([
             'nama_hotel' => 'Lavenda Hotel',
             'gambar' => 'hotel3.jpg',
@@ -95,19 +53,11 @@ class HotelSeeder extends Seeder
             'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 4,
         ]);
-            
-        Hotel::create([
-            'nama_hotel' => 'Aruna Stay',
-            'gambar' => 'hotel2.jpg',
-            'kota' => 'Maluku',
-            'alamat' => 'Jl. Merdeka No. 1',
-            'bintang' => 3,
-        ]);
 
         Hotel::create([
             'nama_hotel' => 'Biru Hotel',
             'gambar' => 'hotel9.jpg',
-            'kota' => 'Pangandaran',
+            'kota' => 'Bandung',
             'alamat' => 'Jl. Merdeka No. 1',
             'bintang' => 4,
         ]);

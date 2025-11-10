@@ -102,9 +102,9 @@ class ResepInvoiceController extends Controller // Mendefinisikan class controll
         }
 
         $pembayaran->update([
-            'status_bayar' => 'batal', // Ubah status menjadi batal
+            'status_bayar' => 'gagal', // Ubah status menjadi gagal
         ]);
 
-        return back()->with('success', 'Pembayaran berhasil ditolak dan status diubah menjadi batal.'); // Kembalikan pesan sukses
+        return back()->with('success', 'Pembayaran berhasil ditolak dan status diubah menjadi gagal.'); // Kembalikan pesan sukses
     }
 }

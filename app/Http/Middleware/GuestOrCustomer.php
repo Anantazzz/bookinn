@@ -15,8 +15,8 @@ class GuestOrCustomer
             return $next($request);
         }
 
-        // Jika user login sebagai customer, boleh akses
-        if (Auth::user()->role === 'customer') {
+        // Jika user login sebagai user, boleh akses
+        if (Auth::user()->role === 'user') {
             return $next($request);
         }
 

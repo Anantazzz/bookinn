@@ -24,7 +24,7 @@ use App\Http\Controllers\{
     InvoiceOfflineController
 };
 
-//PUBLIC (Tanpa Login) - Hanya untuk guest atau customer
+//PUBLIC (Tanpa Login) - Hanya untuk guest atau user
 Route::middleware(['guest_or_customer'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/hotel', [HotelController::class, 'index'])->name('hotel');
@@ -48,8 +48,8 @@ Route::middleware('auth')->group(function () {
 Route::get('/hotel', [HotelController::class, 'index'])->name('hotel');
 Route::get('/hotel/{id}', [HotelController::class, 'detail'])->name('hotel.detail');
 
-//CUSTOMER (auth + role:customer)
-Route::middleware(['auth', 'role:customer'])->group(function () {
+//USER (auth + role:user)
+Route::middleware(['auth', 'role:user'])->group(function () {
     // Reservasi
     Route::get('/reservasi/{id}', [ReservasiController::class, 'showForm'])->name('hotel.reservasi');
     Route::post('/reservasi/{id}', [ReservasiController::class, 'store'])->name('reservasi.store');

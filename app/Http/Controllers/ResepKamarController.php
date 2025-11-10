@@ -11,7 +11,13 @@ class ResepKamarController extends Controller
     {
         $this->updateKamarStatus();
         
-        $query = Kamar::with('tipeKamar')->where('hotel_id', Auth::user()->hotel_id);
+        $user = Auth::user();
+        $query = Kamar::with(['tipeKamar', 'hotel']);
+        
+        // Filter kamar berdasarkan hotel resepsionis
+        if ($user->hotel_id) {
+            $query->where('hotel_id', $user->hotel_id);
+        }
 
         if ($request->filled('search')) {
             $query->where('nomor_kamar', 'like', '%' . $request->search . '%');

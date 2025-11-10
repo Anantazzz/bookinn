@@ -32,6 +32,7 @@ class AuthController extends Controller // Deklarasi class controller untuk aute
             'password' => Hash::make($request->password), // Hash password sebelum disimpan
             'alamat' => $request->alamat, // Simpan alamat jika ada
             'no_hp' => $request->no_hp, // Simpan no_hp jika ada
+            'role' => 'user', // Set role sebagai user
         ]);
 
         return redirect()->route('login')->with('success', 'Registrasi berhasil, silakan login.'); // Redirect ke halaman login dengan pesan sukses

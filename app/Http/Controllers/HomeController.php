@@ -1,15 +1,14 @@
-<?php // Tag pembuka PHP
+<?php
 
-namespace App\Http\Controllers; // Namespace controller
+namespace App\Http\Controllers; 
+use Illuminate\Http\Request; 
+use App\Models\Hotel; 
 
-use Illuminate\Http\Request; // Import Request (jika diperlukan)
-use App\Models\Hotel; // Import model Hotel
-
-class HomeController extends Controller // Deklarasi class HomeController
+class HomeController extends Controller 
 {
-     public function index() // Fungsi untuk menampilkan halaman utama
+     public function index() 
     {
-        $hotels = Hotel::all(); // Ambil semua data hotel
-        return view('home', compact('hotels')); // Render view home dengan data hotels
+        $hotels = Hotel::all();
+        return view('home', compact('hotels')); 
     }
 } 

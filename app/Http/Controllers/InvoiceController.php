@@ -12,7 +12,7 @@ class InvoiceController extends Controller // Deklarasi class InvoiceController
 {
     public function show($id) // Fungsi untuk menampilkan invoice di browser
     {
-        $invoice = Invoice::with(['pembayaran.reservasi.kamar.tipeKamar'])->findOrFail($id); // Ambil invoice beserta relasi
+        $invoice = Invoice::with(['pembayaran.reservasi.kamar.hotel', 'pembayaran.reservasi.kamar.tipeKamar'])->findOrFail($id); // Ambil invoice beserta relasi
 
         $reservasi = $invoice->pembayaran->reservasi ?? null; // Ambil reservasi terkait jika ada
 

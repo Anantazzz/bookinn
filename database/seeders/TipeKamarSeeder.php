@@ -17,19 +17,16 @@ class TipeKamarSeeder extends Seeder
         TipeKamar::create([
             'nama_tipe' => 'Standar',
             'harga' => 762000,
-            'deskripsi' => 'Kamar standar dengan fasilitas dasar',
         ]);
 
         TipeKamar::create([
             'nama_tipe' => 'Deluxe',
             'harga' => 983000,
-            'deskripsi' => 'Kamar deluxe dengan fasilitas tambahan',
         ]);
 
         TipeKamar::create([
             'nama_tipe' => 'Premium',
             'harga' => 1145000,
-            'deskripsi' => 'Kamar premium untuk kenyamanan maksimal',
         ]);
     }
 }

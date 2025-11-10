@@ -38,8 +38,20 @@
           </div>
         @endif
 
+        {{-- DEBUG INFO --}}
+        <div class="alert alert-warning mb-4">
+          <strong>DEBUG TERBARU:</strong><br>
+          Session Reservation ID: {{ session('latest_reservation_id') ?? 'NULL' }}<br>
+          User ID: {{ Auth::id() }}<br>
+          Kamar ID: {{ $kamar->id ?? 'NULL' }}<br>
+          Hotel ID: {{ $kamar->hotel_id ?? 'NULL' }}<br>
+          Hotel Name: {{ $kamar->hotel->nama_hotel ?? 'NULL' }}<br>
+          Reservasi ID: {{ $reservasi->id ?? 'NULL' }}<br>
+          Reservasi Kamar ID: {{ $reservasi->kamar_id ?? 'NULL' }}
+        </div>
+        
         {{-- Informasi Rekening Hotel --}}
-        @if($kamar->hotel)
+        @if($kamar && $kamar->hotel)
           <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
             <div class="card-header bg-light border-0 p-4">
               <div class="d-flex align-items-center gap-3">
@@ -47,8 +59,8 @@
                   <i class="bi bi-building text-primary fs-5"></i>
                 </div>
                 <div>
-                  <h5 class="fw-bold mb-1">Rekening Hotel Tujuan</h5>
-                  <p class="text-muted mb-0 small">Gunakan informasi berikut untuk transfer</p>
+                  <h5 class="fw-bold mb-1">{{ $kamar->hotel->nama_hotel }}</h5>
+                  <p class="text-muted mb-0 small">Transfer ke rekening hotel berikut</p>
                 </div>
               </div>
             </div>
@@ -56,11 +68,11 @@
             <div class="card-body p-4">
               <div class="mb-3">
                 <label class="form-label fw-semibold text-dark mb-2">
-                  <i class="bi bi-credit-card text-primary me-2"></i>Nomor Rekening Hotel
+                  <i class="bi bi-credit-card text-primary me-2"></i>Nomor Rekening
                 </label>
                 <input type="text" 
                        class="form-control form-control-lg rounded-3 bg-light" 
-                       value="{{ $kamar->hotel->norek ?? '-' }}" 
+                       value="{{ $kamar->hotel->norek ?? 'Belum diatur' }}" 
                        readonly>
               </div>
 
@@ -70,7 +82,7 @@
                 </label>
                 <input type="text" 
                        class="form-control form-control-lg rounded-3 bg-light" 
-                       value="{{ $kamar->hotel->nama_pemilik ?? $kamar->hotel->nama_hotel }}" 
+                       value="{{ $kamar->hotel->nama_hotel ?? 'Belum diatur' }}" 
                        readonly>
               </div>
             </div>
