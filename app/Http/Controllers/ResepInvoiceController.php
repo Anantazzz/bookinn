@@ -1,110 +1,115 @@
 <?php
 
-namespace App\Http\Controllers; // Menentukan namespace dari controller ini
+namespace App\Http\Controllers; 
 
-use App\Models\Pembayaran; // Mengimpor model Pembayaran
-use App\Models\Invoice; // Mengimpor model Invoice
-use Illuminate\Http\Request; // Mengimpor class Request untuk menangani input dari user
-use Barryvdh\DomPDF\Facade\Pdf; // Mengimpor library DomPDF untuk generate file PDF
-use Illuminate\Support\Facades\Storage; // Mengimpor Storage untuk menyimpan file
-use Carbon\Carbon; // Mengimpor Carbon untuk manipulasi tanggal
+use App\Models\Pembayaran; 
+use App\Models\Invoice; 
+use Illuminate\Http\Request; 
+use Barryvdh\DomPDF\Facade\Pdf; 
+use Illuminate\Support\Facades\Storage; 
+use Carbon\Carbon; 
 
-class ResepInvoiceController extends Controller // Mendefinisikan class controller bernama ResepInvoiceController
+class ResepInvoiceController extends Controller 
 {
     // Tampilkan daftar pembayaran (yang pending & success) + fitur search
-    public function index(Request $request) // Fungsi untuk menampilkan daftar pembayaran
+    public function index(Request $request) 
     {
-        $search = $request->input('search'); // Mengambil input pencarian dari request
-        $statusFilter = $request->input('status'); // Mengambil input filter status pembayaran
+        $search = $request->input('search'); 
+        $statusFilter = $request->input('status'); 
+        $user = \Illuminate\Support\Facades\Auth::user(); 
 
-        $pembayarans = Pembayaran::with(['reservasi.user', 'reservasi.kamar.tipeKamar', 'invoice']) // Mengambil data pembayaran beserta relasi terkait
-            ->when($statusFilter && $statusFilter !== 'all', function ($query) use ($statusFilter) { // Jika ada filter status selain 'all'
-                // Jika ada filter status pembayaran yang dipilih selain 'all', gunakan itu
-                $query->where('status_bayar', $statusFilter); // Filter data berdasarkan status bayar
+        $pembayarans = Pembayaran::with(['reservasi.user', 'reservasi.kamar.tipeKamar', 'reservasi.kamar.hotel', 'invoice']) 
+            ->whereHas('reservasi.kamar', function($query) use ($user) { 
+                if ($user->hotel_id) {
+                    $query->where('hotel_id', $user->hotel_id);
+                }
             })
-            ->when($search, function ($query, $search) { // Jika ada input pencarian
-                $query->whereHas('reservasi.user', function($q) use ($search) { // Cari berdasarkan nama user
+            ->when($statusFilter && $statusFilter !== 'all', function ($query) use ($statusFilter) { 
+              
+                $query->where('status_bayar', $statusFilter); 
+            })
+            ->when($search, function ($query, $search) { 
+                $query->whereHas('reservasi.user', function($q) use ($search) { 
                     $q->where('name', 'like', "%{$search}%");
-                })->orWhereHas('invoice', function($q) use ($search) { // Atau cari berdasarkan kode invoice
+                })->orWhereHas('invoice', function($q) use ($search) { 
                     $q->where('kode_unik', 'like', "%{$search}%");
                 });
             })
-            ->orderBy('created_at', 'desc') // Urutkan data dari yang terbaru
-            ->get(); // Ambil semua hasil
+            ->orderBy('created_at', 'desc') 
+            ->get(); 
 
-        return view('resepsionis.invoice.index', compact('pembayarans')); // Tampilkan view dengan data pembayaran
+        return view('resepsionis.invoice.index', compact('pembayarans')); 
     }
 
     // Terima pembayaran & buat invoice
-    public function accept($id) // Fungsi untuk menerima pembayaran dan membuat invoice
+    public function accept($id) 
     {
-        $pembayaran = Pembayaran::with('reservasi.kamar')->findOrFail($id); // Ambil data pembayaran berdasarkan ID beserta relasinya
+        $pembayaran = Pembayaran::with('reservasi.kamar')->findOrFail($id); 
 
-        if ($pembayaran->status_bayar === 'lunas') { // Cek jika pembayaran sudah lunas sebelumnya
-            return back()->with('error', 'Pembayaran sudah diterima sebelumnya.'); // Kembalikan pesan error
+        if ($pembayaran->status_bayar === 'lunas') { 
+            return back()->with('error', 'Pembayaran sudah diterima sebelumnya.');
         }
 
         // Hitung total bayar
-        $reservasi = $pembayaran->reservasi; // Ambil data reservasi dari pembayaran
-        $malam = Carbon::parse($reservasi->tanggal_checkin) // Hitung jumlah malam menginap
+        $reservasi = $pembayaran->reservasi;
+        $malam = Carbon::parse($reservasi->tanggal_checkin) 
             ->diffInDays(Carbon::parse($reservasi->tanggal_checkout));
 
-        $hargaPerMalam = $reservasi->kamar->harga; // Ambil harga kamar per malam
-        $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0; // Jika ada kasur tambahan, tambahkan biaya 100000
-        $totalBayar = ($hargaPerMalam * $malam) + $hargaKasur; // Hitung total keseluruhan biaya
+        $hargaPerMalam = $reservasi->kamar->harga; 
+        $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0; 
+        $totalBayar = ($hargaPerMalam * $malam) + $hargaKasur;
 
         // Ubah status pembayaran jadi lunas
         $pembayaran->update([
-            'status_bayar' => 'lunas', // Ubah status menjadi lunas
-            'harga' => $totalBayar, // Simpan total harga ke database
+            'status_bayar' => 'lunas',
+            'harga' => $totalBayar, 
         ]);
 
         // Generate kode unik untuk invoice
-        $kode_unik = 'INV-' . strtoupper(\Illuminate\Support\Str::random(7)); // Buat kode unik acak untuk invoice
+        $kode_unik = 'INV-' . strtoupper(\Illuminate\Support\Str::random(7)); 
 
         // Generate invoice PDF
-        $pdf = Pdf::loadView('hotels.invoice', compact('reservasi', 'kode_unik')); // Buat file PDF dari view hotels.invoice
-        $filename = 'invoice_' . $pembayaran->id . '_' . time() . '.pdf'; // Buat nama file unik berdasarkan ID & waktu
-        Storage::put('public/invoices/' . $filename, $pdf->output()); // Simpan file PDF ke storage
+        $pdf = Pdf::loadView('hotels.invoice', compact('reservasi', 'kode_unik')); 
+        $filename = 'invoice_' . $pembayaran->id . '_' . time() . '.pdf'; 
+        Storage::put('public/invoices/' . $filename, $pdf->output()); 
 
         // Simpan ke tabel invoices
         Invoice::create([
-            'pembayaran_id' => $pembayaran->id, // ID pembayaran terkait
-            'tanggal_cetak' => now(), // Waktu pembuatan invoice
-            'total' => $totalBayar, // Total harga yang harus dibayar
-            'file_invoice' => 'invoices/' . $filename, // Lokasi file PDF
-            'kode_unik' => $kode_unik, // Kode unik invoice
+            'pembayaran_id' => $pembayaran->id,
+            'tanggal_cetak' => now(), 
+            'total' => $totalBayar, 
+            'file_invoice' => 'invoices/' . $filename, 
+            'kode_unik' => $kode_unik, 
         ]);
 
-        return back()->with('success', 'Pembayaran berhasil diterima & invoice dibuat.'); // Kembalikan pesan sukses
+        return back()->with('success', 'Pembayaran berhasil diterima & invoice dibuat.'); 
     }
 
     // Cetak ulang invoice
-    public function print($id) // Fungsi untuk mencetak ulang invoice berdasarkan ID
+    public function print($id) 
     {
-        $invoice = Invoice::with('pembayaran.reservasi.kamar')->findOrFail($id); // Ambil data invoice dengan relasinya
-        $reservasi = $invoice->pembayaran->reservasi; // Ambil data reservasi dari pembayaran
+        $invoice = Invoice::with('pembayaran.reservasi.kamar')->findOrFail($id); 
+        $reservasi = $invoice->pembayaran->reservasi;
 
-        $pdf = Pdf::loadView('hotels.invoice', [ // Generate PDF dari view hotels.invoice
-            'reservasi' => $reservasi, // Kirim data reservasi
-            'kode_unik' => $invoice->kode_unik, // Kirim kode unik invoice
+        $pdf = Pdf::loadView('hotels.invoice', [ 
+            'reservasi' => $reservasi,
+            'kode_unik' => $invoice->kode_unik, 
         ]);
-        return $pdf->download('invoice_' . $invoice->id . '.pdf'); // Unduh file PDF dengan nama berdasarkan ID
+        return $pdf->download('invoice_' . $invoice->id . '.pdf'); 
     }
 
     // Tolak pembayaran (mark as batal)
-    public function reject($id) // Fungsi untuk menolak pembayaran
+    public function reject($id) 
     {
-        $pembayaran = Pembayaran::findOrFail($id); // Ambil data pembayaran berdasarkan ID
-
-        if ($pembayaran->status_bayar !== 'pending') { // Cek jika status bukan pending
-            return back()->with('error', 'Hanya pembayaran dengan status pending yang bisa ditolak.'); // Kembalikan pesan error
+        $pembayaran = Pembayaran::findOrFail($id); 
+        if ($pembayaran->status_bayar !== 'pending') {
+            return back()->with('error', 'Hanya pembayaran dengan status pending yang bisa ditolak.');
         }
 
         $pembayaran->update([
-            'status_bayar' => 'gagal', // Ubah status menjadi gagal
+            'status_bayar' => 'gagal',
         ]);
 
-        return back()->with('success', 'Pembayaran berhasil ditolak dan status diubah menjadi gagal.'); // Kembalikan pesan sukses
+        return back()->with('success', 'Pembayaran berhasil ditolak dan status diubah menjadi gagal.');
     }
 }

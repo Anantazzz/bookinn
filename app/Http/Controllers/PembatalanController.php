@@ -47,7 +47,7 @@ class PembatalanController extends Controller // Deklarasi class PembatalanContr
         // Update status di tabel lain
         $reservasi->update(['status' => 'batal']); // Update status reservasi menjadi batal
         if ($pembayaran) { // Jika ada pembayaran
-            $pembayaran->update(['status_bayar' => 'batal']); // Update status pembayaran menjadi batal
+            $pembayaran->update(['status_bayar' => 'gagal']); // Update status pembayaran menjadi gagal
         }
 
         return redirect()->route('pembatalan.show', $pembatalan->id) // Redirect ke halaman struk pembatalan

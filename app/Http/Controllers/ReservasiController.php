@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Models\Reservasi;
 use Illuminate\Support\Facades\Auth;
@@ -32,65 +30,63 @@ class ReservasiController extends Controller
         // Validasi input dari form reservasi
         $request->validate([
             'tanggal_checkin' => 'required|date|after_or_equal:today', // Tidak boleh sebelum hari ini
-            'jam_checkin' => 'required', // Wajib diisi
+            'jam_checkin' => 'required', 
             'tanggal_checkout' => 'required|date|after:tanggal_checkin', // Harus setelah check-in
-            'jam_checkout' => 'required', // Wajib diisi
+            'jam_checkout' => 'required', 
         ]);
 
         // Simpan nilai tanggal untuk dipakai di query
         $tanggalCheckin = $request->tanggal_checkin;
         $tanggalCheckout = $request->tanggal_checkout;
 
-        // CARI KAMAR YANG MASIH TERSEDIA
-        $kamarTersedia = Kamar::where('tipe_kamar_id', $tipeKamar->tipe_kamar_id) // Cari kamar berdasarkan tipe
-            ->whereDoesntHave('reservasis', function ($query) use ($tanggalCheckin, $tanggalCheckout) {
-                // Filter kamar yang sedang punya reservasi aktif atau pending
-                $query->whereIn('status', ['pending', 'aktif'])
-                    ->where(function ($q) use ($tanggalCheckin, $tanggalCheckout) {
-                        // Cek apakah tanggal yang diminta bentrok dengan tanggal reservasi lain
-                        $q->whereBetween('tanggal_checkin', [$tanggalCheckin, $tanggalCheckout]) // checkin bentrok
-                            ->orWhereBetween('tanggal_checkout', [$tanggalCheckin, $tanggalCheckout]) // checkout bentrok
-                            ->orWhere(function ($r) use ($tanggalCheckin, $tanggalCheckout) {
-                                // Jika tanggal baru berada di dalam rentang tanggal lama
-                                $r->where('tanggal_checkin', '<=', $tanggalCheckin)
-                                  ->where('tanggal_checkout', '>=', $tanggalCheckout);
-                            });
-                    });
+        // CEK APAKAH KAMAR YANG DIPILIH TERSEDIA
+        $kamarBentrok = Reservasi::where('kamar_id', $id)
+            ->whereIn('status', ['pending', 'aktif'])
+            ->where(function ($q) use ($tanggalCheckin, $tanggalCheckout) {
+                $q->whereBetween('tanggal_checkin', [$tanggalCheckin, $tanggalCheckout])
+                  ->orWhereBetween('tanggal_checkout', [$tanggalCheckin, $tanggalCheckout])
+                  ->orWhere(function ($r) use ($tanggalCheckin, $tanggalCheckout) {
+                      $r->where('tanggal_checkin', '<=', $tanggalCheckin)
+                        ->where('tanggal_checkout', '>=', $tanggalCheckout);
+                  });
             })
-            ->first(); // Ambil satu kamar kosong saja
+            ->exists();
 
-        // Jika tidak ada kamar kosong di tanggal itu, tampilkan pesan error
-        if (!$kamarTersedia) {
+        // Jika kamar yang dipilih bentrok, tampilkan error
+        if ($kamarBentrok) {
             return back()->withErrors([
-                'tanggal_checkin' => 'Semua kamar pada tipe ini sudah penuh di tanggal tersebut.'
+                'tanggal_checkin' => 'Kamar yang Anda pilih sudah dipesan pada tanggal tersebut.'
             ])->withInput();
         }
+        
+        // Gunakan kamar yang dipilih user (bukan cari yang lain)
+        $kamarTersedia = $tipeKamar; // $tipeKamar sebenarnya adalah kamar yang dipilih
 
         // HITUNG TOTAL HARGA
-        $kasurTambahan = $request->has('kasur_tambahan') ? 1 : 0; // Apakah user menambah kasur?
+        $kasurTambahan = $request->has('kasur_tambahan') ? 1 : 0; 
         $jumlahHari = \Carbon\Carbon::parse($tanggalCheckin)->diffInDays(\Carbon\Carbon::parse($tanggalCheckout));
-        $hargaKamar = $kamarTersedia->harga * $jumlahHari; // Harga kamar dikali jumlah hari
-        $biayaKasur = $kasurTambahan ? 100000 : 0; // Tambahan biaya kasur
-        $totalHarga = $hargaKamar + $biayaKasur; // Total harga keseluruhan
+        $hargaKamar = $kamarTersedia->harga * $jumlahHari; 
+        $biayaKasur = $kasurTambahan ? 100000 : 0; 
+        $totalHarga = $hargaKamar + $biayaKasur; 
 
         // TENTUKAN STATUS RESERVASI OTOMATIS
         if ($tanggalCheckin == date('Y-m-d')) {
-            $status = 'aktif'; // Kalau check-in hari ini, langsung aktif
+            $status = 'aktif'; 
         } else {
-            $status = 'pending'; // Kalau belum hari H, status pending dulu
+            $status = 'pending'; 
         }
 
         // SIMPAN DATA RESERVASI KE DATABASE
         $reservasi = Reservasi::create([
-            'user_id' => $user->id, // User yang melakukan reservasi
-            'kamar_id' => $kamarTersedia->id, // ID kamar yang kosong
-            'tanggal_checkin' => $tanggalCheckin, // Tanggal masuk
-            'jam_checkin' => $request->jam_checkin, // Jam masuk
-            'tanggal_checkout' => $tanggalCheckout, // Tanggal keluar
-            'jam_checkout' => $request->jam_checkout, // Jam keluar
-            'status' => $status, // Status (aktif/pending)
-            'kasur_tambahan' => $kasurTambahan, // Apakah pakai kasur tambahan
-            'total_harga' => $totalHarga, // Total biaya yang harus dibayar
+            'user_id' => $user->id, 
+            'kamar_id' => $kamarTersedia->id, 
+            'tanggal_checkin' => $tanggalCheckin,
+            'jam_checkin' => $request->jam_checkin, 
+            'tanggal_checkout' => $tanggalCheckout,
+            'jam_checkout' => $request->jam_checkout, 
+            'status' => $status,
+            'kasur_tambahan' => $kasurTambahan, 
+            'total_harga' => $totalHarga, 
         ]);
         
         // UPDATE STATUS KAMAR MENJADI BOOKING
