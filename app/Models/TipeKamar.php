@@ -5,6 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property int $id
+ * @property string $nama_tipe
+ * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon $updated_at
+ */
 class TipeKamar extends Model
 {
     use HasFactory;
@@ -13,7 +19,6 @@ class TipeKamar extends Model
 
     protected $fillable = [
         'nama_tipe',
-        'harga',
     ];
 
     public function kamars()

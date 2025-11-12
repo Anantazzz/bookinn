@@ -15,7 +15,23 @@ class ResepOfflineController extends Controller
         $tipeKamars = TipeKamar::whereHas('kamars', function($query) {
             $query->where('hotel_id', auth()->user()->hotel_id);
         })->get();
-        return view('resepsionis.offline.index', compact('tipeKamars'));
+        
+        $kamarData = [];
+        foreach ($tipeKamars as $tipe) {
+            $contohKamar = Kamar::where('hotel_id', auth()->user()->hotel_id)
+                ->where('tipe_kamar_id', $tipe->id)
+                ->first();
+                
+            if ($contohKamar) {
+                $kamarData[] = [
+                    'tipe_id' => $tipe->id,
+                    'nama_tipe' => $tipe->nama_tipe,
+                    'harga' => $contohKamar->harga,
+                ];
+            }
+        }
+        
+        return view('resepsionis.offline.index', compact('kamarData'));
     }
     public function store(Request $request)
     {
@@ -34,19 +50,8 @@ class ResepOfflineController extends Controller
             'no_hp' => $request->no_hp,
         ]);
 
-        // Ambil tipe kamar
-        $tipeKamar = TipeKamar::findOrFail($request->tipe_kamar_id);
-        
-        // Hitung jumlah hari menginap
-        $checkinDate = Carbon::now();
-        $checkoutDate = Carbon::parse($request->tanggal_checkout);
-        $jumlahHari = $checkinDate->diffInDays($checkoutDate);
-        
-        // Hitung total harga berdasarkan jumlah hari
-        $totalHarga = $tipeKamar->harga * $jumlahHari;
-
         // Cari 1 kamar yang masih tersedia berdasarkan tipe_kamar_id dan hotel_id
-        $kamar = Kamar::where('tipe_kamar_id', $tipeKamar->id)
+        $kamar = Kamar::where('tipe_kamar_id', $request->tipe_kamar_id)
             ->where('hotel_id', auth()->user()->hotel_id)
             ->where('status', 'tersedia')
             ->first();
@@ -55,6 +60,16 @@ class ResepOfflineController extends Controller
         if (!$kamar) {
             return back()->with('error', 'Tidak ada kamar tersedia untuk tipe kamar ini.');
         }
+            
+        // Hitung jumlah hari menginap (gunakan startOfDay untuk akurasi)
+        $checkinDate = Carbon::now('Asia/Jakarta')->startOfDay();
+        $checkoutDate = Carbon::parse($request->tanggal_checkout, 'Asia/Jakarta')->startOfDay();
+        $jumlahHari = $checkinDate->diffInDays($checkoutDate);
+        
+        // Hitung total harga berdasarkan jumlah hari dari harga kamar
+        $totalHarga = $kamar->harga * $jumlahHari;
+        
+        $tipeKamar = $kamar->tipeKamar;
 
         $kasurTambahan = $request->has('kasur_tambahan') ? 1 : 0;
         if ($kasurTambahan) {
@@ -63,10 +78,11 @@ class ResepOfflineController extends Controller
 
         // Buat reservasi baru dengan user_id null untuk offline
         $reservasi = Reservasi::create([
-            'user_id' => null, // Null untuk reservasi offline
+            'user_id' => null,
+            'tamu_offline_id' => $tamu->id,
             'kamar_id' => $kamar->id,
-            'tanggal_checkin' => Carbon::now()->toDateString(),
-            'jam_checkin' => Carbon::now()->format('H:i:s'),
+            'tanggal_checkin' => Carbon::now('Asia/Jakarta')->toDateString(),
+            'jam_checkin' => Carbon::now('Asia/Jakarta')->format('H:i:s'),
             'tanggal_checkout' => $request->tanggal_checkout,
             'jam_checkout' => '12:00:00',
             'status' => 'aktif',
@@ -83,7 +99,7 @@ class ResepOfflineController extends Controller
         // Buat pembayaran otomatis
         $pembayaran = Pembayaran::create([
             'reservasi_id' => $reservasi->id,
-            'tanggal_bayar' => Carbon::now()->toDateString(),
+            'tanggal_bayar' => Carbon::now('Asia/Jakarta')->toDateString(),
             'jumlah_bayar' => $totalHarga,
             'metode_bayar' => $request->metode_bayar,
             'status_bayar' => 'lunas',
@@ -94,7 +110,7 @@ class ResepOfflineController extends Controller
         Invoice::create([
             'kode_unik' => $kodeUnik,
             'pembayaran_id' => $pembayaran->id,
-            'tanggal_cetak' => Carbon::now()->toDateString(),
+            'tanggal_cetak' => Carbon::now('Asia/Jakarta')->toDateString(),
             'total' => $totalHarga,
             'file_invoice' => 'offline_invoice.pdf',
         ]);

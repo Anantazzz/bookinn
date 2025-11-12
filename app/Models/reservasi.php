@@ -13,6 +13,7 @@ class Reservasi extends Model
 
     protected $fillable = [
         'user_id',
+        'tamu_offline_id',
         'kamar_id',
         'tanggal_checkin',
         'jam_checkin',

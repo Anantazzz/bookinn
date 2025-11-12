@@ -74,9 +74,9 @@
                                     <span class="text-sm text-gray-600">{{ Str::limit($r->alamat ?? '-', 30) }}</span>
                                 </td>
                                 <td class="py-4 px-6">
-                                    @if($r->shift == 'pagi')
+                                    @if($r->shift == 'siang')
                                         <span class="inline-flex items-center gap-1 bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full font-semibold text-xs">
-                                            Pagi
+                                            Siang
                                         </span>
                                     @elseif($r->shift == 'malam')
                                         <span class="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-semibold text-xs">
@@ -273,7 +273,7 @@
           <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Shift Kerja</label>
           <select name="shift" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm sm:text-base">
             <option value="">-- Pilih Shift --</option>
-            <option value="pagi">Pagi</option>
+            <option value="siang">Siang</option>
             <option value="malam">Malam</option>
           </select>
         </div>
@@ -337,7 +337,7 @@
         <div>
           <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5 sm:mb-2">Shift Kerja</label>
           <select name="shift" id="edit_shift" class="w-full border-2 border-gray-200 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all text-sm sm:text-base">
-            <option value="pagi">Pagi</option>
+            <option value="siang">Siang</option>
             <option value="malam">Malam</option>
           </select>
         </div>

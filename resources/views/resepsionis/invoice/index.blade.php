@@ -103,7 +103,7 @@
                                     <div class="flex items-center gap-3">
                                         @php
                                             // Cek nama customer dari user login atau tamu offline
-                                            $namaCustomer = $p->reservasi->user->name ?? $p->reservasi->tamu_offline->nama ?? 'Tamu';
+                                            $namaCustomer = $p->reservasi->user->name ?? $p->reservasi->tamuOffline->nama ?? 'Tamu';
                                             $inisial = strtoupper(substr($namaCustomer, 0, 1));
                                         @endphp
 

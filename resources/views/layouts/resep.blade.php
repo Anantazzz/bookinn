@@ -38,8 +38,8 @@
                 $shift = strtolower(trim(Auth::user()->shift ?? 'pagi'));
             @endphp
 
-            @if ($shift === 'pagi')
-                Selamat Pagi ☀️
+            @if ($shift === 'siang')
+                Selamat Siang ☀️
             @elseif ($shift === 'malam')
                 Selamat Malam 🌙
             @else

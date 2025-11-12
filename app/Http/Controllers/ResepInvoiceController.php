@@ -18,21 +18,24 @@ class ResepInvoiceController extends Controller
         $statusFilter = $request->input('status'); 
         $user = \Illuminate\Support\Facades\Auth::user(); 
 
-        $pembayarans = Pembayaran::with(['reservasi.user', 'reservasi.kamar.tipeKamar', 'reservasi.kamar.hotel', 'invoice']) 
+        $pembayarans = Pembayaran::with(['reservasi.user', 'reservasi.tamuOffline', 'reservasi.kamar.tipeKamar', 'reservasi.kamar.hotel', 'invoice']) 
             ->whereHas('reservasi.kamar', function($query) use ($user) { 
                 if ($user->hotel_id) {
                     $query->where('hotel_id', $user->hotel_id);
                 }
             })
             ->when($statusFilter && $statusFilter !== 'all', function ($query) use ($statusFilter) { 
-              
                 $query->where('status_bayar', $statusFilter); 
             })
             ->when($search, function ($query, $search) { 
-                $query->whereHas('reservasi.user', function($q) use ($search) { 
-                    $q->where('name', 'like', "%{$search}%");
-                })->orWhereHas('invoice', function($q) use ($search) { 
-                    $q->where('kode_unik', 'like', "%{$search}%");
+                $query->where(function($q) use ($search) {
+                    $q->whereHas('reservasi.user', function($subQ) use ($search) { 
+                        $subQ->where('name', 'like', "%{$search}%");
+                    })->orWhereHas('reservasi.tamuOffline', function($subQ) use ($search) { 
+                        $subQ->where('nama', 'like', "%{$search}%");
+                    })->orWhereHas('invoice', function($subQ) use ($search) { 
+                        $subQ->where('kode_unik', 'like', "%{$search}%");
+                    });
                 });
             })
             ->orderBy('created_at', 'desc') 
@@ -62,7 +65,7 @@ class ResepInvoiceController extends Controller
         // Ubah status pembayaran jadi lunas
         $pembayaran->update([
             'status_bayar' => 'lunas',
-            'harga' => $totalBayar, 
+            'jumlah_bayar' => $totalBayar,
         ]);
 
         // Generate kode unik untuk invoice

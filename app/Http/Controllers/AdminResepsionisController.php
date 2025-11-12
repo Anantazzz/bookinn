@@ -68,28 +68,23 @@ class AdminResepsionisController extends Controller // Deklarasi class controlle
         return view('admin.resepsionis.edit', compact('resepsionis')); // Tampilkan view edit resepsionis
     }
 
-    public function update(Request $request, $id) // Fungsi untuk mengupdate data resepsionis
+    public function update(Request $request, $id)
     {
-        $resepsionis = User::where('role', 'resepsionis')->findOrFail($id); // Cari resepsionis berdasarkan id
+        $resepsionis = User::where('role', 'resepsionis')->findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255', // Validasi nama
-            'email' => 'required|email|max:255|unique:users,email,' . $resepsionis->id, // Validasi email unik kecuali id ini
-            'alamat' => 'nullable|string|max:255', // Validasi alamat (opsional)
-            'no_hp' => 'nullable|string|max:15', // Validasi no hp (opsional)
-            'shift' => 'nullable|string', // Validasi shift (opsional)
-            'nama_hotel' => 'nullable|string', // Validasi nama hotel (opsional)
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $resepsionis->id,
+            'alamat' => 'nullable|string|max:255',
+            'no_hp' => 'nullable|string|max:15',
+            'hotel_id' => 'required|exists:hotels,id',
+            'shift' => 'nullable|in:siang,malam',
         ]);
 
-        // Update data utama di DB
-        $resepsionis->update($validated); // Update data resepsionis di database
-
-        // Simpan shift & nama hotel ke session
-        session(['shift_' . $resepsionis->id => $request->shift]); // Simpan shift ke session
-        session(['hotel_' . $resepsionis->id => $request->nama_hotel]); // Simpan nama hotel ke session
+        $resepsionis->update($validated);
 
         return redirect()->route('admin.resepsionis.index')
-                        ->with('success', 'Data resepsionis berhasil diperbarui!'); // Redirect ke halaman index resepsionis dengan pesan sukses
+                        ->with('success', 'Data resepsionis berhasil diperbarui!');
     }
 
     public function destroy($id) // Fungsi untuk menghapus data resepsionis

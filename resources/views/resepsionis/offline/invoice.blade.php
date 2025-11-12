@@ -3,7 +3,7 @@
 @section('content')
 @php
   \Carbon\Carbon::setLocale('id');
-  $totalBenar = ($tipeKamar->harga * $jumlahHari) + ($reservasi->kasur_tambahan ? $kasurTambahan : 0);
+  $totalBenar = $reservasi->pembayaran->jumlah_bayar;
 @endphp
 
 <div class="min-h-screen flex items-center justify-center bg-gray-100 py-8">
@@ -58,7 +58,7 @@
 
             <div class="flex justify-between text-gray-700">
                 <p>Harga per malam</p>
-                <p>Rp{{ number_format($tipeKamar->harga, 0, ',', '.') }}</p>
+                <p>Rp{{ number_format($reservasi->kamar->harga, 0, ',', '.') }}</p>
             </div>
 
             <div class="flex justify-between text-gray-700 mt-1">

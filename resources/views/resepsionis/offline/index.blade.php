@@ -95,9 +95,9 @@
                                 </div>
                                 <select name="tipe_kamar_id" id="tipe_kamar_id" class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition appearance-none bg-white" required>
                                     <option value="">Pilih tipe kamar yang diinginkan</option>
-                                    @foreach($tipeKamars as $tipe)
-                                        <option value="{{ $tipe->id }}">
-                                            {{ $tipe->nama_tipe }} - Rp {{ number_format($tipe->harga, 0, ',', '.') }}
+                                    @foreach($kamarData as $kamar)
+                                        <option value="{{ $kamar['tipe_id'] }}">
+                                            {{ $kamar['nama_tipe'] }} - Rp {{ number_format($kamar['harga'], 0, ',', '.') }}
                                         </option>
                                     @endforeach
                                 </select>
