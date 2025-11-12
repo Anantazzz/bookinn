@@ -37,18 +37,6 @@
             </div>
           </div>
         @endif
-
-        {{-- DEBUG INFO --}}
-        <div class="alert alert-warning mb-4">
-          <strong>DEBUG TERBARU:</strong><br>
-          Session Reservation ID: {{ session('latest_reservation_id') ?? 'NULL' }}<br>
-          User ID: {{ Auth::id() }}<br>
-          Kamar ID: {{ $kamar->id ?? 'NULL' }}<br>
-          Hotel ID: {{ $kamar->hotel_id ?? 'NULL' }}<br>
-          Hotel Name: {{ $kamar->hotel->nama_hotel ?? 'NULL' }}<br>
-          Reservasi ID: {{ $reservasi->id ?? 'NULL' }}<br>
-          Reservasi Kamar ID: {{ $reservasi->kamar_id ?? 'NULL' }}
-        </div>
         
         {{-- Informasi Rekening Hotel --}}
         @if($kamar && $kamar->hotel)

@@ -46,11 +46,6 @@
            class="bg-gray-700 hover:bg-gray-600 text-white px-5 py-2.5 rounded-lg font-medium transition-all duration-200">
            ← Kembali
         </a>
-
-        <a href="{{ route('admin.resepsionis.edit', $resepsionis->id) }}" 
-           class="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2.5 rounded-lg font-medium transition-all duration-200">
-            Edit
-        </a>
     </div>
 </div>
 @endsection

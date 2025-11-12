@@ -1,19 +1,19 @@
-<?php // Tag pembuka PHP
+<?php
 
-namespace App\Http\Controllers; // Namespace controller
+namespace App\Http\Controllers; 
 
-use App\Models\Reservasi; // Import model Reservasi
-use App\Models\Kamar; // Import model Kamar
-use App\Models\Pembayaran; // Import model Pembayaran
-use App\Models\Invoice; // Import model Invoice
-use Illuminate\Support\Facades\Auth; // Import facade Auth
-use Illuminate\Http\Request; // Import Request
-use Carbon\Carbon; // Import Carbon untuk tanggal
-use Barryvdh\DomPDF\Facade\Pdf; // Import PDF facade
-use Illuminate\Support\Str; // Import Str helper
-use Illuminate\Support\Facades\Storage; // Import Storage facade
+use App\Models\Reservasi; 
+use App\Models\Kamar;
+use App\Models\Pembayaran;
+use App\Models\Invoice; 
+use Illuminate\Support\Facades\Auth; 
+use Illuminate\Http\Request; 
+use Carbon\Carbon; 
+use Barryvdh\DomPDF\Facade\Pdf; 
+use Illuminate\Support\Str; 
+use Illuminate\Support\Facades\Storage; 
 
-class PembayaranController extends Controller // Deklarasi class PembayaranController
+class PembayaranController extends Controller 
 {
     public function show($id) // Fungsi untuk menampilkan halaman pembayaran
     {
