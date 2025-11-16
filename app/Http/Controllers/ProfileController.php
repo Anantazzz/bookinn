@@ -1,11 +1,9 @@
-<?php // Tag pembuka PHP
+<?php
+namespace App\Http\Controllers; 
+use Illuminate\Http\Request; 
+use Illuminate\Support\Facades\Auth; 
 
-namespace App\Http\Controllers; // Namespace controller
-
-use Illuminate\Http\Request; // Import Request
-use Illuminate\Support\Facades\Auth; // Import facade Auth
-
-class ProfileController extends Controller // Deklarasi class ProfileController
+class ProfileController extends Controller 
 {
     // Tampilkan halaman profile
     public function index() // Fungsi untuk menampilkan halaman profil pengguna

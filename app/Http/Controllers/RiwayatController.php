@@ -1,11 +1,10 @@
-<?php // Tag pembuka PHP
+<?php 
+namespace App\Http\Controllers; 
+use Illuminate\Support\Facades\Auth; 
+use App\Models\Reservasi; 
+use Illuminate\Http\Request; 
 
-namespace App\Http\Controllers; // Menentukan namespace untuk controller ini
-use Illuminate\Support\Facades\Auth; // Mengimpor class Auth untuk mendapatkan data user yang sedang login
-use App\Models\Reservasi; // Mengimpor model Reservasi yang berhubungan dengan tabel reservasi di database
-use Illuminate\Http\Request; // Mengimpor class Request untuk menangani data dari permintaan (request)
-
-class RiwayatController extends Controller // Mendefinisikan class RiwayatController yang mewarisi class Controller
+class RiwayatController extends Controller 
 {
    public function riwayat() // Mendefinisikan fungsi riwayat() untuk menampilkan daftar riwayat reservasi pengguna
     {

@@ -21,14 +21,22 @@
 </select>
 </div>
 
-    {{-- Tanggal --}}
+    {{-- Tanggal Check-in --}}
     <div class="flex-fill border rounded-3 p-3 d-flex flex-column justify-content-center">
         <div class="d-flex align-items-center mb-1">
-            <span class="fw-semibold">Tanggal</span>
+            <span class="fw-semibold">Check-in</span>
         </div>
-        <input type="text" class="form-control border-0 p-0 shadow-none"
-               name="dates" value="{{ request('dates') }}"
-               placeholder="22 Sept - 26 Sept">
+        <input type="date" class="form-control border-0 p-0 shadow-none"
+               name="tanggal_checkin" value="{{ request('tanggal_checkin') }}" min="{{ date('Y-m-d') }}">
+    </div>
+
+    {{-- Tanggal Check-out --}}
+    <div class="flex-fill border rounded-3 p-3 d-flex flex-column justify-content-center">
+        <div class="d-flex align-items-center mb-1">
+            <span class="fw-semibold">Check-out</span>
+        </div>
+        <input type="date" class="form-control border-0 p-0 shadow-none"
+               name="tanggal_checkout" value="{{ request('tanggal_checkout') }}" min="{{ date('Y-m-d') }}">
     </div>
 
     {{-- Button --}}

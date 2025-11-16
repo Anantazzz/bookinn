@@ -1,13 +1,15 @@
-<?php // Tag pembuka PHP
+<?php 
 
-namespace App\Http\Controllers; // Namespace controller
+namespace App\Http\Controllers; 
 
-use App\Models\Hotel; // Import model Hotel
-use Illuminate\Http\Request; // Import Request
-use Illuminate\Support\Facades\File; // Import File facade
-
-class AdminHotelController extends Controller // Deklarasi class controller
+use App\Models\Hotel; 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File; 
+class AdminHotelController extends Controller 
 {
+    // ==================
+    // DASHBOARD ADMIN 
+    // ==================
     public function dashboard() // Fungsi untuk menampilkan dashboard admin
     {
         $totalHotel = Hotel::count(); // Menghitung total hotel
@@ -15,7 +17,9 @@ class AdminHotelController extends Controller // Deklarasi class controller
         return view('admin.dashboard', compact('totalHotel', 'totalKota')); // Menampilkan view dashboard dengan data
     }
 
-    //Index Hotel
+    // ==========================================
+    // TAMPILKAN DAFTAR HOTEL (READ)
+    // ==========================================
     public function index(Request $request) // Fungsi untuk menampilkan daftar hotel
     {
         $query = Hotel::query(); // Membuat query hotel
@@ -30,14 +34,18 @@ class AdminHotelController extends Controller // Deklarasi class controller
         return view('admin.hotels.index', compact('hotels', 'kotas')); // Menampilkan view index hotel
     }
 
-    //Show Detail Hotel
+    // ==========================================
+    // TAMPILKAN DETAIL HOTEL (READ)
+    // ==========================================
     public function show($id) // Fungsi untuk menampilkan detail hotel
     {
         $hotel = Hotel::findOrFail($id); // Cari hotel berdasarkan id
         return view('admin.hotels.show', compact('hotel')); // Tampilkan view detail hotel
     }
 
-    //Store (Tambah Data Hotel)
+    // ==========================================
+    // TAMBAH DATA HOTEL BARU (CREATE)
+    // ==========================================
     public function store(Request $request) // Fungsi untuk menambah data hotel
     {
         $validated = $request->validate([
@@ -61,14 +69,18 @@ class AdminHotelController extends Controller // Deklarasi class controller
         return redirect()->route('admin.hotels.index')->with('success', 'Hotel berhasil ditambahkan.'); // Redirect ke halaman index hotel dengan pesan sukses
     }
 
-    //Edit Hotel
+    // ==========================================
+    // TAMPILKAN FORM EDIT HOTEL (UPDATE)
+    // ==========================================
     public function edit($id) // Fungsi untuk menampilkan form edit hotel
     {
         $hotel = Hotel::findOrFail($id); // Cari hotel berdasarkan id
         return view('admin.hotels.edit', compact('hotel')); // Tampilkan view edit hotel
     }
 
-    //Update Hotel
+    // ==========================================
+    // PROSES UPDATE DATA HOTEL (UPDATE)
+    // ==========================================
     public function update(Request $request, $id) // Fungsi untuk mengupdate data hotel
     {
         $hotel = Hotel::findOrFail($id); // Cari hotel berdasarkan id
@@ -99,7 +111,9 @@ class AdminHotelController extends Controller // Deklarasi class controller
         return redirect()->route('admin.hotels.index')->with('success', 'Data hotel berhasil diperbarui.'); // Redirect ke halaman index hotel dengan pesan sukses
     }
 
-    //Hapus Hotel
+    // ==========================================
+    // HAPUS DATA HOTEL (DELETE)
+    // ==========================================
     public function destroy($id) // Fungsi untuk menghapus data hotel
     {
         $hotel = Hotel::findOrFail($id); // Cari hotel berdasarkan id

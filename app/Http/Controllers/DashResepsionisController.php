@@ -1,12 +1,11 @@
-<?php // Tag pembuka PHP
+<?php 
+namespace App\Http\Controllers; 
+use App\Models\Kamar; 
+use App\Models\Hotel; 
+use Illuminate\Support\Facades\Auth; 
+use Illuminate\Http\Request; 
 
-namespace App\Http\Controllers; // Namespace controller
-use App\Models\Kamar; // Import model Kamar
-use App\Models\Hotel; // Import model Hotel
-use Illuminate\Support\Facades\Auth; // Import facade Auth
-use Illuminate\Http\Request; // Import Request (tidak selalu dipakai)
-
-class DashResepsionisController extends Controller // Deklarasi class controller untuk dashboard resepsionis
+class DashResepsionisController extends Controller 
 {
     public function index() // Fungsi untuk menampilkan dashboard resepsionis
     {

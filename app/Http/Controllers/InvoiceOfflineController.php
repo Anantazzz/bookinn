@@ -9,11 +9,14 @@ use Carbon\Carbon;
 
 class InvoiceOfflineController extends Controller
 {
-    public function invoice($id)
-{
-    $reservasi = Reservasi::with(['tamuOffline', 'kamar.tipeKamar', 'pembayaran'])
-        ->findOrFail($id);
+    // Fungsi untuk menampilkan invoice reservasi offline
+    public function invoice($id) // Parameter $id adalah ID reservasi
+    {
+        // Ambil data reservasi lengkap dengan semua relasi terkait
+        $reservasi = Reservasi::with(['tamuOffline', 'kamar.tipeKamar', 'pembayaran']) // Include relasi: tamu offline, kamar+tipe kamar, dan pembayaran
+            ->findOrFail($id); // Cari reservasi berdasarkan ID atau error 404 jika tidak ditemukan
 
-    return view('resepsionis.offline.invoice', compact('reservasi'));
+        // Tampilkan view invoice dengan data reservasi lengkap
+        return view('resepsionis.offline.invoice', compact('reservasi')); // Kirim data reservasi ke view invoice offline
+    }
 }
- }

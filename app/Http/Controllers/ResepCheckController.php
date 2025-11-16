@@ -1,11 +1,11 @@
-<?php // Tag pembuka PHP
-namespace App\Http\Controllers; // Menentukan namespace dari controller ini
-use Illuminate\Http\Request; // Mengimpor class Request untuk menangani input dari user
-use App\Models\Reservasi; // Mengimpor model Reservasi
-use Illuminate\Support\Facades\Auth; // Mengimpor Auth untuk autentikasi user yang login
-use Carbon\Carbon; // Mengimpor Carbon untuk manipulasi tanggal dan waktu
+<?php 
+namespace App\Http\Controllers; 
+use Illuminate\Http\Request;
+use App\Models\Reservasi; 
+use Illuminate\Support\Facades\Auth; 
+use Carbon\Carbon; 
 
-class ResepCheckController extends Controller // Mendefinisikan class controller bernama ResepCheckController
+class ResepCheckController extends Controller 
 {
     // Pastikan hanya resepsionis yang bisa akses
     public function __construct() // Konstruktor dijalankan saat class diinisialisasi
@@ -101,6 +101,6 @@ class ResepCheckController extends Controller // Mendefinisikan class controller
             $reservasi->kamar->save(); // Simpan perubahan status kamar ke database
         }
         
-        return back()->with('success', 'Status reservasi & kamar berhasil diperbarui.'); // Kembalikan pesan sukses ke halaman sebelumnya
+        return back()->with('success', 'Status reservasi & kamar berhasil diperbarui.'); 
     }
 }

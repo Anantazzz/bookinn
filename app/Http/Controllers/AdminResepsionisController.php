@@ -1,12 +1,10 @@
-<?php // Tag pembuka PHP
+<?php 
+namespace App\Http\Controllers; 
+use App\Models\User; 
+use App\Models\Hotel; 
+use Illuminate\Http\Request; 
 
-namespace App\Http\Controllers; // Namespace controller
-
-use App\Models\User; // Import model User
-use App\Models\Hotel; // Import model Hotel
-use Illuminate\Http\Request; // Import Request
-
-class AdminResepsionisController extends Controller // Deklarasi class controller
+class AdminResepsionisController extends Controller 
 {
     public function index() // Fungsi untuk menampilkan daftar resepsionis
     {
@@ -21,29 +19,52 @@ class AdminResepsionisController extends Controller // Deklarasi class controlle
 
     public function store(Request $request) // Fungsi untuk menambah data resepsionis
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255', // Validasi nama
-            'email' => 'required|email|unique:users,email', // Validasi email unik
-            'password' => 'required|string|min:6', // Validasi password
-            'alamat' => 'nullable|string|max:255', // Validasi alamat (opsional)
-            'no_hp' => 'nullable|string|max:15', // Validasi no hp (opsional)
-            'hotel_id' => 'required|exists:hotels,id', // Validasi hotel_id
-            'shift' => 'nullable|in:pagi,malam', // Validasi shift (opsional)
-        ]);
+        try {
+            // LOG DATA REQUEST UNTUK DEBUGGING
+            logger()->info('Mencoba menambah resepsionis:', $request->all());
+            
+            $validated = $request->validate([
+                'name' => 'required|string|max:255', // Validasi nama
+                'email' => 'required|email|unique:users,email', // Validasi email unik
+                'password' => 'required|string|min:6', // Validasi password
+                'alamat' => 'nullable|string|max:255', // Validasi alamat (opsional)
+                'no_hp' => 'nullable|string|max:15', // Validasi no hp (opsional)
+                'hotel_id' => 'required|exists:hotels,id', // Validasi hotel_id
+                'shift' => 'nullable|in:siang,malam', // Validasi shift (opsional)
+            ]);
 
-        User::create([
-            'name' => $validated['name'], // Simpan nama
-            'email' => $validated['email'], // Simpan email
-            'password' => bcrypt($validated['password']), // Simpan password terenkripsi
-            'alamat' => $validated['alamat'] ?? null, // Simpan alamat jika ada
-            'no_hp' => $validated['no_hp'] ?? null, // Simpan no hp jika ada
-            'role' => 'resepsionis', // Set role resepsionis
-            'hotel_id' => $validated['hotel_id'], // Simpan hotel_id
-            'shift' => $validated['shift'], // Simpan shift
-        ]);
+            // CEK JUMLAH RESEPSIONIS SAAT INI
+            $jumlahResepsionis = User::where('role', 'resepsionis')->count();
+            logger()->info('Jumlah resepsionis saat ini: ' . $jumlahResepsionis);
 
-        return redirect()->route('admin.resepsionis.index')
-            ->with('success', 'Data resepsionis berhasil ditambahkan!'); // Redirect ke halaman index resepsionis dengan pesan sukses
+            $user = User::create([
+                'name' => $validated['name'], // Simpan nama
+                'email' => $validated['email'], // Simpan email
+                'password' => bcrypt($validated['password']), // Simpan password terenkripsi
+                'alamat' => $validated['alamat'] ?? null, // Simpan alamat jika ada
+                'no_hp' => $validated['no_hp'] ?? null, // Simpan no hp jika ada
+                'role' => 'resepsionis', // Set role resepsionis
+                'hotel_id' => $validated['hotel_id'], // Simpan hotel_id
+                'shift' => $validated['shift'], // Simpan shift
+            ]);
+
+            logger()->info('Resepsionis berhasil dibuat dengan ID: ' . $user->id);
+
+            return redirect()->route('admin.resepsionis.index')
+                ->with('success', 'Data resepsionis berhasil ditambahkan!'); // Redirect ke halaman index resepsionis dengan pesan sukses
+                
+        } catch (\Exception $e) {
+            // LOG ERROR UNTUK DEBUGGING
+            logger()->error('Error saat menambah resepsionis:', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+            
+            return redirect()->back()
+                ->withErrors(['error' => 'Gagal menambah resepsionis: ' . $e->getMessage()])
+                ->withInput();
+        }
     }
 
     public function show($id) // Fungsi untuk menampilkan detail resepsionis

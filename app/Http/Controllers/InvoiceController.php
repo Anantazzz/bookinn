@@ -1,49 +1,69 @@
-<?php // Tag pembuka PHP
+<?php
+namespace App\Http\Controllers;
+use App\Models\Invoice;
+use App\Models\Reservasi;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
-namespace App\Http\Controllers; // Namespace controller
-
-use App\Models\Invoice; // Import model Invoice
-use App\Models\Reservasi; // Import model Reservasi
-use Barryvdh\DomPDF\Facade\Pdf; // Import facade PDF
-use Illuminate\Support\Str; // Import helper Str
-use Illuminate\Http\Request; // Import Request
-
-class InvoiceController extends Controller // Deklarasi class InvoiceController
+class InvoiceController extends Controller
 {
-    public function show($id) // Fungsi untuk menampilkan invoice di browser
+    // ==========================================
+    // TAMPILKAN INVOICE DI BROWSER 
+    // ==========================================
+    public function show($id)
     {
-        $invoice = Invoice::with(['pembayaran.reservasi.kamar.hotel', 'pembayaran.reservasi.kamar.tipeKamar'])->findOrFail($id); // Ambil invoice beserta relasi
+        // AMBIL DATA INVOICE DENGAN SEMUA RELASI TERKAIT
+        $invoice = Invoice::with([
+            'pembayaran.reservasi.kamar.hotel', // Relasi: invoice → pembayaran → reservasi → kamar → hotel
+            'pembayaran.reservasi.kamar.tipeKamar' // Relasi: invoice → pembayaran → reservasi → kamar → tipe kamar
+        ])->findOrFail($id); // Cari invoice berdasarkan ID atau error 404
 
-        $reservasi = $invoice->pembayaran->reservasi ?? null; // Ambil reservasi terkait jika ada
+        // AMBIL DATA RESERVASI DARI RELASI
+        $reservasi = $invoice->pembayaran->reservasi ?? null; // Ambil reservasi terkait (null jika tidak ada)
 
-        if (!$reservasi) { // Jika tidak ada reservasi
-            abort(404, 'Data reservasi tidak ditemukan untuk invoice ini.'); // Kembalikan 404
+        // VALIDASI: PASTIKAN DATA RESERVASI ADA
+        if (!$reservasi) { // Jika reservasi tidak ditemukan
+            abort(404, 'Data reservasi tidak ditemukan untuk invoice ini.'); // Error 404 dengan pesan khusus
         }
 
-        return view('hotels.invoice', [ // Render view invoice dengan data
-            'reservasi' => $reservasi, // Data reservasi
-            'kode_unik' => $invoice->kode_unik, // Kode unik invoice
+        // KIRIM DATA KE VIEW INVOICE HTML
+        return view('hotels.invoice', [ // Tampilkan invoice dalam format HTML
+            'reservasi' => $reservasi, // Data lengkap reservasi (kamar, hotel, user, dll)
+            'kode_unik' => $invoice->kode_unik, // Kode unik invoice (misal: INV-ABC1234)
         ]);
     }
    
-    public function download($id) // Fungsi untuk mengunduh invoice sebagai PDF
+    // ==========================================
+    // DOWNLOAD INVOICE SEBAGAI FILE PDF
+    // ==========================================
+    public function download($id)
     {
-        $reservasi = Reservasi::with(['kamar.tipeKamar', 'pembayaran'])->findOrFail($id); // Ambil reservasi beserta relasi
+        // AMBIL DATA RESERVASI DENGAN RELASI TERKAIT
+        $reservasi = Reservasi::with([
+            'kamar.tipeKamar', // Relasi: reservasi → kamar → tipe kamar
+            'pembayaran' // Relasi: reservasi → pembayaran
+        ])->findOrFail($id); // Cari reservasi berdasarkan ID atau error 404
 
-        $invoice = Invoice::where('pembayaran_id', $reservasi->pembayaran->id ?? null)->first(); // Cek apakah invoice sudah ada untuk pembayaran ini
+        // CEK APAKAH INVOICE SUDAH ADA UNTUK PEMBAYARAN INI
+        $invoice = Invoice::where('pembayaran_id', $reservasi->pembayaran->id ?? null) // Cari invoice berdasarkan pembayaran ID
+                          ->first(); // Ambil yang pertama atau null
 
-        if (!$invoice) { // Jika belum ada, buat invoice baru
-            $invoice = Invoice::create([
-                'pembayaran_id' => $reservasi->pembayaran->id, // Referensi pembayaran
-                'kode_unik' => 'INV-' . strtoupper(Str::random(7)), // Buat kode unik baru
+        // BUAT INVOICE BARU JIKA BELUM ADA
+        if (!$invoice) { // Jika invoice belum pernah dibuat
+            $invoice = Invoice::create([ // Buat record invoice baru
+                'pembayaran_id' => $reservasi->pembayaran->id, // ID pembayaran terkait
+                'kode_unik' => 'INV-' . strtoupper(Str::random(7)), // Generate kode unik: INV-ABC1234
             ]);
         }
 
-        $pdf = Pdf::loadView('hotels.invoice', [ // Generate PDF dari view
-            'reservasi' => $reservasi, // Data reservasi
+        // GENERATE PDF DARI VIEW BLADE
+        $pdf = Pdf::loadView('hotels.invoice', [ // Buat PDF dari template HTML
+            'reservasi' => $reservasi, // Data reservasi lengkap
             'kode_unik' => $invoice->kode_unik, // Kode unik invoice
         ]);
 
-        return $pdf->download('invoice_' . $reservasi->id . '.pdf'); // Unduh file PDF
+        // DOWNLOAD FILE PDF KE BROWSER USER
+        return $pdf->download('invoice_' . $reservasi->id . '.pdf'); // Nama file: invoice_123.pdf
     }
 } 

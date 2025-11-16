@@ -1,11 +1,10 @@
-<?php // Tag pembuka PHP
+<?php 
+namespace App\Http\Controllers; 
+use App\Models\User; 
+use App\Models\Hotel; 
+use Illuminate\Http\Request; 
 
-namespace App\Http\Controllers; // Namespace controller
-use App\Models\User; // Import model User
-use App\Models\Hotel; // Import model Hotel
-use Illuminate\Http\Request; // Import Request
-
-class AdminOwnerController extends Controller // Deklarasi class controller
+class AdminOwnerController extends Controller 
 {
     public function index() // Fungsi untuk menampilkan daftar owner
     {

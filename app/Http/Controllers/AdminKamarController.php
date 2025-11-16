@@ -1,13 +1,11 @@
-<?php // Tag pembuka PHP
+<?php
+namespace App\Http\Controllers; 
+use App\Models\Kamar; 
+use App\Models\Hotel; 
+use App\Models\TipeKamar; 
+use Illuminate\Http\Request; 
 
-namespace App\Http\Controllers; // Namespace controller
-
-use App\Models\Kamar; // Import model Kamar
-use App\Models\Hotel; // Import model Hotel
-use App\Models\TipeKamar; // Import model TipeKamar
-use Illuminate\Http\Request; // Import Request
-
-class AdminKamarController extends Controller // Deklarasi class controller
+class AdminKamarController extends Controller 
 {
    public function index(Request $request) // Fungsi untuk menampilkan daftar kamar
     {

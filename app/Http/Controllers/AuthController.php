@@ -1,13 +1,11 @@
-<?php // Tag pembuka PHP
+<?php 
+namespace App\Http\Controllers; 
+use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\Hash; 
 
-namespace App\Http\Controllers; // Namespace controller
-
-use Illuminate\Http\Request; // Import Request
-use App\Models\User; // Import model User
-use Illuminate\Support\Facades\Auth; // Import facade Auth
-use Illuminate\Support\Facades\Hash; // Import facade Hash
-
-class AuthController extends Controller // Deklarasi class controller untuk autentikasi
+class AuthController extends Controller 
 {
     // Tampilkan form register
     public function showRegister() // Menampilkan halaman register

@@ -7,103 +7,150 @@ use App\Models\Kamar;
 
 class ReservasiController extends Controller
 {
-    // TAMPILKAN FORM RESERVASI
+    // ==========================================
+    // TAMPILKAN FORM RESERVASI KAMAR
+    // ==========================================
     public function showForm(Request $request, $id)
     {
-        $user = Auth::user(); // Ambil data user yang sedang login
-        $kamar = Kamar::findOrFail($id); // Ambil data kamar berdasarkan ID dari URL
+        // AMBIL DATA USER & KAMAR
+        $user = Auth::user(); // Data user yang sedang login untuk form
+        $kamar = Kamar::findOrFail($id); // Data kamar yang dipilih berdasarkan ID
 
-        // Ambil tanggal check-in dan check-out yang dikirim dari halaman detail hotel
-        $tanggalCheckin = $request->input('tanggal_checkin');
-        $tanggalCheckout = $request->input('tanggal_checkout');
+        // AMBIL TANGGAL DARI PARAMETER URL
+        $tanggalCheckin = $request->input('tanggal_checkin'); // Tanggal checkin dari halaman detail hotel
+        $tanggalCheckout = $request->input('tanggal_checkout'); // Tanggal checkout dari halaman detail hotel
 
-        // Kirim data user, kamar, dan tanggal ke halaman form reservasi
-        return view('hotels.reservasi', compact('user', 'kamar', 'tanggalCheckin', 'tanggalCheckout'));
+        // KIRIM DATA KE VIEW FORM RESERVASI
+        return view('hotels.reservasi', compact('user', 'kamar', 'tanggalCheckin', 'tanggalCheckout')); // Tampilkan form booking
     }
 
-    // SIMPAN DATA RESERVASI KE DATABASE
+    // ==========================================
+    // PROSES PENYIMPANAN RESERVASI KE DATABASE
+    // ==========================================
     public function store(Request $request, $id)
     {
-        $user = Auth::user(); // Ambil data user login
-        $tipeKamar = Kamar::findOrFail($id); // Ambil data tipe kamar berdasarkan ID yang dipilih user
+        // PERSIAPAN DATA AWAL
+        $user = Auth::user(); // Data user yang melakukan reservasi
+        $tipeKamar = Kamar::findOrFail($id); // Data kamar yang dipilih user
 
-        // Validasi input dari form reservasi
+        // VALIDASI INPUT FORM RESERVASI
         $request->validate([
-            'tanggal_checkin' => 'required|date|after_or_equal:today', // Tidak boleh sebelum hari ini
-            'jam_checkin' => 'required', 
-            'tanggal_checkout' => 'required|date|after:tanggal_checkin', // Harus setelah check-in
-            'jam_checkout' => 'required', 
+            'tanggal_checkin' => 'required|date|after_or_equal:today', // Checkin tidak boleh masa lalu
+            'jam_checkin' => 'required', // Jam checkin wajib diisi
+            'tanggal_checkout' => 'required|date|after:tanggal_checkin', // Checkout harus setelah checkin
+            'jam_checkout' => 'required', // Jam checkout wajib diisi
         ]);
 
-        // Simpan nilai tanggal untuk dipakai di query
-        $tanggalCheckin = $request->tanggal_checkin;
-        $tanggalCheckout = $request->tanggal_checkout;
+        // SIMPAN TANGGAL UNTUK QUERY KETERSEDIAAN
+        $tanggalCheckin = $request->tanggal_checkin; // Tanggal checkin yang dipilih
+        $tanggalCheckout = $request->tanggal_checkout; // Tanggal checkout yang dipilih
 
-        // CEK APAKAH KAMAR YANG DIPILIH TERSEDIA
-        $kamarBentrok = Reservasi::where('kamar_id', $id)
-            ->whereIn('status', ['pending', 'aktif'])
-            ->where(function ($q) use ($tanggalCheckin, $tanggalCheckout) {
-                $q->whereBetween('tanggal_checkin', [$tanggalCheckin, $tanggalCheckout])
-                  ->orWhereBetween('tanggal_checkout', [$tanggalCheckin, $tanggalCheckout])
-                  ->orWhere(function ($r) use ($tanggalCheckin, $tanggalCheckout) {
-                      $r->where('tanggal_checkin', '<=', $tanggalCheckin)
-                        ->where('tanggal_checkout', '>=', $tanggalCheckout);
-                  });
+        // ==========================================
+        // CEK KETERSEDIAAN KAMAR BERDASARKAN TIPE
+        // ==========================================
+        $tipeKamarId = $tipeKamar->tipe_kamar_id; // ID tipe kamar 
+        $hotelId = $tipeKamar->hotel_id; // ID hotel tempat kamar berada
+        
+        // HITUNG TOTAL KAMAR UNTUK TIPE INI DI HOTEL INI
+        $totalKamar = Kamar::where('hotel_id', $hotelId)
+            ->where('tipe_kamar_id', $tipeKamarId)
+            ->count(); // Jumlah total kamar tipe ini (misal: 5 kamar Deluxe)
+            
+        // HITUNG KAMAR YANG SUDAH DIPESAN PADA TANGGAL TERSEBUT
+        $kamarTerpesan = Reservasi::whereHas('kamar', function($q) use ($hotelId, $tipeKamarId) {
+                $q->where('hotel_id', $hotelId) // Kamar di hotel ini
+                  ->where('tipe_kamar_id', $tipeKamarId); // Kamar tipe ini
             })
-            ->exists();
+            ->whereIn('status', ['pending', 'aktif']) // Hanya reservasi yang masih berlaku
+            ->where(function ($q) use ($tanggalCheckin, $tanggalCheckout) {
+                // Overlap terjadi jika: checkin_baru < checkout_lama DAN checkout_baru > checkin_lama
+                $q->where('tanggal_checkin', '<', $tanggalCheckout) // Checkin reservasi lama sebelum checkout baru
+                  ->where('tanggal_checkout', '>', $tanggalCheckin); // Checkout reservasi lama setelah checkin baru
+            })
+            ->count(); // Jumlah kamar yang bentrok dengan tanggal pilihan
 
-        // Jika kamar yang dipilih bentrok, tampilkan error
-        if ($kamarBentrok) {
+        // VALIDASI: APAKAH MASIH ADA KAMAR TERSEDIA?
+        if ($kamarTerpesan >= $totalKamar) {
             return back()->withErrors([
-                'tanggal_checkin' => 'Kamar yang Anda pilih sudah dipesan pada tanggal tersebut.'
-            ])->withInput();
+                'tanggal_checkin' => 'Tidak ada kamar tersedia untuk tipe ini pada tanggal tersebut.' // Error jika penuh
+            ])->withInput(); // Kembalikan input user
         }
         
-        // Gunakan kamar yang dipilih user (bukan cari yang lain)
-        $kamarTersedia = $tipeKamar; // $tipeKamar sebenarnya adalah kamar yang dipilih
+        // CARI KAMAR SPESIFIK YANG TERSEDIA UNTUK TIPE INI
+        $kamarTersedia = Kamar::where('hotel_id', $hotelId)
+            ->where('tipe_kamar_id', $tipeKamarId) // Kamar dengan tipe yang dipilih
+            ->where('status', 'tersedia') // Status kamar masih tersedia
+            ->whereNotIn('id', function($query) use ($tanggalCheckin, $tanggalCheckout) {
+                // EXCLUDE kamar yang sudah dipesan pada tanggal tersebut
+                $query->select('kamar_id')
+                    ->from('reservasis')
+                    ->whereIn('status', ['pending', 'aktif']) // Reservasi aktif
+                    ->where(function ($q) use ($tanggalCheckin, $tanggalCheckout) {
+                        // LOGIKA OVERLAP YANG BENAR:
+                        $q->where('tanggal_checkin', '<', $tanggalCheckout) // Checkin lama < checkout baru
+                          ->where('tanggal_checkout', '>', $tanggalCheckin); // Checkout lama > checkin baru
+                    });
+            })
+            ->first(); // Ambil satu kamar yang tersedia
+            
+        // DOUBLE CHECK: PASTIKAN ADA KAMAR YANG BISA DIPAKAI
+        if (!$kamarTersedia) {
+            return back()->withErrors([
+                'tanggal_checkin' => 'Tidak ada kamar tersedia untuk tipe ini pada tanggal tersebut.' // Error jika tidak ada
+            ])->withInput();
+        }
 
-        // HITUNG TOTAL HARGA
-        $kasurTambahan = $request->has('kasur_tambahan') ? 1 : 0; 
-        $jumlahHari = \Carbon\Carbon::parse($tanggalCheckin)->diffInDays(\Carbon\Carbon::parse($tanggalCheckout));
-        $hargaKamar = $kamarTersedia->harga * $jumlahHari; 
-        $biayaKasur = $kasurTambahan ? 100000 : 0; 
-        $totalHarga = $hargaKamar + $biayaKasur; 
+        // ==========================================
+        // PERHITUNGAN TOTAL HARGA RESERVASI
+        // ==========================================
+        $kasurTambahan = $request->has('kasur_tambahan') ? 1 : 0; // Cek apakah user pilih kasur tambahan
+        $jumlahHari = \Carbon\Carbon::parse($tanggalCheckin)->diffInDays(\Carbon\Carbon::parse($tanggalCheckout)); // Hitung jumlah malam
+        $hargaKamar = $kamarTersedia->harga * $jumlahHari; // Harga kamar × jumlah malam
+        $biayaKasur = $kasurTambahan ? 100000 : 0; // Biaya kasur tambahan Rp 100.000 (sekali bayar)
+        $totalHarga = $hargaKamar + $biayaKasur; // Total yang harus dibayar
 
         // TENTUKAN STATUS RESERVASI OTOMATIS
         if ($tanggalCheckin == date('Y-m-d')) {
-            $status = 'aktif'; 
+            $status = 'aktif'; // Jika checkin hari ini, langsung aktif
+            $statusKamar = 'booking'; // Kamar langsung booking jika checkin hari ini
         } else {
-            $status = 'pending'; 
+            $status = 'pending'; // Jika checkin nanti, status pending dulu
+            $statusKamar = 'tersedia'; // Kamar tetap tersedia sampai tanggal checkin
         }
 
-        // SIMPAN DATA RESERVASI KE DATABASE
+        // ==========================================
+        // SIMPAN RESERVASI & UPDATE STATUS KAMAR
+        // ==========================================
+        
+        // BUAT RECORD RESERVASI BARU DI DATABASE
         $reservasi = Reservasi::create([
-            'user_id' => $user->id, 
-            'kamar_id' => $kamarTersedia->id, 
-            'tanggal_checkin' => $tanggalCheckin,
-            'jam_checkin' => $request->jam_checkin, 
-            'tanggal_checkout' => $tanggalCheckout,
-            'jam_checkout' => $request->jam_checkout, 
-            'status' => $status,
-            'kasur_tambahan' => $kasurTambahan, 
-            'total_harga' => $totalHarga, 
+            'user_id' => $user->id, // ID user yang melakukan reservasi
+            'kamar_id' => $kamarTersedia->id, // ID kamar yang berhasil dialokasikan
+            'tanggal_checkin' => $tanggalCheckin, // Tanggal checkin
+            'jam_checkin' => $request->jam_checkin, // Jam checkin
+            'tanggal_checkout' => $tanggalCheckout, // Tanggal checkout
+            'jam_checkout' => $request->jam_checkout, // Jam checkout
+            'status' => $status, // Status reservasi (pending/aktif)
+            'kasur_tambahan' => $kasurTambahan, // Apakah pakai kasur tambahan (0/1)
+            'total_harga' => $totalHarga, // Total harga yang harus dibayar
         ]);
         
-        // UPDATE STATUS KAMAR MENJADI BOOKING
-        $kamarTersedia->update(['status' => 'booking']);
+        // UPDATE STATUS KAMAR BERDASARKAN TANGGAL CHECKIN
+        $kamarTersedia->update(['status' => $statusKamar]); // Booking jika hari ini, tersedia jika nanti
         
-        // Debug: Log untuk memastikan status kamar terupdate
+        // LOG UNTUK DEBUGGING (MEMASTIKAN UPDATE BERHASIL)
         logger()->info('Status kamar diupdate', [
-            'kamar_id' => $kamarTersedia->id,
-            'nomor_kamar' => $kamarTersedia->nomor_kamar,
-            'status_baru' => 'booking'
+            'kamar_id' => $kamarTersedia->id, // ID kamar yang diupdate
+            'nomor_kamar' => $kamarTersedia->nomor_kamar, // Nomor kamar
+            'status_baru' => $statusKamar, // Status baru (booking/tersedia)
+            'tanggal_checkin' => $tanggalCheckin // Tanggal checkin
         ]);
 
-        // SIMPAN ID RESERVASI TERBARU KE SESSION
-        session(['latest_reservation_id' => $reservasi->id]);
+        // SIMPAN ID RESERVASI KE SESSION (UNTUK HALAMAN PEMBAYARAN)
+        session(['latest_reservation_id' => $reservasi->id]); // Session untuk tracking reservasi
         
-        // ARAHKAN KE HALAMAN PEMBAYARAN
-        return redirect()->route('hotel.pembayaran', ['id' => $kamarTersedia->id])
-                        ->with('success', 'Reservasi berhasil! Silakan lanjutkan ke pembayaran.');
-    } 
+        // REDIRECT KE HALAMAN PEMBAYARAN
+        return redirect()->route('hotel.pembayaran', ['id' => $kamarTersedia->id]) // Ke halaman pembayaran
+                        ->with('success', 'Reservasi berhasil! Silakan lanjutkan ke pembayaran.'); // Pesan sukses
+    }
 }
