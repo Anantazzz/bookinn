@@ -34,15 +34,20 @@ class HotelController extends Controller
             $maxHarga = (int) ($request->input('max_harga') ?? 999999999); // Harga maksimum, default sangat besar
 
             $query->whereHas('kamars', function($q) use ($minHarga, $maxHarga){
-                $q->whereBetween('harga', [$minHarga, $maxHarga]); // Cari hotel yang punya kamar dalam range harga
+                $q->where('harga', '>=', $minHarga)
+                  ->where('harga', '<=', $maxHarga); // Cari hotel yang punya minimal 1 kamar dalam range harga
             });
         }
 
         // EKSEKUSI QUERY DAN AMBIL HASIL
         $hotels = $query->get(); // Ambil semua hotel yang sesuai filter
 
+        // AMBIL HARGA MIN DAN MAX DARI DATABASE
+        $minPrice = \App\Models\Kamar::min('harga') ?? 0;
+        $maxPrice = \App\Models\Kamar::max('harga') ?? 1000000;
+
         // KIRIM DATA KE VIEW
-        return view('hotels.hotel', compact('hotels')); // Tampilkan halaman daftar hotel
+        return view('hotels.hotel', compact('hotels', 'minPrice', 'maxPrice')); // Tampilkan halaman daftar hotel
     }
 
     // ==========================================

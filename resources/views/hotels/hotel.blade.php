@@ -17,6 +17,14 @@
             {{-- Search Bar --}}
             <div class="mb-4">
                 <form action="{{ route('hotel') }}" method="GET">
+                    {{-- Hidden inputs to preserve filter parameters --}}
+                    <input type="hidden" name="min_harga" value="{{ request('min_harga') }}">
+                    <input type="hidden" name="max_harga" value="{{ request('max_harga') }}">
+                    @if(request('bintang'))
+                        @foreach((array)request('bintang') as $bintang)
+                            <input type="hidden" name="bintang[]" value="{{ $bintang }}">
+                        @endforeach
+                    @endif
                     <x-search-bar />
                 </form>
             </div>

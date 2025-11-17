@@ -43,9 +43,8 @@
 
         {{-- Menu --}}
         <div class="collapse navbar-collapse" id="navbarNav">
-
             {{-- Menu Tengah --}}
-            <ul class="navbar-nav gap-4 position-absolute start-50 translate-middle-x">
+            <ul class="navbar-nav mx-auto gap-2">
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">Beranda</a>
                 </li>
@@ -60,35 +59,31 @@
                 </li>
             </ul>
             
-            {{-- Menu Kanan (Login/Register) --}}
-                        <ul class="navbar-nav ms-auto gap-3">
-                            @guest
-                                <li class="nav-item"><a href="{{ route('login') }}" class="nav-link">Login</a></li>
-                                <li class="nav-item"><a href="{{ route('register') }}" class="nav-link">Register</a></li>
-                            @endguest
-                        </ul>
-
-                    {{-- Logout kalau user sudah login --}}
-                    @auth
-                        <li class="nav-item">
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button type="submit" class="nav-link btn btn-link text-decoration-none">Logout</button>
-                            </form>
-                        </li>
-                    @endauth
-                </ul>
-            </div>
+            {{-- Menu Kanan --}}
+            <ul class="navbar-nav gap-2">
+                @guest
+                    <li class="nav-item"><a href="{{ route('login') }}" class="nav-link">Login</a></li>
+                    <li class="nav-item"><a href="{{ route('register') }}" class="nav-link">Register</a></li>
+                @else
+                    <li class="nav-item">
+                        <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="nav-link btn btn-link text-decoration-none p-0">Logout</button>
+                        </form>
+                    </li>
+                @endguest
+            </ul>
         </div>
     </nav>
 
     <main class="container py-4">
         @yield('content')
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
+    
     {{-- Footer --}}
-        @include('partials.footer')
+    @include('partials.footer')
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
