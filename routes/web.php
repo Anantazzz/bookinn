@@ -21,7 +21,8 @@ use App\Http\Controllers\{
     PembatalanController,
     DashOwnerController,
     ResepOfflineController,
-    InvoiceOfflineController
+    InvoiceOfflineController,
+    DiscountController
 };
 
 //PUBLIC (Tanpa Login) - Hanya untuk guest atau user
@@ -50,6 +51,9 @@ Route::get('/hotel/{id}', [HotelController::class, 'detail'])->name('hotel.detai
 
 //USER (auth + role:user)
 Route::middleware(['auth', 'role:user'])->group(function () {
+    // Discount validation (AJAX)
+    Route::post('/discount/check', [DiscountController::class, 'checkDiscount'])->name('discount.check');
+    
     // Reservasi
     Route::get('/reservasi/{id}', [ReservasiController::class, 'showForm'])->name('hotel.reservasi');
     Route::post('/reservasi/{id}', [ReservasiController::class, 'store'])->name('reservasi.store');

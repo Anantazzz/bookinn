@@ -5,6 +5,7 @@ use App\Models\Reservasi;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class InvoiceController extends Controller
 {
@@ -16,7 +17,8 @@ class InvoiceController extends Controller
         // AMBIL DATA INVOICE DENGAN SEMUA RELASI TERKAIT
         $invoice = Invoice::with([
             'pembayaran.reservasi.kamar.hotel', // Relasi: invoice → pembayaran → reservasi → kamar → hotel
-            'pembayaran.reservasi.kamar.tipeKamar' // Relasi: invoice → pembayaran → reservasi → kamar → tipe kamar
+            'pembayaran.reservasi.kamar.tipeKamar', // Relasi: invoice → pembayaran → reservasi → kamar → tipe kamar
+            'pembayaran' // Pastikan data pembayaran (termasuk diskon) ter-load
         ])->findOrFail($id); // Cari invoice berdasarkan ID atau error 404
 
         // AMBIL DATA RESERVASI DARI RELASI
@@ -42,7 +44,7 @@ class InvoiceController extends Controller
         // AMBIL DATA RESERVASI DENGAN RELASI TERKAIT
         $reservasi = Reservasi::with([
             'kamar.tipeKamar', // Relasi: reservasi → kamar → tipe kamar
-            'pembayaran' // Relasi: reservasi → pembayaran
+            'pembayaran' // Relasi: reservasi → pembayaran (termasuk data diskon)
         ])->findOrFail($id); // Cari reservasi berdasarkan ID atau error 404
 
         // CEK APAKAH INVOICE SUDAH ADA UNTUK PEMBAYARAN INI
@@ -51,9 +53,21 @@ class InvoiceController extends Controller
 
         // BUAT INVOICE BARU JIKA BELUM ADA
         if (!$invoice) { // Jika invoice belum pernah dibuat
+            // HITUNG TOTAL SETELAH DISKON
+            $malam = \Carbon\Carbon::parse($reservasi->tanggal_checkin)
+                        ->diffInDays(\Carbon\Carbon::parse($reservasi->tanggal_checkout));
+            $subtotal = ($reservasi->kamar->harga * $malam) + ($reservasi->kasur_tambahan ? 100000 : 0);
+            
+            // AMBIL DISKON DARI SESSION
+            $discountInfo = session('discount_info_' . $reservasi->id);
+            $discountAmount = $discountInfo['amount'] ?? 0;
+            
+            $totalSetelahDiskon = $subtotal - $discountAmount;
+            
             $invoice = Invoice::create([ // Buat record invoice baru
                 'pembayaran_id' => $reservasi->pembayaran->id, // ID pembayaran terkait
                 'kode_unik' => 'INV-' . strtoupper(Str::random(7)), // Generate kode unik: INV-ABC1234
+                'total' => $totalSetelahDiskon, // Total setelah diskon
             ]);
         }
 

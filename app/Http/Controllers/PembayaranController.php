@@ -10,10 +10,11 @@ use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Schema;
 
 class PembayaranController extends Controller
 {
-    // ==========================================
+    // ========================================== 
     // TAMPILKAN HALAMAN FORM PEMBAYARAN
     // ==========================================
     public function show($id)
@@ -39,9 +40,22 @@ class PembayaranController extends Controller
 
             $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0; // Biaya kasur tambahan jika dipilih
 
-            $totalBayar = ($hargaPerMalam * $malam) + $hargaKasur; // Total = (harga × malam) + kasur tambahan
+            $totalSebelumDiskon = ($hargaPerMalam * $malam) + $hargaKasur; // Total sebelum diskon
+            
+            // AMBIL INFO DISKON DARI SESSION
+            $discountCode = session('discount_code');
+            $discountAmount = session('discount_amount', 0);
+            $discountName = session('discount_name');
+            
+            $totalBayar = $totalSebelumDiskon - $discountAmount; // Total setelah diskon
 
-            $reservasi->total_harga = $totalBayar; // Update total harga di object (tidak disimpan ke DB)
+            $reservasi->total_harga = $totalBayar; // Update total harga di object
+            $reservasi->discount_info = [ // Tambahkan info diskon
+                'code' => $discountCode,
+                'amount' => $discountAmount,
+                'name' => $discountName,
+                'original_price' => $totalSebelumDiskon
+            ];
         }
 
         // KIRIM DATA KE VIEW FORM PEMBAYARAN
@@ -63,10 +77,19 @@ class PembayaranController extends Controller
 
             // VALIDASI INPUT FORM PEMBAYARAN
             $validated = $request->validate([ // Validasi semua input wajib
-                'bank' => 'required|in:mandiri,bca,bri,bni,btn', // Bank harus salah satu dari pilihan
-                'atas_nama' => 'nullable|string|max:255', // Nama pemilik rekening (opsional)
+                'bank' => 'required|in:mandiri,bca,bri,bni', // Bank harus salah satu dari pilihan
+                'atas_nama' => 'required|string|max:255', // Nama pemilik rekening wajib diisi
                 'nomor_rekening' => 'required|string|max:20', // Nomor rekening wajib diisi
-                'bukti_transfer' => 'required|image|mimes:jpg,jpeg,png|max:2048', // Bukti transfer: gambar, max 2MB
+                'bukti_transfer' => 'required|file|image|mimes:jpg,jpeg,png|max:5120', // Bukti transfer: gambar, max 5MB
+            ], [
+                'bank.required' => 'Pilih bank terlebih dahulu.',
+                'bank.in' => 'Bank yang dipilih tidak valid.',
+                'atas_nama.required' => 'Nama pemilik rekening wajib diisi.',
+                'nomor_rekening.required' => 'Nomor rekening wajib diisi.',
+                'bukti_transfer.required' => 'Bukti transfer wajib diupload.',
+                'bukti_transfer.image' => 'File harus berupa gambar.',
+                'bukti_transfer.mimes' => 'Format file harus JPG, JPEG, atau PNG.',
+                'bukti_transfer.max' => 'Ukuran file maksimal 5MB.',
             ]);
 
         // AMBIL DATA USER, KAMAR & RESERVASI
@@ -86,7 +109,19 @@ class PembayaranController extends Controller
 
         $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0; // Kasur tambahan Rp 100.000 (jika ada)
 
-        $jumlahBayar = ($hargaPerMalam * $malam) + $hargaKasur; // Total pembayaran
+        $subtotal = ($hargaPerMalam * $malam) + $hargaKasur; // Subtotal sebelum diskon
+        
+        // AMBIL DISKON DARI SESSION AKTIF
+        $discountAmount = session('discount_amount', 0);
+        
+        $jumlahBayar = $subtotal - $discountAmount; // Total pembayaran setelah diskon
+        
+        // LOG UNTUK DEBUGGING
+        logger()->info('Perhitungan pembayaran:', [
+            'subtotal' => $subtotal,
+            'discount_amount' => $discountAmount,
+            'jumlah_bayar_final' => $jumlahBayar
+        ]);
 
         // ==========================================
         // UPLOAD & SIMPAN BUKTI TRANSFER
@@ -112,18 +147,31 @@ class PembayaranController extends Controller
             throw new \Exception('File bukti transfer tidak ditemukan'); // Error jika tidak ada file
         }
 
-        // SIMPAN DATA PEMBAYARAN KE DATABASE
-        $pembayaran = Pembayaran::create([ // Buat record pembayaran baru
+        // AMBIL INFO DISKON DARI SESSION
+        $discountCode = session('discount_code');
+        $discountAmount = session('discount_amount', 0);
+        
+        // SIAPKAN DATA PEMBAYARAN
+        $pembayaranData = [
             'reservasi_id' => $reservasi->id, // ID reservasi yang dibayar
             'tanggal_bayar' => now()->toDateString(), // Tanggal pembayaran (hari ini)
-            'jumlah_bayar' => $jumlahBayar, // Total yang dibayar
+            'jumlah_bayar' => $jumlahBayar, // Total yang dibayar (sudah termasuk diskon)
             'metode_bayar' => 'transfer', // Metode: transfer bank
             'bank' => $validated['bank'], // Bank tujuan transfer
             'atas_nama' => $validated['atas_nama'] ?? null, // Nama pengirim (opsional)
             'bukti_transfer' => $buktiTransfer, // Path file bukti transfer
             'nomor_rekening' => $validated['nomor_rekening'], // Nomor rekening pengirim
             'status_bayar' => 'pending', // Status awal: pending (menunggu verifikasi resepsionis)
-        ]);
+        ];
+        
+        // TAMBAHKAN DATA DISKON JIKA KOLOM ADA (SETELAH MIGRATION)
+        if (Schema::hasColumn('pembayarans', 'discount_code')) {
+            $pembayaranData['discount_code'] = $discountCode;
+            $pembayaranData['discount_amount'] = $discountAmount;
+        }
+        
+        // SIMPAN DATA PEMBAYARAN KE DATABASE
+        $pembayaran = Pembayaran::create($pembayaranData);
 
         // ==========================================
         // GENERATE INVOICE PDF
@@ -170,10 +218,22 @@ class PembayaranController extends Controller
         $invoice = Invoice::create([ // Buat record invoice baru
             'pembayaran_id' => $pembayaran->id, // ID pembayaran terkait
             'tanggal_cetak' => now(), // Tanggal invoice dibuat
-            'total' => $jumlahBayar, // Total yang tertera di invoice
+            'total' => $jumlahBayar, // Total yang tertera di invoice (sudah termasuk diskon)
             'file_invoice' => 'invoices/' . $filename, // Path file PDF
             'kode_unik' => $kode_unik, // Kode unik invoice
         ]);
+        
+        // SIMPAN DISCOUNT INFO KE SESSION DENGAN KEY RESERVASI (PERSISTENT)
+        session([
+            'discount_info_' . $reservasi->id => [
+                'code' => $discountCode,
+                'amount' => $discountAmount,
+                'name' => session('discount_name')
+            ]
+        ]);
+        
+        // CLEAR TEMPORARY DISCOUNT SESSION
+        session()->forget(['discount_code', 'discount_amount', 'discount_name']);
 
         // REDIRECT KE HALAMAN INVOICE DENGAN PESAN SUKSES
         return redirect()->route('invoice.show', ['id' => $invoice->id]) // Ke halaman tampil invoice

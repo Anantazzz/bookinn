@@ -74,7 +74,7 @@ class HotelController extends Controller
 
         // PERSIAPAN DATA KAMAR PER TIPE
         /** @var \Illuminate\Database\Eloquent\\Collection<TipeKamar> $tipeKamars */
-        $tipeKamars = TipeKamar::all(); // Ambil semua tipe kamar yang ada
+        $tipeKamars = TipeKamar::all();
         $kamarData = []; // Array untuk menyimpan data kamar per tipe
 
         // LOOP SETIAP TIPE KAMAR UNTUK CEK KETERSEDIAAN
@@ -86,7 +86,7 @@ class HotelController extends Controller
                 ->count(); // Jumlah total kamar tipe ini di hotel
 
             // HITUNG KAMAR YANG SUDAH DIPESAN (JIKA ADA TANGGAL)
-            $booked = 0; // Default: tidak ada yang dipesan
+            $booked = 0; 
             
             if ($tanggalCheckin && $tanggalCheckout) {
                 // Cari reservasi yang bentrok dengan tanggal yang dipilih
@@ -96,7 +96,7 @@ class HotelController extends Controller
                     })
                     ->whereIn('status', ['pending', 'aktif']) // Hanya reservasi aktif/pending
                     ->where(function($query) use ($tanggalCheckin, $tanggalCheckout) {
-                        // LOGIKA OVERLAP TANGGAL YANG BENAR:
+                    
                         // Overlap terjadi jika: checkin_baru < checkout_lama DAN checkout_baru > checkin_lama
                         $query->where('tanggal_checkin', '<', $tanggalCheckout) // Checkin lama < checkout baru
                               ->where('tanggal_checkout', '>', $tanggalCheckin); // Checkout lama > checkin baru
@@ -113,8 +113,8 @@ class HotelController extends Controller
             if ($contohKamar) {
                 $kamarData[] = [
                     'id' => $contohKamar->id, // ID kamar untuk booking
-                    'gambar' => $contohKamar->gambar, // Foto kamar
-                    'tipeKamar' => $tipe->nama_tipe, // Nama tipe (Standard, Deluxe, dll)
+                    'gambar' => $contohKamar->gambar,
+                    'tipeKamar' => $tipe->nama_tipe, 
                     'harga' => $contohKamar->harga, // Harga per malam
                     'kapasitas' => $contohKamar->kapasitas, // Jumlah orang yang bisa menginap
                     'jumlahBed' => $contohKamar->jumlah_bed, // Jumlah tempat tidur

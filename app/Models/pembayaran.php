@@ -20,6 +20,8 @@ class Pembayaran extends Model
         'atas_nama',
         'status_bayar',
         'bukti_transfer',
+        'discount_code',
+        'discount_amount',
     ];
 
     public function reservasi()

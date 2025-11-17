@@ -14,7 +14,38 @@
               ->diffInDays(\Carbon\Carbon::parse($reservasi->tanggal_checkout));
   $hargaPerMalam = $reservasi->kamar->harga;
   $hargaKasur = $reservasi->kasur_tambahan ? 100000 : 0;
-  $totalBayar = ($hargaPerMalam * $malam) + $hargaKasur;
+  $subtotal = ($hargaPerMalam * $malam) + $hargaKasur;
+  
+  // Ambil info diskon dari database pembayaran (jika kolom ada) atau session
+  $discountCode = null;
+  $discountAmount = 0;
+  $discountName = null;
+  
+  // Coba ambil dari database dulu (jika migration sudah dijalankan)
+  if ($reservasi->pembayaran && isset($reservasi->pembayaran->discount_code)) {
+      $discountCode = $reservasi->pembayaran->discount_code;
+      $discountAmount = $reservasi->pembayaran->discount_amount ?? 0;
+  } else {
+      // Fallback ke session persistent
+      $discountInfo = session('discount_info_' . $reservasi->id);
+      if ($discountInfo) {
+          $discountCode = $discountInfo['code'];
+          $discountAmount = $discountInfo['amount'];
+          $discountName = $discountInfo['name'];
+      }
+  }
+  
+  // Ambil nama diskon berdasarkan kode (jika belum ada dari session)
+  if ($discountCode && !$discountName) {
+      $discountCodes = [
+          'WELCOME10' => 'Welcome Discount',
+          'WEEKEND20' => 'Weekend Special', 
+          'SAVE50K' => 'Fixed Discount'
+      ];
+      $discountName = $discountCodes[$discountCode] ?? 'Diskon Khusus';
+  }
+  
+  $totalBayar = $subtotal - $discountAmount;
 @endphp
 
 <div class="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md border border-gray-200">
@@ -95,8 +126,29 @@
         @endif
 
         <hr class="my-3">
+        
+        <div class="flex justify-between text-gray-700">
+            <p>Subtotal</p>
+            <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
+        </div>
+        
+        @if($discountAmount > 0)
+            <div class="flex justify-between text-green-600 mt-1">
+                <p>Diskon ({{ $discountCode }})</p>
+                <p>-Rp{{ number_format($discountAmount, 0, ',', '.') }}</p>
+            </div>
+            @if($discountName)
+                <div class="text-center mt-1">
+                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                        {{ $discountName }}
+                    </span>
+                </div>
+            @endif
+        @endif
 
-        <div class="flex justify-between font-semibold text-gray-900">
+        <hr class="my-3">
+
+        <div class="flex justify-between font-semibold text-gray-900 text-lg">
             <p>Total Bayar</p>
             <p>Rp{{ number_format($totalBayar, 0, ',', '.') }}</p>
         </div>

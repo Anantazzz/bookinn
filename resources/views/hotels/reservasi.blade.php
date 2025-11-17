@@ -200,6 +200,51 @@
               </div>
             </div>
           </div>
+
+          {{-- Discount Code Section --}}
+          <div class="card border-0 shadow-sm mb-4 rounded-4 overflow-hidden">
+            <div class="card-header bg-white border-0 p-4">
+              <div class="d-flex align-items-center gap-3">
+                <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                  <i class="bi bi-percent text-success fs-5"></i>
+                </div>
+                <div>
+                  <h5 class="fw-bold mb-1">Kode Diskon</h5>
+                  <p class="text-muted mb-0 small">Pilih kode diskon untuk mendapatkan potongan harga</p>
+                </div>
+              </div>
+            </div>
+            <div class="card-body p-4">
+              <div class="row g-3">
+                <div class="col-md-8">
+                  <label class="form-label fw-semibold text-dark">
+                    <i class="bi bi-tag-fill text-success me-2"></i>Pilih Kode Diskon (Opsional)
+                  </label>
+                  <select name="discount_code" 
+                          id="discount_code"
+                          class="form-select form-select-lg rounded-3" 
+                          style="border: 2px solid #e9ecef;">
+                    <option value="">-- Pilih Kode Diskon --</option>
+                    <option value="WELCOME10" {{ old('discount_code') == 'WELCOME10' ? 'selected' : '' }}>WELCOME10 - Welcome Discount (10%)</option>
+                    <option value="WEEKEND20" {{ old('discount_code') == 'WEEKEND20' ? 'selected' : '' }}>WEEKEND20 - Weekend Special (20%)</option>
+                    <option value="SAVE50K" {{ old('discount_code') == 'SAVE50K' ? 'selected' : '' }}>SAVE50K - Fixed Discount (Rp 50.000)</option>
+                  </select>
+                  <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>Pilih salah satu kupon diskon yang tersedia
+                  </small>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold text-dark" style="visibility: hidden;">Hidden Label</label>
+                  <button type="button" 
+                          id="check_discount" 
+                          class="btn btn-outline-success btn-lg rounded-3 w-100">
+                    <i class="bi bi-check-circle me-2"></i>Terapkan Diskon
+                  </button>
+                </div>
+              </div>
+              <div id="discount_result" class="mt-3"></div>
+            </div>
+          </div>
           
           {{-- Submit Button --}}
           <div class="d-grid gap-3 mb-4">
@@ -267,6 +312,131 @@
   * {
     transition: all 0.3s ease;
   }
+  
+  /* Discount Result Styles */
+  .discount-success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    border: 2px solid #10b981;
+    color: #065f46;
+  }
+  
+  .discount-error {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border: 2px solid #ef4444;
+    color: #991b1b;
+  }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const discountInput = document.getElementById('discount_code');
+    const checkButton = document.getElementById('check_discount');
+    const resultDiv = document.getElementById('discount_result');
+    const form = document.querySelector('form');
+    
+    // Check discount function
+    function checkDiscount() {
+        const code = discountInput.value;
+        if (!code) {
+            resultDiv.innerHTML = '';
+            return;
+        }
+        
+        // Calculate current total (basic calculation)
+        const basePrice = {{ $kamar->harga }};
+        const extraBed = document.getElementById('kasur_tambahan').checked ? 100000 : 0;
+        const checkinDate = document.querySelector('[name="tanggal_checkin"]').value;
+        const checkoutDate = document.querySelector('[name="tanggal_checkout"]').value;
+        
+        if (!checkinDate || !checkoutDate) {
+            resultDiv.innerHTML = '<div class="alert alert-warning rounded-3 p-3"><i class="bi bi-exclamation-triangle me-2"></i>Pilih tanggal check-in dan check-out terlebih dahulu</div>';
+            return;
+        }
+        
+        const nights = Math.ceil((new Date(checkoutDate) - new Date(checkinDate)) / (1000 * 60 * 60 * 24));
+        const totalAmount = (basePrice * nights) + extraBed;
+        
+        // Show loading
+        checkButton.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Mengecek...';
+        checkButton.disabled = true;
+        
+        // AJAX call to check discount
+        fetch('{{ route("discount.check") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                code: code,
+                total_amount: totalAmount
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.valid) {
+                resultDiv.innerHTML = `
+                    <div class="alert discount-success rounded-3 p-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                <strong>${data.name}</strong><br>
+                                <small>${data.description}</small>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-bold">Diskon: Rp ${data.discount_amount.toLocaleString('id-ID')}</div>
+                                <div class="text-success fw-bold">Total: Rp ${data.final_amount.toLocaleString('id-ID')}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="alert discount-error rounded-3 p-3">
+                        <i class="bi bi-x-circle-fill me-2"></i>${data.message}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            resultDiv.innerHTML = '<div class="alert alert-danger rounded-3 p-3"><i class="bi bi-exclamation-triangle me-2"></i>Terjadi kesalahan saat mengecek diskon</div>';
+        })
+        .finally(() => {
+            checkButton.innerHTML = '<i class="bi bi-check-circle me-2"></i>Cek Diskon';
+            checkButton.disabled = false;
+        });
+    }
+    
+    // Event listeners
+    checkButton.addEventListener('click', checkDiscount);
+    
+    discountInput.addEventListener('change', function() {
+        if (this.value) {
+            checkDiscount();
+        } else {
+            resultDiv.innerHTML = '';
+        }
+    });
+    
+    // Auto-check when dates change
+    document.querySelector('[name="tanggal_checkin"]').addEventListener('change', function() {
+        if (discountInput.value) {
+            setTimeout(checkDiscount, 500);
+        }
+    });
+    
+    document.querySelector('[name="tanggal_checkout"]').addEventListener('change', function() {
+        if (discountInput.value) {
+            setTimeout(checkDiscount, 500);
+        }
+    });
+    
+    document.getElementById('kasur_tambahan').addEventListener('change', function() {
+        if (discountInput.value) {
+            setTimeout(checkDiscount, 500);
+        }
+    });
+});
+</script>
 
 @endsection

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use App\Models\Reservasi;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Kamar;
+use App\Http\Controllers\DiscountController;
 
 class ReservasiController extends Controller
 {
@@ -54,7 +55,7 @@ class ReservasiController extends Controller
         // HITUNG TOTAL KAMAR UNTUK TIPE INI DI HOTEL INI
         $totalKamar = Kamar::where('hotel_id', $hotelId)
             ->where('tipe_kamar_id', $tipeKamarId)
-            ->count(); // Jumlah total kamar tipe ini (misal: 5 kamar Deluxe)
+            ->count(); 
             
         // HITUNG KAMAR YANG SUDAH DIPESAN PADA TANGGAL TERSEBUT
         $kamarTerpesan = Reservasi::whereHas('kamar', function($q) use ($hotelId, $tipeKamarId) {
@@ -107,7 +108,33 @@ class ReservasiController extends Controller
         $jumlahHari = \Carbon\Carbon::parse($tanggalCheckin)->diffInDays(\Carbon\Carbon::parse($tanggalCheckout)); // Hitung jumlah malam
         $hargaKamar = $kamarTersedia->harga * $jumlahHari; // Harga kamar × jumlah malam
         $biayaKasur = $kasurTambahan ? 100000 : 0; // Biaya kasur tambahan Rp 100.000 (sekali bayar)
-        $totalHarga = $hargaKamar + $biayaKasur; // Total yang harus dibayar
+        $totalHarga = $hargaKamar + $biayaKasur; // Total sebelum diskon
+        
+        // APLIKASIKAN DISKON JIKA ADA
+        $discountAmount = 0;
+        $discountCode = null;
+        $finalAmount = $totalHarga;
+        
+        if ($request->filled('discount_code')) {
+            $discountResult = DiscountController::validateDiscount($request->discount_code, $totalHarga, $user->id);
+            if ($discountResult['valid']) {
+                $discountAmount = $discountResult['discount_amount'];
+                $discountCode = $discountResult['code'];
+                $finalAmount = $discountResult['final_amount'];
+                
+                // Simpan info diskon ke session
+                session([
+                    'discount_code' => $discountCode,
+                    'discount_amount' => $discountAmount,
+                    'discount_name' => $discountResult['name']
+                ]);
+            } else {
+                // Jika kupon tidak valid, kembalikan dengan error
+                return back()->withErrors([
+                    'discount_code' => $discountResult['message']
+                ])->withInput();
+            }
+        }
 
         // TENTUKAN STATUS RESERVASI OTOMATIS
         if ($tanggalCheckin == date('Y-m-d')) {
@@ -132,7 +159,7 @@ class ReservasiController extends Controller
             'jam_checkout' => $request->jam_checkout, // Jam checkout
             'status' => $status, // Status reservasi (pending/aktif)
             'kasur_tambahan' => $kasurTambahan, // Apakah pakai kasur tambahan (0/1)
-            'total_harga' => $totalHarga, // Total harga yang harus dibayar
+            'total_harga' => $finalAmount, // Total harga setelah diskon
         ]);
         
         // UPDATE STATUS KAMAR BERDASARKAN TANGGAL CHECKIN

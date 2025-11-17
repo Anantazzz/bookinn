@@ -25,15 +25,41 @@
         @if(isset($reservasi))
           <div class="card border-0 shadow-lg mb-4 rounded-4 overflow-hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
             <div class="card-body p-4">
-              <div class="d-flex align-items-center justify-content-between">
+              @if(isset($reservasi->discount_info) && $reservasi->discount_info['amount'] > 0)
+                {{-- Dengan Diskon --}}
                 <div class="text-white">
-                  <p class="mb-1 opacity-75 small">Total Pembayaran</p>
-                  <h2 class="fw-bold mb-0">Rp {{ number_format($reservasi->total_harga, 0, ',', '.') }}</h2>
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="opacity-75 small">Harga Asli</span>
+                    <span class="text-decoration-line-through opacity-75">Rp {{ number_format($reservasi->discount_info['original_price'], 0, ',', '.') }}</span>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-between mb-2">
+                    <span class="opacity-75 small">Diskon ({{ $reservasi->discount_info['code'] }})</span>
+                    <span class="text-warning fw-bold">-Rp {{ number_format($reservasi->discount_info['amount'], 0, ',', '.') }}</span>
+                  </div>
+                  <hr class="border-white opacity-25 my-2">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <p class="mb-1 opacity-75 small">Total Pembayaran</p>
+                      <h2 class="fw-bold mb-0">Rp {{ number_format($reservasi->total_harga, 0, ',', '.') }}</h2>
+                      <small class="opacity-75">{{ $reservasi->discount_info['name'] ?? 'Diskon Diterapkan' }}</small>
+                    </div>
+                    <div class="bg-white bg-opacity-20 rounded-circle p-3">
+                      <i class="bi bi-cash-stack text-white fs-3"></i>
+                    </div>
+                  </div>
                 </div>
-                <div class="bg-white bg-opacity-20 rounded-circle p-3">
-                  <i class="bi bi-cash-stack text-white fs-3"></i>
+              @else
+                {{-- Tanpa Diskon --}}
+                <div class="d-flex align-items-center justify-content-between">
+                  <div class="text-white">
+                    <p class="mb-1 opacity-75 small">Total Pembayaran</p>
+                    <h2 class="fw-bold mb-0">Rp {{ number_format($reservasi->total_harga, 0, ',', '.') }}</h2>
+                  </div>
+                  <div class="bg-white bg-opacity-20 rounded-circle p-3">
+                    <i class="bi bi-cash-stack text-white fs-3"></i>
+                  </div>
                 </div>
-              </div>
+              @endif
             </div>
           </div>
         @endif
@@ -106,8 +132,9 @@
               </div>
             @endif
 
-            <form method="POST" action="{{ route('hotel.prosesPembayaran', ['id' => $kamar->id]) }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('hotel.prosesPembayaran', ['id' => $kamar->id]) }}" enctype="multipart/form-data" id="paymentForm">
               @csrf
+              <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
               {{-- Atas Nama --}}
               <div class="mb-4">
@@ -161,13 +188,15 @@
                 </label>
                 <input type="file" 
                        name="bukti_transfer" 
+                       id="bukti_transfer"
                        class="form-control form-control-lg rounded-3 @error('bukti_transfer') is-invalid @enderror"
                        style="border: 2px solid #e9ecef;"
-                       accept="image/*"
+                       accept="image/jpeg,image/jpg,image/png"
                        required>
                 <small class="text-muted">
-                  <i class="bi bi-info-circle me-1"></i>Unggah bukti transfer (format: JPG, PNG, JPEG)
+                  <i class="bi bi-info-circle me-1"></i>Unggah bukti transfer (JPG, PNG max 5MB)
                 </small>
+                <div id="file-info" class="mt-2 text-muted small"></div>
               </div>
 
               {{-- Hidden field kamar --}}
@@ -175,8 +204,13 @@
 
               {{-- Submit Button --}}
               <div class="d-grid gap-3 mt-4">
-                <button type="submit" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
-                  <i class="bi bi-check-circle-fill me-2"></i>Konfirmasi & Pesan Sekarang
+                <button type="submit" id="submitBtn" class="btn btn-primary btn-lg rounded-pill py-3 fw-bold shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                  <span id="submitText">
+                    <i class="bi bi-check-circle-fill me-2"></i>Konfirmasi & Pesan Sekarang
+                  </span>
+                  <span id="loadingText" class="d-none">
+                    <i class="bi bi-hourglass-split me-2"></i>Memproses...
+                  </span>
                 </button>
               </div>
             </form>
@@ -232,4 +266,86 @@
     transition: all 0.3s ease;
   }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('paymentForm');
+    const fileInput = document.getElementById('bukti_transfer');
+    const fileInfo = document.getElementById('file-info');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const loadingText = document.getElementById('loadingText');
+    
+    // File validation
+    fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Check file size (5MB = 5120KB)
+            if (file.size > 5120 * 1024) {
+                alert('Ukuran file terlalu besar. Maksimal 5MB.');
+                fileInput.value = '';
+                fileInfo.innerHTML = '';
+                return;
+            }
+            
+            // Check file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Format file tidak didukung. Gunakan JPG, JPEG, atau PNG.');
+                fileInput.value = '';
+                fileInfo.innerHTML = '';
+                return;
+            }
+            
+            // Show file info
+            const fileSize = (file.size / 1024).toFixed(2);
+            fileInfo.innerHTML = `<i class="bi bi-check-circle text-success me-1"></i>File: ${file.name} (${fileSize} KB)`;
+        }
+    });
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        // Validate required fields
+        const requiredFields = ['atas_nama', 'bank', 'nomor_rekening', 'bukti_transfer'];
+        let isValid = true;
+        
+        requiredFields.forEach(function(fieldName) {
+            const field = form.querySelector(`[name="${fieldName}"]`);
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Mohon lengkapi semua field yang diperlukan.');
+            return;
+        }
+        
+        // Show loading state
+        submitBtn.disabled = true;
+        submitText.classList.add('d-none');
+        loadingText.classList.remove('d-none');
+        
+        // Re-enable button after 30 seconds (fallback)
+        setTimeout(function() {
+            submitBtn.disabled = false;
+            submitText.classList.remove('d-none');
+            loadingText.classList.add('d-none');
+        }, 30000);
+    });
+    
+    // CSRF token refresh for mobile
+    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+    if (csrfToken) {
+        const tokenInput = form.querySelector('input[name="_token"]');
+        if (tokenInput) {
+            tokenInput.value = csrfToken.getAttribute('content');
+        }
+    }
+});
+</script>
 @endsection
