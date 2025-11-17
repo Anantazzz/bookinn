@@ -64,6 +64,7 @@
             {{-- Informasi transfer ke hotel (tujuan) --}}
             <hr class="my-3">
             <p class="font-medium text-gray-800">Transfer ke Hotel: <span class="font-normal">{{ $reservasi->kamar->hotel->nama_hotel ?? '-' }}</span></p>
+            <p class="font-medium text-gray-800">Bank Hotel: <span class="font-normal">{{ $reservasi->kamar->hotel->bank ?? '-' }}</span></p>
             <p class="font-medium text-gray-800">No. Rekening Hotel: <span class="font-normal">{{ $reservasi->kamar->hotel->norek ?? '-' }}</span></p>
         </div>
     @else

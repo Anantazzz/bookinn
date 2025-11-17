@@ -4,8 +4,8 @@
     $kotas = $hotels->pluck('kota')->unique(); // Ambil daftar kota unik
 @endphp
 
-<aside class="w-64 bg-gray-900 min-h-screen p-6 flex flex-col">
-    <h2 class="text-2xl font-bold mb-10 text-white text-center">Admin Panel</h2>
+<aside id="admin-sidebar" class="w-64 bg-gray-900 min-h-screen p-4 lg:p-6 flex flex-col fixed lg:relative z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out">
+    <h2 class="text-xl lg:text-2xl font-bold mb-6 lg:mb-10 text-white text-center">Admin Panel</h2>
 
     <nav class="flex flex-col space-y-2 text-gray-300">
         {{-- Menu Hotel + Dropdown berdasarkan kota --}}
@@ -93,10 +93,10 @@
         </a>
 
         {{-- Logout --}}
-        <form action="{{ route('logout') }}" method="POST" class="mt-8">
+        <form action="{{ route('logout') }}" method="POST" class="mt-4 lg:mt-8">
             @csrf
             <button type="submit" 
-                class="block w-full text-left px-4 py-2 rounded-md hover:bg-red-600 hover:text-white transition">
+                class="block w-full text-left px-3 lg:px-4 py-1.5 lg:py-2 rounded-md hover:bg-red-600 hover:text-white transition text-sm lg:text-base">
                 Logout
             </button>
         </form>

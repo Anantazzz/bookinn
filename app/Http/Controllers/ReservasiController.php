@@ -116,7 +116,17 @@ class ReservasiController extends Controller
         $finalAmount = $totalHarga;
         
         if ($request->filled('discount_code')) {
+            // Log untuk debugging
+            logger()->info('Validating discount in reservasi', [
+                'user_id' => $user->id,
+                'code' => $request->discount_code,
+                'total_amount' => $totalHarga
+            ]);
+            
             $discountResult = DiscountController::validateDiscount($request->discount_code, $totalHarga, $user->id);
+            
+            logger()->info('Discount validation result', $discountResult);
+            
             if ($discountResult['valid']) {
                 $discountAmount = $discountResult['discount_amount'];
                 $discountCode = $discountResult['code'];
@@ -130,6 +140,12 @@ class ReservasiController extends Controller
                 ]);
             } else {
                 // Jika kupon tidak valid, kembalikan dengan error
+                logger()->warning('Discount validation failed', [
+                    'user_id' => $user->id,
+                    'code' => $request->discount_code,
+                    'message' => $discountResult['message']
+                ]);
+                
                 return back()->withErrors([
                     'discount_code' => $discountResult['message']
                 ])->withInput();

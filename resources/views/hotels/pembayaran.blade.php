@@ -80,24 +80,33 @@
             </div>
 
             <div class="card-body p-4">
-              <div class="mb-3">
-                <label class="form-label fw-semibold text-dark mb-2">
-                  <i class="bi bi-credit-card text-primary me-2"></i>Nomor Rekening
-                </label>
-                <input type="text" 
-                       class="form-control form-control-lg rounded-3 bg-light" 
-                       value="{{ $kamar->hotel->norek ?? 'Belum diatur' }}" 
-                       readonly>
-              </div>
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold text-dark mb-2">
+                    <i class="bi bi-bank text-primary me-2"></i>Bank
+                  </label>
+                  <div class="p-3 bg-light rounded-3 border">
+                    <span class="fw-bold text-uppercase">{{ strtoupper($kamar->hotel->bank ?? 'Belum diatur') }}</span>
+                  </div>
+                </div>
+                
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold text-dark mb-2">
+                    <i class="bi bi-credit-card text-primary me-2"></i>Nomor Rekening
+                  </label>
+                  <div class="p-3 bg-light rounded-3 border">
+                    <span class="fw-bold font-monospace">{{ $kamar->hotel->norek ?? 'Belum diatur' }}</span>
+                  </div>
+                </div>
 
-              <div>
-                <label class="form-label fw-semibold text-dark mb-2">
-                  <i class="bi bi-person-circle text-primary me-2"></i>Atas Nama
-                </label>
-                <input type="text" 
-                       class="form-control form-control-lg rounded-3 bg-light" 
-                       value="{{ $kamar->hotel->nama_hotel ?? 'Belum diatur' }}" 
-                       readonly>
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold text-dark mb-2">
+                    <i class="bi bi-person-circle text-primary me-2"></i>Atas Nama
+                  </label>
+                  <div class="p-3 bg-light rounded-3 border">
+                    <span class="fw-bold">{{ $kamar->hotel->nama_hotel ?? 'Belum diatur' }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

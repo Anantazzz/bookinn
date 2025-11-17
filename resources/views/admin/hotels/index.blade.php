@@ -29,7 +29,8 @@
         </div>
         @endif
 
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        {{-- Desktop Table --}}
+        <div class="hidden lg:block bg-white rounded-2xl shadow-xl overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="min-w-full">
                     <thead>
@@ -41,6 +42,7 @@
                             <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase">Alamat</th>
                             <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase">Bintang</th>
                             <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase">No. Rekening</th>
+                            <th class="py-4 px-6 text-left text-xs font-bold text-gray-700 uppercase">Bank</th>
                             <th class="py-4 px-6 text-center text-xs font-bold text-gray-700 uppercase">Aksi</th>
                         </tr>
                     </thead>
@@ -68,9 +70,18 @@
                             </td>
                             <td class="py-4 px-6 text-gray-700">{{ $hotel->norek ?? '-' }}</td>
                             <td class="py-4 px-6">
+                                @if($hotel->bank)
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {{ strtoupper($hotel->bank) }}
+                                    </span>
+                                @else
+                                    <span class="text-gray-400 text-sm">-</span>
+                                @endif
+                            </td>
+                            <td class="py-4 px-6">
                                 <div class="flex items-center justify-center gap-2">
                                     <a href="{{ route('admin.hotels.show', $hotel->id) }}" class="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:scale-105 transition">Detail</a>
-                                    <button onclick="openEditModal('{{ $hotel->id }}', '{{ $hotel->nama_hotel }}', '{{ $hotel->kota }}', '{{ $hotel->alamat }}', '{{ $hotel->bintang }}', '{{ $hotel->norek }}')" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:scale-105 transition">Edit</button>
+                                    <button onclick="openEditModal('{{ $hotel->id }}', '{{ $hotel->nama_hotel }}', '{{ $hotel->kota }}', '{{ $hotel->alamat }}', '{{ $hotel->bintang }}', '{{ $hotel->norek }}', '{{ $hotel->bank }}')" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold text-sm hover:scale-105 transition">Edit</button>
                                     <form action="{{ route('admin.hotels.destroy', $hotel->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus hotel ini?')">
                                         @csrf
                                         @method('DELETE')
@@ -81,12 +92,66 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center py-12 text-gray-500 font-semibold">Belum ada data hotel</td>
+                            <td colspan="9" class="text-center py-12 text-gray-500 font-semibold">Belum ada data hotel</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+        </div>
+        
+        {{-- Mobile Cards --}}
+        <div class="lg:hidden space-y-4">
+            @forelse ($hotels as $hotel)
+            <div class="bg-white rounded-xl shadow-lg p-4">
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0">
+                        @if ($hotel->gambar)
+                        <img src="{{ asset('images/' . $hotel->gambar) }}" class="w-16 h-16 object-cover rounded-lg">
+                        @else
+                        <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-gray-300" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+                                <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12z"/>
+                            </svg>
+                        </div>
+                        @endif
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-bold text-gray-900 text-lg">{{ $hotel->nama_hotel }}</h3>
+                        <p class="text-sm text-gray-600 mb-1">{{ $hotel->kota }}</p>
+                        <p class="text-xs text-gray-500 mb-2">{{ Str::limit($hotel->alamat, 50) }}</p>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="bg-yellow-50 text-yellow-700 px-2 py-1 rounded-full text-xs font-semibold">⭐ {{ $hotel->bintang }}</span>
+                            <span class="text-xs text-gray-500">ID: #{{ $hotel->id }}</span>
+                        </div>
+                        @if($hotel->norek)
+                        <p class="text-xs text-gray-600 mb-2">Rekening: {{ $hotel->norek }}</p>
+                        @endif
+                        @if($hotel->bank)
+                        <p class="text-xs text-gray-600 mb-3">Bank: 
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                {{ strtoupper($hotel->bank) }}
+                            </span>
+                        </p>
+                        @endif
+                        <div class="flex flex-wrap gap-2">
+                            <a href="{{ route('admin.hotels.show', $hotel->id) }}" class="bg-cyan-500 text-white px-3 py-1 rounded-lg text-xs font-semibold">Detail</a>
+                            <button onclick="openEditModal('{{ $hotel->id }}', '{{ $hotel->nama_hotel }}', '{{ $hotel->kota }}', '{{ $hotel->alamat }}', '{{ $hotel->bintang }}', '{{ $hotel->norek }}', '{{ $hotel->bank }}')" class="bg-amber-500 text-white px-3 py-1 rounded-lg text-xs font-semibold">Edit</button>
+                            <form action="{{ route('admin.hotels.destroy', $hotel->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus hotel ini?')" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-semibold">Hapus</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @empty
+            <div class="bg-white rounded-xl shadow-lg p-8 text-center">
+                <p class="text-gray-500 font-semibold">Belum ada data hotel</p>
+            </div>
+            @endforelse
         </div>
     </div>
 </div>
@@ -130,6 +195,15 @@
                 <input type="text" name="norek"
                     class="w-full border border-emerald-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                     placeholder="No. Rekening">
+
+                <select name="bank"
+                    class="w-full border border-emerald-300 rounded-lg p-2 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                    <option value="">Pilih Bank</option>
+                    <option value="mandiri">Bank Mandiri</option>
+                    <option value="bca">Bank BCA</option>
+                    <option value="bri">Bank BRI</option>
+                    <option value="bni">Bank BNI</option>
+                </select>
 
                 <input type="file" name="gambar"
                     class="w-full border border-emerald-300 rounded-lg p-2 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none">
@@ -193,6 +267,15 @@
                     class="w-full border border-indigo-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                     placeholder="No. Rekening">
 
+                <select id="edit_bank" name="bank"
+                    class="w-full border border-indigo-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <option value="">Pilih Bank</option>
+                    <option value="mandiri">Bank Mandiri</option>
+                    <option value="bca">Bank BCA</option>
+                    <option value="bri">Bank BRI</option>
+                    <option value="bni">Bank BNI</option>
+                </select>
+
                 <input name="gambar" type="file"
                     class="w-full border border-indigo-300 rounded-lg p-2 bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
             </div>
@@ -219,13 +302,14 @@ function openAddModal() {
 function closeAddModal() {
     document.getElementById('addModal').classList.add('hidden');
 }
-function openEditModal(id, nama, kota, alamat, bintang, norek) {
+function openEditModal(id, nama, kota, alamat, bintang, norek, bank) {
     document.getElementById('editForm').action = '/admin/hotels/' + id;
     document.getElementById('edit_nama_hotel').value = nama;
     document.getElementById('edit_kota').value = kota;
     document.getElementById('edit_alamat').value = alamat;
     document.getElementById('edit_bintang').value = bintang;
     document.getElementById('edit_norek').value = norek;
+    document.getElementById('edit_bank').value = bank || '';
     document.getElementById('editModal').classList.remove('hidden');
 }
 function closeEditModal() {

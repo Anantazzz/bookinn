@@ -72,6 +72,22 @@
                     <p>Rp{{ number_format($kasurTambahan, 0, ',', '.') }}</p>
                 </div>
             @endif
+            
+            @php
+                $subtotal = ($reservasi->kamar->harga * $jumlahHari) + ($reservasi->kasur_tambahan ? $kasurTambahan : 0);
+                $hasDiscount = $reservasi->pembayaran->discount_code && $reservasi->pembayaran->discount_amount > 0;
+            @endphp
+            
+            @if($hasDiscount)
+                <div class="flex justify-between text-gray-700 mt-1">
+                    <p>Subtotal</p>
+                    <p>Rp{{ number_format($subtotal, 0, ',', '.') }}</p>
+                </div>
+                <div class="flex justify-between text-green-600 mt-1">
+                    <p>Diskon ({{ $reservasi->pembayaran->discount_code }})</p>
+                    <p>-Rp{{ number_format($reservasi->pembayaran->discount_amount, 0, ',', '.') }}</p>
+                </div>
+            @endif
 
             <hr class="my-3">
 

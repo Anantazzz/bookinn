@@ -55,6 +55,7 @@ class AdminHotelController extends Controller
             'alamat' => 'required|string|max:255', // Validasi alamat
             'bintang' => 'required|integer|min:1|max:5', // Validasi bintang hotel
             'norek' => 'required|string|max:30', // Validasi nomor rekening
+            'bank' => 'required|in:mandiri,bca,bri,bni', // Validasi bank
         ]);
 
         if ($request->hasFile('gambar')) { // Jika ada file gambar diupload
@@ -91,6 +92,7 @@ class AdminHotelController extends Controller
             'alamat' => 'required|string|max:255', // Validasi alamat
             'bintang' => 'required|integer|min:1|max:5', // Validasi bintang hotel
             'norek' => 'required|string|max:30', // Validasi nomor rekening
+            'bank' => 'required|in:mandiri,bca,bri,bni', // Validasi bank
             'gambar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', // Validasi gambar
         ]);
 

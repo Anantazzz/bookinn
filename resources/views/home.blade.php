@@ -2,6 +2,60 @@
 
 @section('content')
 
+{{-- Promo Popup --}}
+<div class="modal fade" id="promoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 overflow-hidden shadow-lg">
+            <div class="position-relative" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3 btn-close-white" data-bs-dismiss="modal"></button>
+                
+                <div class="text-center text-white p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-gift-fill" style="font-size: 4rem; color: #ffd700;"></i>
+                    </div>
+                    <h2 class="fw-bold mb-3">🎉 PROMO SPESIAL HARI INI! 🎉</h2>
+                    <p class="fs-5 mb-4">Dapatkan diskon hingga <span class="fw-bold text-warning">20%</span> untuk booking hotel impian Anda!</p>
+                </div>
+                
+                <div class="bg-white p-4">
+                    <div class="row g-3 text-center">
+                        <div class="col-md-4">
+                            <div class="p-3 bg-primary bg-opacity-10 rounded-3">
+                                <i class="bi bi-percent text-primary fs-3 mb-2"></i>
+                                <h6 class="fw-bold text-primary">WELCOME10</h6>
+                                <small class="text-muted">Diskon 10% untuk customer baru</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 bg-success bg-opacity-10 rounded-3">
+                                <i class="bi bi-calendar-event text-success fs-3 mb-2"></i>
+                                <h6 class="fw-bold text-success">WEEKEND20</h6>
+                                <small class="text-muted">Diskon 20% untuk booking weekend</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3 bg-warning bg-opacity-10 rounded-3">
+                                <i class="bi bi-cash-coin text-warning fs-3 mb-2"></i>
+                                <h6 class="fw-bold text-warning">SAVE50K</h6>
+                                <small class="text-muted">Potongan langsung Rp 50.000</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{{ route('hotel') }}" class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                            <i class="bi bi-search me-2"></i>Cari Hotel Sekarang
+                        </a>
+                        <p class="small text-muted mt-3 mb-0">
+                            <i class="bi bi-clock me-1"></i>Promo terbatas! Jangan sampai terlewat
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- Hero Section --}}
 <section class="position-relative rounded-4 overflow-hidden mb-5 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
     {{-- Background Image with Overlay --}}
@@ -19,10 +73,16 @@
         </div>
         
         {{-- Search Bar Component --}}
-        <div class="mx-auto" style="max-width: 700px;">
+        <div class="mx-auto search-container">
             <form action="{{ route('hotel') }}" method="GET">
-                <div class="bg-white rounded-4 shadow-lg p-2" style="backdrop-filter: blur(10px);">
+                <div class="bg-white rounded-4 shadow-lg search-box" style="backdrop-filter: blur(10px);">
                     <x-search-bar />
+                    <div class="text-center mt-3">
+                        <small class="text-muted bg-white bg-opacity-75 px-3 py-1 rounded-pill">
+                            <i class="bi bi-gift text-primary me-1"></i>
+                            Ada promo menarik menanti Anda!
+                        </small>
+                    </div>
                 </div>
             </form>
         </div>
@@ -200,6 +260,69 @@
 
     /* Bootstrap Icons (if not already included) */
     @import url('https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css');
+    
+    /* Responsive Search Bar */
+    .search-container {
+        max-width: 900px;
+    }
+    
+    .search-box {
+        padding: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .search-container {
+            max-width: 95%;
+        }
+        
+        .search-box {
+            padding: 1rem;
+        }
+    }
+    
+    /* Promo Modal Animation */
+    .modal.fade .modal-dialog {
+        transform: scale(0.8) translateY(-50px);
+        transition: all 0.3s ease;
+    }
+    
+    .modal.show .modal-dialog {
+        transform: scale(1) translateY(0);
+    }
 </style>
+
+{{-- Promo Modal Script --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    @auth
+    // Cek apakah popup sudah ditampilkan untuk session login ini
+    const sessionKey = 'promoShown_{{ auth()->id() }}_{{ session()->getId() }}';
+    const hasShown = sessionStorage.getItem(sessionKey);
+    
+    if (!hasShown) {
+        // Tampilkan popup setelah 2 detik
+        setTimeout(function() {
+            const promoModal = new bootstrap.Modal(document.getElementById('promoModal'));
+            promoModal.show();
+            
+            // Tandai sudah ditampilkan untuk session ini
+            sessionStorage.setItem(sessionKey, 'true');
+        }, 2000);
+    }
+    @else
+    // Untuk guest, tampilkan sekali per hari
+    const today = new Date().toDateString();
+    const lastShown = localStorage.getItem('promoPopupLastShown');
+    
+    if (lastShown !== today) {
+        setTimeout(function() {
+            const promoModal = new bootstrap.Modal(document.getElementById('promoModal'));
+            promoModal.show();
+            localStorage.setItem('promoPopupLastShown', today);
+        }, 2000);
+    }
+    @endauth
+});
+</script>
 
 @endsection

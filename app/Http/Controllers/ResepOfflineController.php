@@ -83,6 +83,38 @@ class ResepOfflineController extends Controller
         if ($kasurTambahan) { // Jika ada kasur tambahan
             $totalHarga += 100000; // Tambah biaya kasur tambahan Rp 100.000 (sekali bayar)
         }
+        
+        // APLIKASIKAN DISKON JIKA ADA
+        $discountAmount = 0;
+        $discountCode = null;
+        $discountName = null;
+        $originalPrice = $totalHarga;
+        
+        if ($request->filled('discount_code')) {
+            // Log untuk debugging
+            logger()->info('Validating discount in offline booking', [
+                'code' => $request->discount_code,
+                'total_amount' => $totalHarga
+            ]);
+            
+            $discountResult = \App\Http\Controllers\DiscountController::validateDiscount(
+                $request->discount_code, 
+                $totalHarga, 
+                null // Offline booking tidak ada user_id
+            );
+            
+            logger()->info('Offline discount validation result', $discountResult);
+            
+            if ($discountResult['valid']) {
+                $discountAmount = $discountResult['discount_amount'];
+                $discountCode = $discountResult['code'];
+                $discountName = $discountResult['name'];
+                $totalHarga = $discountResult['final_amount'];
+            } else {
+                // Jika kupon tidak valid, kembalikan dengan error
+                return back()->with('error', $discountResult['message'])->withInput();
+            }
+        }
 
         // BUAT RESERVASI OFFLINE
         $reservasi = Reservasi::create([ // Buat record reservasi baru
@@ -122,13 +154,21 @@ class ResepOfflineController extends Controller
         ]);
 
         // BUAT PEMBAYARAN OTOMATIS (LANGSUNG LUNAS)
-        $pembayaran = Pembayaran::create([ // Buat record pembayaran
+        $pembayaranData = [
             'reservasi_id' => $reservasi->id, // ID reservasi yang baru dibuat
             'tanggal_bayar' => Carbon::now('Asia/Jakarta')->toDateString(), // Tanggal bayar hari ini
-            'jumlah_bayar' => $totalHarga, // Jumlah yang dibayar
+            'jumlah_bayar' => $totalHarga, // Jumlah yang dibayar (sudah termasuk diskon)
             'metode_bayar' => $request->metode_bayar, // Cash atau Transfer
             'status_bayar' => 'lunas', // Status langsung lunas (offline)
-        ]);
+        ];
+        
+        // Tambahkan data diskon jika ada
+        if ($discountCode) {
+            $pembayaranData['discount_code'] = $discountCode;
+            $pembayaranData['discount_amount'] = $discountAmount;
+        }
+        
+        $pembayaran = Pembayaran::create($pembayaranData);
         
         // BUAT INVOICE DENGAN KODE UNIK
         $kodeUnik = 'INV-' . date('Ymd') . '-' . str_pad($reservasi->id, 4, '0', STR_PAD_LEFT); // Format: INV-20241201-0001
