@@ -33,6 +33,11 @@ class User extends Authenticatable
         return $this->belongsTo(Hotel::class);
     }
 
+    public function reservasis()
+    {
+        return $this->hasMany(Reservasi::class);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

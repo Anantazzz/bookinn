@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body, html {
             height: 100%;
@@ -51,12 +52,22 @@
 
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control">
+                        <div class="position-relative">
+                            <input type="password" name="password" class="form-control" id="password">
+                            <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y" onclick="togglePassword('password')" style="border: none; background: none; padding: 0 10px;">
+                                <i class="bi bi-eye" id="password-icon"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Konfirmasi Password</label>
-                        <input type="password" name="password_confirmation" class="form-control" >
+                        <div class="position-relative">
+                            <input type="password" name="password_confirmation" class="form-control" id="password_confirmation">
+                            <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y" onclick="togglePassword('password_confirmation')" style="border: none; background: none; padding: 0 10px;">
+                                <i class="bi bi-eye" id="password_confirmation-icon"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -81,6 +92,21 @@
         </div>
     </div>
 </div>
+
+<script>
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    const icon = document.getElementById(fieldId + '-icon');
+    
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+    } else {
+        field.type = 'password';
+        icon.className = 'bi bi-eye';
+    }
+}
+</script>
 
 </body>
 </html>

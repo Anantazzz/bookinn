@@ -13,6 +13,7 @@ use App\Http\Controllers\{
     AdminKamarController,
     AdminResepsionisController,
     AdminOwnerController,
+    AdminCustomerController,
     DashResepsionisController,
     ResepKamarController,
     ResepCheckController,
@@ -89,6 +90,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin'])->group(function () {
 
     // CRUD Owner
     Route::resource('owners', AdminOwnerController::class)->names('admin.owners');
+
+    // Kelola Customer
+    Route::get('customers', [AdminCustomerController::class, 'index'])->name('admin.customers.index');
+    Route::get('customers/{id}', [AdminCustomerController::class, 'show'])->name('admin.customers.show');
 });
 
 //RESEPSIONIS (auth + role:resepsionis)
